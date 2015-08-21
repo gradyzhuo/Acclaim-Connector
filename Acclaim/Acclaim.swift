@@ -8,7 +8,6 @@
 
 import Foundation
 
-public typealias Response = ACResponse
 public typealias HTTPMethod = ACMethod
 public typealias RequestParam = ACRequestParam
 

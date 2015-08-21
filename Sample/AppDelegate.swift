@@ -22,17 +22,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let caller = ACAPICaller(API: "getName", params: [:])
 
-        caller.addResponse(ACResponse.JSON(handler: { (result, response) -> Void in
+        caller.addResponse(ACResponse.JSON({ (JSONOjbect, response, error) -> Void in
+            println("JSONOjbect:\(JSONOjbect)")
+        })).addResponse(ACResponse.Failed({ (data, response, error) -> Void in
+            println("result:\(data)")
+        })).addResponse(ACResponse.Image({ (result, response, error) -> Void in
             println("result:\(result)")
-        })).addResponse(ACResponse.OriginalData(handler: { (result, response) -> Void in
-            println("result:\(result)")
-        })).addResponse(ACResponse.Image(handler: { (image, response) -> Void in
-            println("image:\(image)")
-        })).addResponse(ACResponse.Failed(handler: { (result, response, error) -> Void in
-            println("error:\(error == nil)")
-        })).run()
-
-        
+        })).resume()
+ 
         return true
     }
 

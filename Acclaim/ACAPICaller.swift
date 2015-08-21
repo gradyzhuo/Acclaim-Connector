@@ -22,7 +22,7 @@ public class ACAPICaller {
     public internal(set) var API:ACAPI!
     
     internal var params:ACRequestParams = ACRequestParams()
-    internal var responseHandlers:[ACResponseCore : ACResponse] = [:]
+    internal var responseHandlers:[ACResponseIdentifier : ACResponse] = [:]
     
     public internal(set) var running:Bool = false
     public  var cancelled:Bool {
@@ -44,8 +44,8 @@ public class ACAPICaller {
         return self
     }
     
-    public func addResponse(response:Response)->ACAPICaller{
-        self.responseHandlers[response.core] = response
+    public func addResponse(response:ACResponse)->ACAPICaller{
+        self.responseHandlers[response.identifier] = response
         return self
     }
     
@@ -109,7 +109,7 @@ public class ACAPICaller {
     internal func handleResponse(data:NSData, response:NSURLResponse, error:NSError?){
         
         var handlers = self.responseHandlers
-        let failedResponseHandler = handlers.removeValueForKey(ACResponseCore.Failed)
+        let failedResponseHandler = handlers.removeValueForKey("Failed")
         
         if error != nil {
             failedResponseHandler?.handle(data, response: response, error: error)
