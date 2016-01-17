@@ -9,46 +9,56 @@
 import Foundation
 
 internal protocol _Response {
-    func handle(data:NSData, URLResponse:NSURLResponse, error:ErrorType?)->Bool
+    func handle(data:NSData, URLResponse:NSURLResponse?, error:ErrorType?)->Bool
 }
 
-internal protocol _ACAPIResponse : _Response {
+internal protocol _ACResponse : _Response {
+    typealias DeserializerResultTuple = (item:DeserializerType.InstanceType?, error: ErrorType?)
+    
     typealias DeserializerType : Deserializer
 }
 
-extension _ACAPIResponse {
-    func handle(data:NSData, URLResponse:NSURLResponse, error:ErrorType?)->Bool{
+extension _ACResponse {
+    
+    func handle(data:NSData, URLResponse:NSURLResponse?, error:ErrorType?)->Bool{
         return false
     }
 }
 
 public typealias ACResponseIdentifier = String
 
-public struct Response<T : Deserializer> : _ACAPIResponse {
-    
-    public typealias DeserializerType = T
+public class Response<T : Deserializer> : _ACResponse {
+
+    internal typealias DeserializerType = T
     
     let handler: DeserializerType.Handler
     
     public init(handler: DeserializerType.Handler){
         self.handler = handler
+        
     }
     
-    internal func handle(data:NSData, URLResponse:NSURLResponse, error:ErrorType?)->Bool{
+    internal func handle(data:NSData, URLResponse:NSURLResponse?, error:ErrorType?)->Bool{
         
-        guard let handler = self.handler as? (result: DeserializerType.DeserialType?, URLResponse: NSURLResponse, error: ErrorType?)->Void else {
-            return false
+        guard let handler = self.handler as? (result: DeserializerType.InstanceType?, URLResponse: NSURLResponse?, error: ErrorType?)->Void else {
+            fatalError("Deserializer.Handler must be a closure by the formal type : (result: DeserializerType.InstanceType?, URLResponse: NSURLResponse, error: ErrorType?).")
         }
         
-        let (object, e) = DeserializerType.deserialize(data)
-        handler(result: object, URLResponse: URLResponse, error: e)
+        let result:DeserializerResultTuple = DeserializerType.deserialize(data)
+        let error = result.error ?? error
+        handler(result: result.item, URLResponse: URLResponse, error: error)
         
-        if let e = e as? NSError {
+        if let e = result.error as? NSError {
             ACDebugLog("deserialize error, reason: \(e.debugDescription)")
             return false
         }
         
         return true
+    }
+    
+    
+    deinit{
+        ACDebugLog("Response(\(T.identifier)) : [\(unsafeAddressOf(self))] deinit")
     }
     
 }

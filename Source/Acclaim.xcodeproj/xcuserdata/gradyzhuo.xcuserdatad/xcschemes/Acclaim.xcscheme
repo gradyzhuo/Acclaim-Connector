@@ -93,15 +93,16 @@
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
-      <MacroExpansion>
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "79213F131B7B04C500A527DE"
-            BuildableName = "Acclaim.framework"
-            BlueprintName = "Acclaim"
-            ReferencedContainer = "container:Acclaim.xcodeproj">
+            BlueprintIdentifier = "7914ADC91C3BCFF30089FEF0"
+            BuildableName = "AcclaimDemo.app"
+            BlueprintName = "AcclaimDemo"
+            ReferencedContainer = "container:../Samples/AcclaimDemo/AcclaimDemo.xcodeproj">
          </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

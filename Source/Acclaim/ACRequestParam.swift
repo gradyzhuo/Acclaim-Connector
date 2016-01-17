@@ -13,8 +13,8 @@ extension ACRequestParams : ArrayLiteralConvertible {
 }
 
 extension ACRequestParams : DictionaryLiteralConvertible {
-    public typealias Key = String!
-    public typealias Value = AnyObject!
+    public typealias Key = String
+    public typealias Value = AnyObject
 }
 
 public struct ACRequestParams {
@@ -35,6 +35,16 @@ public struct ACRequestParams {
         
     }
     
+    /// Create an instance initialized with `dictionary elements`.
+    public init(dictionary elements: [Key:Value]){
+        self = ACRequestParams()
+        
+        elements.forEach {
+            self.addParam($0.1, forKey: $0.0)
+        }
+        
+    }
+    
     /// Create an instance initialized with `elements`.
     public init(arrayLiteral elements: Element...){
         self = ACRequestParams(params: elements)
@@ -44,11 +54,10 @@ public struct ACRequestParams {
     public init(dictionaryLiteral elements: (Key, Value)...){
         self = ACRequestParams()
         
-        for (key, value) in elements {
-            if let key = key, let value: AnyObject = value {
-                self.addParam(value, forKey: key)
-            }
+        elements.forEach {
+            self.addParam($0.1, forKey: $0.0)
         }
+
     }
     
     
@@ -88,6 +97,10 @@ public struct ACRequestParams {
     
     public mutating func clearAllParams(){
         self.params.removeAll(keepCapacity: false)
+    }
+    
+    internal func serialize(serializer: Serializer) -> NSData? {
+        return serializer.serialize(self)
     }
     
 }

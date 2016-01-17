@@ -11,15 +11,16 @@ import Foundation
 public typealias HTTPMethod = ACMethod
 public typealias RequestParam = ACRequestParam
 public typealias APICaller = ACAPICaller
-//public typealias Response = ACAPIResponse
 
-
-var ACAPIHostURLInfoKey:String {
-    return Acclaim.hostURLInfoKey
-}
-
+public let ACAPIHostURLInfoKey:String = Acclaim.hostURLInfoKey
 
 public class Acclaim {
+    
+    public static let version = AcclaimVersionNumber
+    
+    public static var allowsCellularAccess: Bool = true
+    
+    public static var defaultConnector: Connector = URLSession()
     
     internal static let deafultHostURLInfoKey:String = "ACAPIHostURLInfoKey"
     public static var hostURLInfoKey:String = Acclaim.deafultHostURLInfoKey

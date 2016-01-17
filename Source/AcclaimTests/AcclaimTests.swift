@@ -27,9 +27,9 @@ class AcclaimTests: XCTestCase {
         // This is an example of a functional test case.
 
         
-        XCTAssertEqual("POST", ACMethod.POST, "pass")
-        XCTAssertEqual("GET", ACMethod.GET, "pass")
-        XCTAssertEqual("G", ACMethod.GET, "If method not found, 'GET' instead.")
+//        XCTAssertEqual("POST", ACMethod.POST, "pass")
+//        XCTAssertEqual("GET", ACMethod.GET, "pass")
+//        XCTAssertEqual("G", ACMethod.GET, "If method not found, 'GET' instead.")
         
     }
 

@@ -14,51 +14,19 @@ public struct  API : StringLiteralConvertible {
     public typealias ExtendedGraphemeClusterLiteralType = String
     public typealias UnicodeScalarLiteralType = String
     
-    public internal(set) var apiURL:NSURL!
+    public internal(set) var apiURL:NSURL
     
-    public var method:ACMethod = .GET{
-        didSet{
-            let mutableRequest = self.request.mutableCopy() as! NSMutableURLRequest
-            mutableRequest.HTTPMethod = method.rawValue
-            self.request = mutableRequest
-        }
-    }
+    public var method:ACMethod = .GET
     
-    public var paramsType:ACRequestParamType = .URLParameters
+    public var timeoutInterval:NSTimeInterval = 30
     
-    public var timeoutInterval:NSTimeInterval = 30 {
-        didSet{
-            let mutableRequest = self.request.mutableCopy() as! NSMutableURLRequest
-            mutableRequest.timeoutInterval = timeoutInterval
-            self.request = mutableRequest
-        }
-    }
+    public var cachePolicy:NSURLRequestCachePolicy = .UseProtocolCachePolicy
     
-    public var cachePolicy:NSURLRequestCachePolicy = .UseProtocolCachePolicy{
-        didSet{
-            let mutableRequest = self.request.mutableCopy() as! NSMutableURLRequest
-            mutableRequest.cachePolicy = cachePolicy
-            self.request = mutableRequest
-        }
-    }
+    public var HTTPHeaderFields:[String:String] = [:]
     
-    public var HTTPHeaderFields:[String:String] = [:]{
-        didSet{
-            let mutableRequest = self.request.mutableCopy() as! NSMutableURLRequest
-            mutableRequest.allHTTPHeaderFields?.removeAll(keepCapacity: false)
-            
-            for (key, value) in HTTPHeaderFields {
-                mutableRequest.addValue(value, forHTTPHeaderField: key)
-            }
-            self.request = mutableRequest
-        }
-    }
+    internal var identifier: String = String(NSDate().timeIntervalSince1970)
     
-//    internal var mutableRequest:NSMutableURLRequest
-    public internal(set) var request:NSURLRequest
-    
-    
-    public init(api:String, host:NSURL! = Acclaim.hostURLFromInfoDictionary(), method:ACMethod = .GET, paramsType:ACRequestParamType = .URLParameters) throws {
+    public init(api:String, host:NSURL! = Acclaim.hostURLFromInfoDictionary(), method:ACMethod = .GET) throws {
         
         guard let validHostURL = host else {
             
@@ -70,22 +38,14 @@ public struct  API : StringLiteralConvertible {
         
         let apiURL = validHostURL.URLByAppendingPathComponent(api)
         
-        self = API(URL: apiURL, method: method, paramsType: paramsType)
+        self = API(URL: apiURL, method: method)
         
     }
 
-    public init(URL:NSURL, method:ACMethod = .GET, paramsType:ACRequestParamType = .URLParameters){
-        let request:NSMutableURLRequest = NSMutableURLRequest(URL: URL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
-        request.HTTPMethod = method.rawValue
-        self = API(request: request, paramsType: paramsType)
-        
+    public init(URL:NSURL, method:ACMethod = .GET){
+        self.apiURL = URL
         self.method = method
-    }
-    
-    public init(request:NSURLRequest , paramsType:ACRequestParamType = .URLParameters){
-        self.request = request
-        self.paramsType = paramsType
-        self.apiURL = request.URL
+        
     }
     
     /// Create an instance initialized to `value`.
@@ -96,6 +56,7 @@ public struct  API : StringLiteralConvertible {
         }else{
             self = try! API(api: value)
         }
+        
     }
     
     /// Create an instance initialized to `value`.
@@ -114,7 +75,7 @@ public struct  API : StringLiteralConvertible {
 
 extension API : Hashable {
     public var hashValue: Int {
-        return self.request.hashValue
+        return self.identifier.hashValue
     }
 }
 

@@ -12,7 +12,23 @@
 		7914ADD31C3BCFF30089FEF0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7914ADD11C3BCFF30089FEF0 /* Main.storyboard */; };
 		7914ADD51C3BCFF30089FEF0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7914ADD41C3BCFF30089FEF0 /* Assets.xcassets */; };
 		7914ADD81C3BCFF30089FEF0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7914ADD61C3BCFF30089FEF0 /* LaunchScreen.storyboard */; };
+		79F008DA1C482E0F00A8CBB7 /* Acclaim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79F008D91C482E0F00A8CBB7 /* Acclaim.framework */; };
+		79F008DB1C482E0F00A8CBB7 /* Acclaim.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 79F008D91C482E0F00A8CBB7 /* Acclaim.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		79F008DC1C482E1000A8CBB7 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				79F008DB1C482E0F00A8CBB7 /* Acclaim.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		7914ADCA1C3BCFF30089FEF0 /* AcclaimDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AcclaimDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -22,6 +38,7 @@
 		7914ADD41C3BCFF30089FEF0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7914ADD71C3BCFF30089FEF0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7914ADD91C3BCFF30089FEF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		79F008D91C482E0F00A8CBB7 /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Acclaim.framework; path = "/Users/gradyzhuo/Library/Developer/Xcode/DerivedData/Acclaim-bjshldpxkdcgsyfywrauvuqggbav/Build/Products/Debug-iphoneos/Acclaim.framework"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -29,6 +46,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				79F008DA1C482E0F00A8CBB7 /* Acclaim.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -38,6 +56,7 @@
 		7914ADC11C3BCFF30089FEF0 = {
 			isa = PBXGroup;
 			children = (
+				79F008D91C482E0F00A8CBB7 /* Acclaim.framework */,
 				7914ADCC1C3BCFF30089FEF0 /* AcclaimDemo */,
 				7914ADCB1C3BCFF30089FEF0 /* Products */,
 			);
@@ -74,6 +93,7 @@
 				7914ADC61C3BCFF30089FEF0 /* Sources */,
 				7914ADC71C3BCFF30089FEF0 /* Frameworks */,
 				7914ADC81C3BCFF30089FEF0 /* Resources */,
+				79F008DC1C482E1000A8CBB7 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -96,6 +116,7 @@
 				TargetAttributes = {
 					7914ADC91C3BCFF30089FEF0 = {
 						CreatedOnToolsVersion = 7.2;
+						DevelopmentTeam = XWA3XUFMA8;
 					};
 				};
 			};
@@ -249,10 +270,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AcclaimDemo",
+				);
 				INFOPLIST_FILE = AcclaimDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.offsky.AcclaimDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -260,10 +289,18 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AcclaimDemo",
+				);
 				INFOPLIST_FILE = AcclaimDemo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.offsky.AcclaimDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

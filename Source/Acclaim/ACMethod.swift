@@ -17,36 +17,60 @@ extension ACMethod {
     
 }
 
-public enum ACMethod : String, StringLiteralConvertible{
+public enum ACMethod {
     
-    case GET = "GET"
-    case POST = "POST"
-    case PUT = "PUT"
-    case DELETE = "DELETE"
-    case HEAD = "HEAD"
-    case OPTIONS = "OPTIONS"
-    case CONNECT = "CONNECT"
+    case GET
+    case POST(serializer: Serializer)
+    case PUT(serializer: Serializer)
+    case DELETE(serializer: Serializer)
+    case HEAD(serializer: Serializer)
+    case OPTIONS(serializer: Serializer)
+    case CONNECT(serializer: Serializer)
     
-    /// Create an instance initialized to `value`.
-    public init(stringLiteral value: StringLiteralType){
+    internal var serializer: Serializer {
+        switch self {
+        case let .POST(serializer):
+            return serializer
         
-        if let method = ACMethod(rawValue: value.uppercaseString){
-            self = method
-        }else{
-            
-            print("method [\(value)] is not supported, it will be [GET] instead.")
-            self = .GET
+        case let .PUT(serializer):
+            return serializer
+        case let .DELETE(serializer):
+            return serializer
+        case let .HEAD(serializer):
+            return serializer
+        case let .OPTIONS(serializer):
+            return serializer
+        case let .CONNECT(serializer):
+            return serializer
+        case .GET:
+            fallthrough
+        default:
+            return ACParamsQueryStringSerializer()
         }
     }
     
-    /// Create an instance initialized to `value`.
-    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType){
-        self = ACMethod(stringLiteral: value)
+    public var rawValue: String {
+        
+        switch self {
+        case .GET:
+            return "GET"
+        case .POST:
+            return "POST"
+        case .PUT:
+            return "PUT"
+        case .DELETE:
+            return "DELETE"
+        case .HEAD:
+            return "HEAD"
+        case .OPTIONS:
+            return "OPTIONS"
+        case .CONNECT:
+            return "CONNECT"
+        }
     }
     
-    /// Create an instance initialized to `value`.
-    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType){
-        self = ACMethod(stringLiteral: value)
-    }
-    
+}
+
+public func ==(lhs: ACMethod, rhs: ACMethod)->Bool{
+    return lhs.rawValue == rhs.rawValue
 }

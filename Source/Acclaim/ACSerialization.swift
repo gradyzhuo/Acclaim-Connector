@@ -8,48 +8,50 @@
 
 import Foundation
 
+
 public protocol Serializer {
-    
-    typealias SerialType
-    typealias ValueType
-    
-    static func serialize(object:SerialType) -> ValueType?
+    func serialize(object:ACRequestParams) -> NSData?
 
 }
 
+//FIXME: 未來可以加入錯誤的Key，要如何自已處理的方式。
 public protocol Deserializer {
-    typealias DeserialType
-    typealias Handler = (DeserialType?, NSURLResponse, ErrorType?)->Void
+    typealias InstanceType
+    typealias Handler = (Self.InstanceType?, NSURLResponse, ErrorType?)->Void
     
     static var identifier: String { get }
-    static func deserialize(data:NSData) -> (DeserialType?, ErrorType?)
+    static func deserialize(data:NSData) -> (Self.InstanceType?, ErrorType?)
     
 }
-
 
 typealias Serialization = protocol<Serializer, Deserializer>
 
-struct ACParamsJSONSerializer : Serializer {
+
+public struct ACParamsJSONSerializer : Serializer {
+    public var option: NSJSONWritingOptions
     
-    typealias SerialType = ACRequestParam
-    typealias ValueType = NSData
+    public init(option: NSJSONWritingOptions = .PrettyPrinted){
+        self.option = option
+    }
     
-    static func serialize(object: SerialType) -> ValueType? {
+    public func serialize(object: ACRequestParams) -> NSData? {
         return nil
     }
     
-    static func serialize(object: SerialType, option: NSJSONWritingOptions = .PrettyPrinted) -> ValueType? {
-        return nil
-    }
 }
 
 
-struct ACParamsKeyValueSerializer : Serializer {
-    typealias SerialType = ACRequestParam
-    typealias ValueType = NSData
-    
-    static func serialize(object: SerialType) -> ValueType? {
-        return nil
+public struct ACParamsQueryStringSerializer : Serializer {
+
+    public func serialize(object: ACRequestParams) -> NSData? {
+        
+        let components = NSURLComponents()
+        
+        components.queryItems = object.params.map { (element) -> NSURLQueryItem in
+            return NSURLQueryItem(name: element.1.key, value: element.1.value as? String)
+        }
+        
+        return components.query?.dataUsingEncoding(NSUTF8StringEncoding)
     }
 }
 
@@ -58,7 +60,7 @@ public struct ACOriginalDataResponseDeserializer : Deserializer{
     public static var identifier: String { return "OriginalData" }
     
     public typealias DeserialType = NSData
-    public typealias Handler = (data : NSData?, response:NSURLResponse, error:ErrorType?) -> Void
+    public typealias Handler = (data : NSData?, response:NSURLResponse?, error:ErrorType?) -> Void
     
     public static func deserialize(data: NSData) -> (DeserialType?, ErrorType?) {
         return (data, nil)
@@ -87,7 +89,7 @@ public struct ACTextResponseDeserializer : Deserializer{
     
     public typealias DeserialType = String
     
-    public typealias Handler = (text : DeserialType?, response:NSURLResponse, error:ErrorType?) -> Void
+    public typealias Handler = (text : DeserialType?, response:NSURLResponse?, error:ErrorType?) -> Void
     
     public static func deserialize(data: NSData) -> (DeserialType?, ErrorType?) {
         let text : String? = NSString(data: data, encoding: NSUTF8StringEncoding) as? String
@@ -100,7 +102,7 @@ public struct ACJSONResponseDeserializer : Deserializer{
     public static var identifier: String { return "JSON" }
     public typealias DeserialType = AnyObject
     
-    public typealias Handler = (JSONObject : DeserialType?, response:NSURLResponse, error:ErrorType?) -> Void
+    public typealias Handler = (JSONObject : DeserialType?, response:NSURLResponse?, error:ErrorType?) -> Void
     
     public static func deserialize(data: NSData) -> (DeserialType?, ErrorType?) {
         var error:ErrorType?
@@ -120,7 +122,7 @@ public struct ACImageResponseDeserializer : Deserializer{
     public static var identifier: String { return "Image" }
     public typealias DeserialType = UIImage
     
-    public typealias Handler = (image : DeserialType?, response:NSURLResponse, error:ErrorType?) -> Void
+    public typealias Handler = (image : DeserialType?, response:NSURLResponse?, error:ErrorType?) -> Void
     
     public static func deserialize(data: NSData) -> (DeserialType?, ErrorType?) {
         let image = UIImage(data: data)

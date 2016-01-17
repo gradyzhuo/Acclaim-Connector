@@ -22,6 +22,7 @@ extension Response {
     }
 }
 
+
 public class ACAPICaller : Caller {
     
     internal static var running:[API:ACAPICaller] = [:]
@@ -52,16 +53,20 @@ public class ACAPICaller : Caller {
     internal var params:ACRequestParams = ACRequestParams()
     internal var responseHandlers:(normal: [_Response], failed: [_Response]) = ([], [])
     
+    internal var connector: Connector
     
-    public convenience init(API api:API, params:[ACRequestParam]) {
-        self.init(API: api, params: ACRequestParams(params: params))
-        
+    public convenience init(API api:API, params:[String: AnyObject], connector: Connector = Acclaim.defaultConnector) {
+        self.init(API: api, params: ACRequestParams(dictionary: params), connector: connector)
     }
     
-    internal init(API api:API, params:ACRequestParams) {
+    public convenience init(API api:API, params:[ACRequestParam], connector: Connector = Acclaim.defaultConnector) {
+        self.init(API: api, params: ACRequestParams(params: params), connector: connector)
+    }
+    
+    internal init(API api:API, params:ACRequestParams, connector: Connector = Acclaim.defaultConnector) {
         self.api = api
         self.params = params
-        
+        self.connector = connector
     }
     
     public func handleProgress()->ACAPICaller{
@@ -79,39 +84,19 @@ public class ACAPICaller : Caller {
         return self
     }
     
-    internal func addResponse<T:Deserializer>(deserializer: T.Type, handler:T.Handler)->ACAPICaller{
-        
-        let response = Response<T>(handler: handler)
-        self.addResponse(response)
-        return self
-    }
-    
-    public func addOriginalDataResponse(handler:OriginalData.Handler)->ACAPICaller{
-        self.addResponse(OriginalData.self, handler: handler)
-        return self
-    }
-    
-    public func addImageResponse(handler:Image.Handler)->ACAPICaller{
-        self.addResponse(Image.self, handler: handler)
-        return self
-    }
-    
-    public func addJSONResponse(handler:JSON.Handler)->ACAPICaller{
-        self.addResponse(JSON.self, handler: handler)
-        return self
-    }
-    
-    public func addTextResponse(handler:Text.Handler)->ACAPICaller{
-        self.addResponse(Text.self, handler: handler)
-        return self
-    }
-    
-    public func addFailedResponse(handler:Failed.Handler)->ACAPICaller{
-        self.addResponse(Failed.self, handler: handler)
-        return self
+
+    internal func addResponse<T:Deserializer>(deserializer: T.Type)->(handler:T.Handler)->ACAPICaller{
+
+        return { (handler:T.Handler)->ACAPICaller in
+            let response = Response<T>(handler: handler)
+            return self.addResponse(response)
+        }
     }
     
     internal class func removeRunningCaller(API api:API){
+        
+        ACDebugLog("removeRunningCallerByAPI:\(api.apiURL)")
+        
         let caller = self.running.removeValueForKey(api)
         caller?.blockInQueue = nil
         caller?.running = false
@@ -127,40 +112,51 @@ public class ACAPICaller : Caller {
         return self
     }
     
-    internal func runToConnector(){
+    internal func run(var connector connector: Connector){
         
         if !self.running {
             return
         }
         
-        let error:ErrorType? = nil
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(NSEC_PER_SEC * 3)), dispatch_get_global_queue(0, 0), {[weak self] () -> Void in
-            
-            if let weakSelf = self {
-                let URLResponse = NSURLResponse(URL: weakSelf.api.apiURL, MIMEType: "text/json", expectedContentLength: 0, textEncodingName: "UTF-8")
-                let data:NSData! = "{\"key\":\"我\"}".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
-                
-                if error == nil {
-                    let cachedResponse = NSCachedURLResponse(response: URLResponse, data: data, userInfo: nil, storagePolicy: weakSelf.cacheStoragePolicy)
-                    Acclaim.storeCachedResponse(cachedResponse, forRequest: weakSelf.api.request)
-                }
-                
-                weakSelf.handleResponse(data, URLResponse: URLResponse, error: error)
-                
-                ACAPICaller.removeRunningCaller(API: weakSelf.api)
+        defer {
+            self.request = request
+        }
+        
+        let request = ACAPICaller.URLRequest(self.api, params: self.params)
+        
+        connector.sendRequest(request) {[weak self] (data, response, error) -> Void in
+            guard let weakSelf = self else {
+                return
             }
             
-        })
+            guard let data = data else {
+                return
+            }
+            
+            if let response = response{
+                let cachedResponse = NSCachedURLResponse(response: response, data: data, userInfo: nil, storagePolicy: weakSelf.cacheStoragePolicy)
+                Acclaim.storeCachedResponse(cachedResponse, forRequest: request)
+            }
+            
+            weakSelf.handleResponses(data: data, URLResponse: response, error: error)
+            
+        }
         
     }
     
-    internal func handleResponse(data:NSData, URLResponse:NSURLResponse, error:ErrorType?){
+    internal func handleResponses(data data:NSData, URLResponse: NSURLResponse?, error:ErrorType?){
+        
+        defer {
+            //Remove caller after response completion.
+            ACAPICaller.removeRunningCaller(API: self.api)
+        }
         
         if error != nil {
             self.responseHandlers.failed.forEach{ $0.handle(data, URLResponse: URLResponse, error: error) }
         }else{
             self.responseHandlers.normal.forEach{ $0.handle(data, URLResponse: URLResponse, error: error) }
         }
+        
         
     }
     
@@ -173,7 +169,7 @@ public class ACAPICaller : Caller {
         self.running = true
         
         let block = dispatch_block_create_with_qos_class(DISPATCH_BLOCK_DETACHED, priority.qos_class, priority.relative_priority) {[unowned self] () -> Void in
-            self.runToConnector()
+            self.run(connector: self.connector)
         }
         
         self.blockInQueue = block
@@ -185,19 +181,20 @@ public class ACAPICaller : Caller {
     
     public func cancel(){
         
-        if !running {
+        guard self.running else {
             ACDebugLog("Caller is not running. Please perform call() to run your api.")
             return
         }
         
-        if !self.cancelled {
-            self.running = false
-            
-            dispatch_block_cancel(self.blockInQueue)
-            ACAPICaller.removeRunningCaller(API: self.api)
-            ACDebugLog("Caller is cancelled.")
-            
+        guard !self.cancelled else {
+            return
         }
+        
+        self.running = false
+        
+        dispatch_block_cancel(self.blockInQueue)
+        ACAPICaller.removeRunningCaller(API: self.api)
+        ACDebugLog("Caller is cancelled.")
     }
     
     
@@ -205,4 +202,64 @@ public class ACAPICaller : Caller {
         ACDebugLog("ACAPICaller : [\(unsafeAddressOf(self))] deinit")
         ACDebugLog("count of running caller:\(ACAPICaller.running.count)")
     }
+}
+
+extension ACAPICaller {
+    
+    internal static func URLRequest(api: API, params: ACRequestParams)->NSURLRequest{
+        
+        let request:NSMutableURLRequest = NSMutableURLRequest(URL: api.apiURL, cachePolicy: api.cachePolicy, timeoutInterval: api.timeoutInterval)
+        
+        let body = api.method.serializer.serialize(params)
+        
+        if let body = body where api.method == ACMethod.GET {
+            let components = NSURLComponents(URL: api.apiURL, resolvingAgainstBaseURL: false)
+            components?.query = String(data: body, encoding: NSUTF8StringEncoding)
+            request.URL = (components?.URL)!
+        }else{
+            request.HTTPBody = body
+        }
+        
+        request.HTTPMethod = api.method.rawValue
+        request.allowsCellularAccess = Acclaim.allowsCellularAccess
+        
+        api.HTTPHeaderFields.forEach { (field:(key:String, value: String)) -> () in
+            request.addValue(field.value, forHTTPHeaderField: field.key)
+        }
+        
+        return request.copy() as! NSURLRequest
+    }
+
+    
+}
+
+
+// convenience response handler function
+extension ACAPICaller {
+    
+    public func addOriginalDataResponse(handler:OriginalData.Handler)->ACAPICaller{
+        self.addResponse(OriginalData.self)(handler: handler)
+        return self
+    }
+    
+    public func addImageResponseHandler(handler:Image.Handler)->ACAPICaller{
+        self.addResponse(Image.self)(handler: handler)
+        return self
+    }
+    
+    public func addJSONResponseHandler(handler:JSON.Handler)->ACAPICaller{
+        self.addResponse(JSON.self)(handler: handler)
+        return self
+    }
+    
+    public func addTextResponseHandler(handler:Text.Handler)->ACAPICaller{
+        self.addResponse(Text.self)(handler: handler)
+        return self
+    }
+    
+    public func addFailedResponseHandler(handler:Failed.Handler)->ACAPICaller{
+        self.addResponse(Failed.self)(handler: handler)
+        return self
+    }
+
 }

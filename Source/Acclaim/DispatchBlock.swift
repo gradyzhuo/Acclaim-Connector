@@ -8,12 +8,15 @@
 
 import Foundation
 
-internal class DispatchBlock {
+public class DispatchBlock {
+    
+    public typealias dispatch_block_t = () throws -> Void
     
     internal var block:dispatch_block_t!
     
-    internal init(block:dispatch_block_t){
+    public init(block:dispatch_block_t){
         self.block = block
+        
     }
     
     deinit{
@@ -21,3 +24,4 @@ internal class DispatchBlock {
         ACDebugLog("DispatchBlock deinit")
     }
 }
+

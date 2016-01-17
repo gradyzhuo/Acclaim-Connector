@@ -1,0 +1,10 @@
+framework module Acclaim {
+  umbrella header "Acclaim.h"
+
+  export *
+  module * { export * }
+}
+
+module Acclaim.Swift {
+    header "Acclaim-Swift.h"
+}

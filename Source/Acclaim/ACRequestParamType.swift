@@ -11,53 +11,53 @@ import Foundation
 public typealias ACRequestParamEncodeHandler = (params:[ACRequestParam])->NSData?
 
 
-public enum ACRequestParamType : String, StringLiteralConvertible {
-    case URLParameters = "URLParameters"
-    case JSON = "JSON"
+//public enum ACRequestParamType : String, StringLiteralConvertible {
+//    case URLParameters = "URLParameters"
+//    case JSON = "JSON"
+//
+//    internal func serialize(params:ACRequestParam)->NSData?{
+//        
+//        switch self {
+//        case .JSON:
+//            return ACParamsJSONSerializer.serialize(params)
+//        case .URLParameters:
+//            return ACParamsQueryStringSerializer.serialize(params)
+//        }
+//
+//    }
+//    
+//    public init(stringLiteral value: StringLiteralType){
+//        self = ACRequestParamType(rawValue: value.uppercaseString) ?? ACRequestParamType.URLParameters
+//    }
+//    
+//    /// Create an instance initialized to `value`.
+//    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType){
+//        self = ACRequestParamType(stringLiteral: value)
+//    }
+//    
+//    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
+//        self = ACRequestParamType(stringLiteral: value)
+//    }
+//}
 
-    internal func serialize(params:ACRequestParam)->NSData?{
-        
-        switch self {
-        case .JSON:
-            return ACParamsJSONSerializer.serialize(params)
-        case .URLParameters:
-            return ACParamsKeyValueSerializer.serialize(params)
-        }
-
-    }
-    
-    public init(stringLiteral value: StringLiteralType){
-        self = ACRequestParamType(rawValue: value.uppercaseString) ?? ACRequestParamType.URLParameters
-    }
-    
-    /// Create an instance initialized to `value`.
-    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType){
-        self = ACRequestParamType(stringLiteral: value)
-    }
-    
-    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-        self = ACRequestParamType(stringLiteral: value)
-    }
-}
-
-//JSON Encoder
-extension ACRequestParamType {
-    
-    public typealias StringLiteralType = String
-    public typealias ExtendedGraphemeClusterLiteralType = String
-    public typealias UnicodeScalarLiteralType = String
-    
-}
-
-extension ACRequestParamType : CustomStringConvertible {
-    public var description: String {
-        switch self {
-        case .JSON:
-            return "JSON"
-        case .URLParameters:
-            return "URLParameters"
-        }
-//        Acclaim.
-    }
-    
-}
+////JSON Encoder
+//extension ACRequestParamType {
+//    
+//    public typealias StringLiteralType = String
+//    public typealias ExtendedGraphemeClusterLiteralType = String
+//    public typealias UnicodeScalarLiteralType = String
+//    
+//}
+//
+//extension ACRequestParamType : CustomStringConvertible {
+//    public var description: String {
+//        switch self {
+//        case .JSON:
+//            return "JSON"
+//        case .URLParameters:
+//            return "URLParameters"
+//        }
+////        Acclaim.
+//    }
+//    
+//}

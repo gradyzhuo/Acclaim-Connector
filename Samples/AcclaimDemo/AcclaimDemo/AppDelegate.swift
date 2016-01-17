@@ -9,36 +9,37 @@
 import UIKit
 import Acclaim
 
+struct TestDeserializer : Deserializer {
+    typealias InstanceType = (AnyObject)
+    
+    static var identifier: String { return "Test" }
+    static func deserialize(data:NSData) -> (InstanceType?, ErrorType?){
+        return ((t: "123"), nil)
+    }
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-
-        let caller = ACAPICaller(API: "getName", params: [])
-        caller.addTextResponse { (result, response, error) -> Void in
-            print("result:\(result)")
-        }.addFailedResponse { (data, response, error) -> Void in
+        var api:API = "fling"
+        api.method = ACMethod.GET//POST(serializer: ACParamsJSONSerializer(option: .PrettyPrinted))
+        
+        let caller = ACAPICaller(API: api, params: ["fling_hash":"dQAXWbcv"])
+        caller.addFailedResponseHandler { (data, response, error) -> Void in
             print("result:\(data)")
-        }.addJSONResponse { (JSONObject, response, error) -> Void in
+        }.addJSONResponseHandler { (JSONObject, response, error) -> Void in
             print("JSONObject:\(JSONObject)")
             if let dict = JSONObject as? [String: AnyObject] {
+                print("dict:\(dict)")
             }
-        }.addJSONResponse({ (JSONObject, response, error) -> Void in
-            print("JSON2:\(JSONObject)")
-        }).addJSONResponse({ (JSONObject, response, error) -> Void in
-            print("JSON3:\(JSONObject)")
-        }).run().addImageResponse { (image, response, error) -> Void in
-            print("image:\(image), error:\(error)")
-        }.addFailedResponse { (data, response, error) -> Void in
-            print("error:\(error)")
-        }.addFailedResponse { (data, response, error) -> Void in
-            print("error:\(error)")
-        }
+        }.addTextResponseHandler({ (text, response, error) -> Void in
+            print("text:\(text)")
+        }).run()
         
         
         return true

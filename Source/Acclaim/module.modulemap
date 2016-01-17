@@ -1,0 +1,16 @@
+framework module Acclaim {
+    header "Acclaim.h"
+    /*explicit module Bolts {
+        umbrella "Bolts.framework"
+        module * { export * }
+        export *
+    }*/
+    export *
+}
+
+
+/*framework module Boltss {
+    umbrella "Bolts.framework"
+    explicit module * { export * }
+    export *
+}*/
