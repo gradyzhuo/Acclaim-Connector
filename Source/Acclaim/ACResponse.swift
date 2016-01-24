@@ -16,6 +16,8 @@ internal protocol _ACResponse : _Response {
     typealias DeserializerResultTuple = (item:DeserializerType.InstanceType?, error: ErrorType?)
     
     typealias DeserializerType : Deserializer
+    
+    var deserializer: DeserializerType { set get }
 }
 
 extension _ACResponse {
@@ -25,28 +27,22 @@ extension _ACResponse {
     }
 }
 
-public typealias ACResponseIdentifier = String
-
-public class Response<T : Deserializer> : _ACResponse {
-
-    internal typealias DeserializerType = T
+public class Response<DeserializerType : Deserializer> : _ACResponse {
+    
+    internal var deserializer: DeserializerType
     
     let handler: DeserializerType.Handler
     
-    public init(handler: DeserializerType.Handler){
+    public init(deserializer: DeserializerType, handler: DeserializerType.Handler){
         self.handler = handler
-        
+        self.deserializer = deserializer
     }
     
     internal func handle(data:NSData, URLResponse:NSURLResponse?, error:ErrorType?)->Bool{
         
-        guard let handler = self.handler as? (result: DeserializerType.InstanceType?, URLResponse: NSURLResponse?, error: ErrorType?)->Void else {
-            fatalError("Deserializer.Handler must be a closure by the formal type : (result: DeserializerType.InstanceType?, URLResponse: NSURLResponse, error: ErrorType?).")
-        }
-        
-        let result:DeserializerResultTuple = DeserializerType.deserialize(data)
+        let result:DeserializerResultTuple = self.deserializer.deserialize(data, URLResponse: URLResponse, connectionError: error)
         let error = result.error ?? error
-        handler(result: result.item, URLResponse: URLResponse, error: error)
+        self.deserializer.handle(result.item, error: error)(handler: self.handler)
         
         if let e = result.error as? NSError {
             ACDebugLog("deserialize error, reason: \(e.debugDescription)")
@@ -58,7 +54,7 @@ public class Response<T : Deserializer> : _ACResponse {
     
     
     deinit{
-        ACDebugLog("Response(\(T.identifier)) : [\(unsafeAddressOf(self))] deinit")
+        ACDebugLog("Response(\(DeserializerType.identifier)) : [\(unsafeAddressOf(self))] deinit")
     }
     
 }

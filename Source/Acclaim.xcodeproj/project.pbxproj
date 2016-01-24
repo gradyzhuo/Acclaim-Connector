@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		790162E91B7FC5F100DDD8A5 /* ACRequestParamType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790162E81B7FC5F100DDD8A5 /* ACRequestParamType.swift */; };
 		790162EB1B7FD28700DDD8A5 /* ACResponse.swift in Sources */ = {isa = PBXBuildFile; fileRef = 790162EA1B7FD28700DDD8A5 /* ACResponse.swift */; };
+		791D80F31C4F8FFA009126E6 /* ResponseStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 791D80F21C4F8FFA009126E6 /* ResponseStatus.swift */; };
 		79213F1A1B7B04C500A527DE /* Acclaim.h in Headers */ = {isa = PBXBuildFile; fileRef = 79213F191B7B04C500A527DE /* Acclaim.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		79213F201B7B04C500A527DE /* Acclaim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79213F141B7B04C500A527DE /* Acclaim.framework */; };
 		79213F271B7B04C500A527DE /* AcclaimTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79213F261B7B04C500A527DE /* AcclaimTests.swift */; };
@@ -19,7 +20,7 @@
 		797AFE3C1B8396BA009E9227 /* ACAPIQueuePriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797AFE3B1B8396BA009E9227 /* ACAPIQueuePriority.swift */; };
 		797AFE3E1B84327F009E9227 /* DispatchBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797AFE3D1B84327F009E9227 /* DispatchBlock.swift */; };
 		7994F1511B8313C10016ADB1 /* ACSerialization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7994F1501B8313C10016ADB1 /* ACSerialization.swift */; };
-		79C373E91B7DED2100C809BE /* ACAPICaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C373E81B7DED2100C809BE /* ACAPICaller.swift */; };
+		79C373E91B7DED2100C809BE /* APICaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C373E81B7DED2100C809BE /* APICaller.swift */; };
 		79C373ED1B7DF19800C809BE /* ACMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C373EC1B7DF19800C809BE /* ACMethod.swift */; };
 /* End PBXBuildFile section */
 
@@ -36,6 +37,7 @@
 /* Begin PBXFileReference section */
 		790162E81B7FC5F100DDD8A5 /* ACRequestParamType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACRequestParamType.swift; sourceTree = "<group>"; };
 		790162EA1B7FD28700DDD8A5 /* ACResponse.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACResponse.swift; sourceTree = "<group>"; };
+		791D80F21C4F8FFA009126E6 /* ResponseStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResponseStatus.swift; sourceTree = "<group>"; };
 		79213F141B7B04C500A527DE /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Acclaim.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		79213F181B7B04C500A527DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		79213F191B7B04C500A527DE /* Acclaim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Acclaim.h; sourceTree = "<group>"; };
@@ -49,7 +51,7 @@
 		797AFE3B1B8396BA009E9227 /* ACAPIQueuePriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACAPIQueuePriority.swift; sourceTree = "<group>"; };
 		797AFE3D1B84327F009E9227 /* DispatchBlock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DispatchBlock.swift; sourceTree = "<group>"; };
 		7994F1501B8313C10016ADB1 /* ACSerialization.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACSerialization.swift; sourceTree = "<group>"; };
-		79C373E81B7DED2100C809BE /* ACAPICaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACAPICaller.swift; sourceTree = "<group>"; };
+		79C373E81B7DED2100C809BE /* APICaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APICaller.swift; sourceTree = "<group>"; };
 		79C373EC1B7DF19800C809BE /* ACMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACMethod.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -95,7 +97,7 @@
 			children = (
 				79213F191B7B04C500A527DE /* Acclaim.h */,
 				79213F301B7B4B4600A527DE /* Acclaim.swift */,
-				79C373E81B7DED2100C809BE /* ACAPICaller.swift */,
+				79C373E81B7DED2100C809BE /* APICaller.swift */,
 				79C373EC1B7DF19800C809BE /* ACMethod.swift */,
 				790162E81B7FC5F100DDD8A5 /* ACRequestParamType.swift */,
 				790162EA1B7FD28700DDD8A5 /* ACResponse.swift */,
@@ -106,6 +108,7 @@
 				7959D0421B805541003F0AE3 /* ACConnector.swift */,
 				797AFE3D1B84327F009E9227 /* DispatchBlock.swift */,
 				79213F171B7B04C500A527DE /* Supporting Files */,
+				791D80F21C4F8FFA009126E6 /* ResponseStatus.swift */,
 			);
 			path = Acclaim;
 			sourceTree = "<group>";
@@ -252,11 +255,12 @@
 				7959D0431B805541003F0AE3 /* ACConnector.swift in Sources */,
 				79309BA31B82506E00C6B426 /* API.swift in Sources */,
 				7994F1511B8313C10016ADB1 /* ACSerialization.swift in Sources */,
+				791D80F31C4F8FFA009126E6 /* ResponseStatus.swift in Sources */,
 				79309BA01B82404D00C6B426 /* ACRequestParam.swift in Sources */,
 				797AFE3C1B8396BA009E9227 /* ACAPIQueuePriority.swift in Sources */,
 				797AFE3E1B84327F009E9227 /* DispatchBlock.swift in Sources */,
 				79213F311B7B4B4600A527DE /* Acclaim.swift in Sources */,
-				79C373E91B7DED2100C809BE /* ACAPICaller.swift in Sources */,
+				79C373E91B7DED2100C809BE /* APICaller.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

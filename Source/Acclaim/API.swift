@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct  API : StringLiteralConvertible {
+public class  API : StringLiteralConvertible {
     
     public typealias StringLiteralType = String
     public typealias ExtendedGraphemeClusterLiteralType = String
@@ -26,19 +26,19 @@ public struct  API : StringLiteralConvertible {
     
     internal var identifier: String = String(NSDate().timeIntervalSince1970)
     
-    public init(api:String, host:NSURL! = Acclaim.hostURLFromInfoDictionary(), method:ACMethod = .GET) throws {
+    public convenience init(api:String, host:NSURL! = Acclaim.hostURLFromInfoDictionary(), method:ACMethod = .GET) throws {
         
         guard let validHostURL = host else {
             
             let reason = "Error: [Host URL] is not found."
-            let recoverSuggestion = "Please assign your api host url, or setup '\(ACAPIHostURLInfoKey)' into info.plist."
+            let recoverSuggestion = "Please assign your api host url, or setup '\(ACAPIHostURLInfoKey)' into your project info.plist."
             
             throw NSError(domain: "API.Constructor", code: 999, userInfo: [NSLocalizedFailureReasonErrorKey:reason, NSLocalizedRecoverySuggestionErrorKey:recoverSuggestion])
         }
         
         let apiURL = validHostURL.URLByAppendingPathComponent(api)
         
-        self = API(URL: apiURL, method: method)
+        self.init(URL: apiURL, method: method)
         
     }
 
@@ -48,27 +48,55 @@ public struct  API : StringLiteralConvertible {
         
     }
     
-    /// Create an instance initialized to `value`.
-    public init(stringLiteral value: StringLiteralType) {
+    public required convenience init(stringLiteral value: StringLiteralType) {
         
         if let components = NSURLComponents(string: value) where components.scheme != nil, let url = components.URL  {
-            self = API(URL: url)
+            self.init(URL: url)
         }else{
-            self = try! API(api: value)
+            try! self.init(api: value)
         }
         
     }
     
     /// Create an instance initialized to `value`.
-    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-        self = API(stringLiteral: value)
+    public required convenience init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
+        self.init(stringLiteral: value)
     }
     
     /// Create an instance initialized to `value`.
-    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
-        self = API(stringLiteral: value)
+    public required convenience init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
+        self.init(stringLiteral: value)
     }
     
+    
+}
+
+extension API {
+    
+    internal func getRequest(params: ACRequestParams)->NSURLRequest {
+        
+        let request:NSMutableURLRequest = NSMutableURLRequest(URL: self.apiURL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
+        
+        let body = self.method.serializer.serialize(params)
+        
+        if let body = body where self.method == ACMethod.GET {
+            let components = NSURLComponents(URL: self.apiURL, resolvingAgainstBaseURL: false)
+            components?.query = String(data: body, encoding: NSUTF8StringEncoding)
+            request.URL = (components?.URL)!
+        }else{
+            request.HTTPBody = body
+        }
+        
+        request.HTTPMethod = self.method.rawValue
+        request.allowsCellularAccess = Acclaim.allowsCellularAccess
+        
+        self.HTTPHeaderFields.forEach { (field:(key:String, value: String)) -> () in
+            request.addValue(field.value, forHTTPHeaderField: field.key)
+        }
+        
+        return request.copy() as! NSURLRequest
+        
+    }
     
 }
 

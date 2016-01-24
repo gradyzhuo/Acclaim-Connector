@@ -13,8 +13,13 @@ struct TestDeserializer : Deserializer {
     typealias InstanceType = (AnyObject)
     
     static var identifier: String { return "Test" }
-    static func deserialize(data:NSData) -> (InstanceType?, ErrorType?){
+    
+    func deserialize(data: NSData, URLResponse: NSURLResponse?, connectionError: ErrorType?) -> (InstanceType?, ErrorType?) {
         return ((t: "123"), nil)
+    }
+    
+    init(){
+        
     }
 }
 
@@ -26,20 +31,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        var api:API = "fling"
-        api.method = ACMethod.GET//POST(serializer: ACParamsJSONSerializer(option: .PrettyPrinted))
+        let api:API = "fling"
+        api.method = "GET"
+
+//        Acclaim :: "fling" :: "GET" << (success:"") << (data: "")
         
-        let caller = ACAPICaller(API: api, params: ["fling_hash":"dQAXWbcv"])
-        caller.addFailedResponseHandler { (data, response, error) -> Void in
-            print("result:\(data)")
-        }.addJSONResponseHandler { (JSONObject, response, error) -> Void in
-            print("JSONObject:\(JSONObject)")
-            if let dict = JSONObject as? [String: AnyObject] {
-                print("dict:\(dict)")
-            }
-        }.addTextResponseHandler({ (text, response, error) -> Void in
-            print("text:\(text)")
-        }).run()
+        weak var caller:APICaller? = Acclaim.runAPI(API: api, params: ["fling_hash":"dQAXWbcv"])
+        caller?.addJSONResponseHandler { (JSONObject, error) -> Void in
+            print("JSONObject:\(JSONObject), caller.response:\(caller?.response)")
+            
+        }
+
+        
+//        let caller = ACAPICaller(API: api, params: ["fling_hash":"dQAXWbcv"])
+//        caller.addFailedResponseHandler { (data, response, error) -> Void in
+//            print("result:\(data)")
+//        }.addJSONResponseHandler { (JSONObject, response, error) -> Void in
+//            print("JSONObject:\(JSONObject)")
+//            if let dict = JSONObject as? [String: AnyObject] {
+//                print("dict:\(dict)")
+//            }
+//        }.run().cancel()
         
         
         return true

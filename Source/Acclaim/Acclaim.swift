@@ -10,7 +10,7 @@ import Foundation
 
 public typealias HTTPMethod = ACMethod
 public typealias RequestParam = ACRequestParam
-public typealias APICaller = ACAPICaller
+//public typealias APICaller = ACAPICaller
 
 public let ACAPIHostURLInfoKey:String = Acclaim.hostURLInfoKey
 
@@ -25,20 +25,52 @@ public class Acclaim {
     internal static let deafultHostURLInfoKey:String = "ACAPIHostURLInfoKey"
     public static var hostURLInfoKey:String = Acclaim.deafultHostURLInfoKey
     
+    internal static var running:[API:APICaller] = [:]
+    
+    internal class func addRunningCaller(caller: APICaller){
+        self.running[caller.api] = caller
+    }
+    
+    internal class func removeRunningCaller(API api:API){
+        weak var caller = self.running[api]
+        self.removeRunningCaller(APICaller: caller)
+    }
+
+    
+    internal class func removeRunningCaller(APICaller caller: APICaller?){
+
+        if let api = caller?.api where self.running.keys.contains(api){
+            self.running.removeValueForKey(api)
+        }
+        
+        
+        caller?.blockInQueue = nil
+        caller?.running = false
+        
+        ACDebugLog("removeRunningCallerByAPI:\(caller?.api.apiURL)")
+        
+        defer{
+            ACDebugLog("caller:\(caller)")
+            ACDebugLog("count of running caller:\(Acclaim.running.count)")
+        }
+        
+    }
+
+    
     internal static var sharedURLCache: NSURLCache{
         return NSURLCache.sharedURLCache()
     }
     
-    public class func cachedResponseForRequest(request: NSURLRequest) -> NSCachedURLResponse?{
+    internal class func cachedResponseForRequest(request: NSURLRequest) -> NSCachedURLResponse?{
         return Acclaim.sharedURLCache.cachedResponseForRequest(request)
     }
 
-    public class func storeCachedResponse(cachedResponse: NSCachedURLResponse, forRequest request: NSURLRequest){
+    internal class func storeCachedResponse(cachedResponse: NSCachedURLResponse, forRequest request: NSURLRequest){
         Acclaim.sharedURLCache.storeCachedResponse(cachedResponse, forRequest: request)
     }
     
-    public class func runAPI(API api:API, params:ACRequestParams, priority: ACAPIQueuePriority = .Default)->ACAPICaller{
-        let caller = ACAPICaller(API: api, params: params)
+    public class func runAPI(API api:API, params:ACRequestParams = [], priority: ACAPIQueuePriority = .Default)->APICaller{
+        let caller = APICaller(API: api, params: params)
         caller.run()
         return caller
     }
