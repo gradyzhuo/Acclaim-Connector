@@ -6,28 +6,16 @@
 //  Copyright (c) 2015 Grady Zhuo. All rights reserved.
 //
 
-
 internal protocol Caller{
     
 }
 
-//struct TestResponse {
-//    var identifier: String
-//    var response : _Response
-//}
-
-//extension Response {
-//    func getTestResponse()->TestResponse {
-//        return TestResponse(identifier: DeserializerType.identifier, response: self)
-//    }
-//}
-
-//public typealias Response = (request: NSURLRequest, response: NSURLResponse)
+public typealias Connection = (request: NSURLRequest, response: NSHTTPURLResponse?)
 
 public class APICaller : Caller {
     
-    public var priority:ACAPIQueuePriority = .Default
-    public var cacheStoragePolicy:NSURLCacheStoragePolicy = .Allowed
+    public internal(set) var priority:APIQueuePriority = .Default
+    public internal(set) var cacheStoragePolicy:NSURLCacheStoragePolicy = .Allowed
     
     /** (read only) */
     public  var cancelled:Bool {
@@ -43,26 +31,25 @@ public class APICaller : Caller {
     /** (read only) */
     public internal(set) var running:Bool = false
     /** (read only) */
-    public internal(set) var request:NSURLRequest?
-    
-    public internal(set) var response : NSURLResponse?
     
     //MARK: internal variables
     internal var blockInQueue:dispatch_block_t!
-    internal var params:ACRequestParams = ACRequestParams()
-    internal var responseHandlers:(normal: [_Response], failed: [_Response]) = ([], [])
+    internal var params:Parameters = Parameters()
+    
+    internal var responseAssistants:[_ResponseAssistantProtocol] = []
+    internal var failedResponseAssistant:_ResponseAssistantProtocol?
     
     internal var connector: Connector
     
     public convenience init(API api:API, params:[String: String], connector: Connector = Acclaim.defaultConnector) {
-        self.init(API: api, params: ACRequestParams(dictionary: params), connector: connector)
+        self.init(API: api, params: Parameters(dictionary: params), connector: connector)
     }
     
-    public convenience init(API api:API, params:[ACRequestParam], connector: Connector = Acclaim.defaultConnector) {
-        self.init(API: api, params: ACRequestParams(params: params), connector: connector)
+    public convenience init(API api:API, params:[Parameter], connector: Connector = Acclaim.defaultConnector) {
+        self.init(API: api, params: Parameters(params: params), connector: connector)
     }
     
-    internal init(API api:API, params:ACRequestParams, connector: Connector = Acclaim.defaultConnector) {
+    internal init(API api:API, params:Parameters, connector: Connector = Acclaim.defaultConnector) {
         self.api = api
         self.params = params
         self.connector = connector
@@ -72,9 +59,7 @@ public class APICaller : Caller {
         return self
     }
     
-    
-    
-    public func run(cacheStoragePolicy:NSURLCacheStoragePolicy = .Allowed, priority: ACAPIQueuePriority = .Default)->APICaller{
+    public func run(cacheStoragePolicy:NSURLCacheStoragePolicy = .Allowed, priority: APIQueuePriority = .Default)->APICaller{
         
         self.cacheStoragePolicy = cacheStoragePolicy
         self.priority = priority
@@ -90,27 +75,15 @@ public class APICaller : Caller {
             return
         }
         
-        defer {
-            self.request = request
-        }
-        
         let request = self.api.getRequest(self.params)
         
         connector.sendRequest(request) {[weak self] (data, response, error) -> Void in
+
             guard let weakSelf = self else {
                 return
             }
             
-            guard let data = data else {
-                return
-            }
-            
-            if let response = response{
-                let cachedResponse = NSCachedURLResponse(response: response, data: data, userInfo: nil, storagePolicy: weakSelf.cacheStoragePolicy)
-                Acclaim.storeCachedResponse(cachedResponse, forRequest: request)
-            }
-            
-            weakSelf.handleResponses(data: data, URLResponse: response, error: error)
+            weakSelf.handleResponses(data: data, connection: Connection(request, response as? NSHTTPURLResponse), error: error)
             
         }
         
@@ -161,68 +134,72 @@ public class APICaller : Caller {
 
 extension APICaller {
     
-    internal func handleResponses(data data:NSData, URLResponse: NSURLResponse?, error:ErrorType?){
+
+    internal func handleResponses(data data:NSData?, connection: Connection, error:ErrorType?)->Void{
         
         defer {
             //Remove caller after response completion.
             Acclaim.removeRunningCaller(API: self.api)
         }
         
-        if error != nil {
-            self.responseHandlers.failed.forEach{ $0.handle(data, URLResponse: URLResponse, error: error) }
-        }else{
-            self.responseHandlers.normal.forEach{ $0.handle(data, URLResponse: URLResponse, error: error) }
+        guard error == nil else {
+            self.failedResponseAssistant?.handle(data, connection: connection, error: error)
+            return
         }
+        
+        if let response = connection.response, let data = data{
+            let cachedResponse = NSCachedURLResponse(response: response, data: data, userInfo: nil, storagePolicy: self.cacheStoragePolicy)
+            Acclaim.storeCachedResponse(cachedResponse, forRequest: connection.request)
+        }
+        
+        self.responseAssistants.forEach { reciver in
+            
+            if let error = reciver.handle(data, connection: connection, error: error) as? NSError {
+                self.failedResponseAssistant?.handle(data, connection: connection, error: error)
+            }
+        }
+        
+        
         
     }
     
-    public func addResponse<T:Deserializer>(response: Response<T>)->APICaller{
-        
-        if T.identifier == Failed.identifier {
-            self.responseHandlers.failed.append(response)
-        }else{
-            self.responseHandlers.normal.append(response)
-        }
-        
+    public func addResponseAssistant<T:ResponseAssistantProtocol>(responseAssistant assistant: T)->APICaller{
+        self.responseAssistants.append(assistant)
         return self
     }
     
-    
-    internal func addResponse<T:Deserializer>(deserializer: T)->(handler:T.Handler)->APICaller{
-        
-        return { (handler:T.Handler)->APICaller in
-            let response = Response<T>(deserializer: deserializer, handler: handler)
-            return self.addResponse(response)
-        }
-    }
-
 }
 
 // convenience response handler function
 extension APICaller {
     
-    public func addOriginalDataResponse(handler:OriginalData.Handler)->APICaller{
-        self.addResponse(OriginalData())(handler: handler)
+    public func setFailedResponseHandler(handler:FailedResponseAssistant.Handler)->APICaller{
+        self.failedResponseAssistant = FailedResponseAssistant(handler: handler)
         return self
     }
     
-    public func addImageResponseHandler(handler:Image.Handler)->APICaller{
-        self.addResponse(Image())(handler: handler)
+    public func addOriginalDataResponseHandler(handler:OriginalDataResponseAssistant.Handler)->APICaller{
+        self.addResponseAssistant(responseAssistant: OriginalDataResponseAssistant(handler: handler))
         return self
     }
     
-    public func addJSONResponseHandler(handler:JSON.Handler)->APICaller{
-        self.addResponse(JSON())(handler: handler)
+    public func addImageResponseHandler(handler:ImageResponseAssistant.Handler)->APICaller{
+        self.addResponseAssistant(responseAssistant: ImageResponseAssistant(handler: handler))
         return self
     }
     
-    public func addTextResponseHandler(handler:Text.Handler)->APICaller{
-        self.addResponse(Text())(handler: handler)
+    public func addJSONResponseHandler(keyPath keyPath:String, option:NSJSONReadingOptions = .AllowFragments, handler:JSONResponseAssistant.Handler)->APICaller{
+        self.addResponseAssistant(responseAssistant: JSONResponseAssistant(forKeyPath: keyPath, option: option, handler: handler))
         return self
     }
     
-    public func addFailedResponseHandler(handler:Failed.Handler)->APICaller{
-        self.addResponse(Failed())(handler: handler)
+    public func addJSONResponseHandler(option:NSJSONReadingOptions = .AllowFragments, handler:JSONResponseAssistant.Handler)->APICaller{
+        self.addResponseAssistant(responseAssistant: JSONResponseAssistant(option: option, handler: handler))
+        return self
+    }
+    
+    public func addTextResponseHandler(encoding: NSStringEncoding = NSUTF8StringEncoding, handler:TextResponseAssistant.Handler)->APICaller{
+        self.addResponseAssistant(responseAssistant: TextResponseAssistant(encoding: encoding, handler: handler))
         return self
     }
 

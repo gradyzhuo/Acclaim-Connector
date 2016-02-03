@@ -8,9 +8,8 @@
 
 import Foundation
 
-public typealias HTTPMethod = ACMethod
-public typealias RequestParam = ACRequestParam
-//public typealias APICaller = ACAPICaller
+//public typealias HTTPMethod = Method
+//public typealias Parameter = Parameter
 
 public let ACAPIHostURLInfoKey:String = Acclaim.hostURLInfoKey
 
@@ -24,6 +23,10 @@ public class Acclaim {
     
     internal static let deafultHostURLInfoKey:String = "ACAPIHostURLInfoKey"
     public static var hostURLInfoKey:String = Acclaim.deafultHostURLInfoKey
+    
+    public static func resetToDeafultHostURLInfoKey(){
+        self.hostURLInfoKey = self.deafultHostURLInfoKey
+    }
     
     internal static var running:[API:APICaller] = [:]
     
@@ -69,7 +72,7 @@ public class Acclaim {
         Acclaim.sharedURLCache.storeCachedResponse(cachedResponse, forRequest: request)
     }
     
-    public class func runAPI(API api:API, params:ACRequestParams = [], priority: ACAPIQueuePriority = .Default)->APICaller{
+    public class func runAPI(API api:API, params:Parameters = [], priority: APIQueuePriority = .Default)->APICaller{
         let caller = APICaller(API: api, params: params)
         caller.run()
         return caller
