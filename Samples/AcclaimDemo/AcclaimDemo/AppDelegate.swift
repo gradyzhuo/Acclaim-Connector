@@ -9,13 +9,23 @@
 import UIKit
 import Acclaim
 
-struct TestDeserializer : Deserializer {
-    typealias InstanceType = (AnyObject)
+class MappingModel {
+    let dataDict:[String:AnyObject]
+    init(dataDict: [String: AnyObject]){
+        self.dataDict = dataDict
+    }
+}
+
+class Fling : MappingModel {
     
-    static var identifier: String { return "Test" }
+}
+
+struct FlingDeserializer : Deserializer {
+    typealias CallbackType = (fling: Fling, connection: Connection)
+    static var identifier: String { return "Fling" }
     
-    func deserialize(data: NSData, URLResponse: NSURLResponse?, connectionError: ErrorType?) -> (InstanceType?, ErrorType?) {
-        return ((t: "123"), nil)
+    func deserialize(data:NSData?, connection: Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?){
+        return ((fling: Fling(dataDict: [:]), connection: connection), nil)
     }
     
     init(){
@@ -32,27 +42,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         let api:API = "fling"
-        api.method = "GET"
-
-//        Acclaim :: "fling" :: "GET" << (success:"") << (data: "")
+        api.addSimpleHTTPCookie(name: "hello", value: "world")
         
-        weak var caller:APICaller? = Acclaim.runAPI(API: api, params: ["fling_hash":"dQAXWbcv"])
-        caller?.addJSONResponseHandler { (JSONObject, error) -> Void in
-            print("JSONObject:\(JSONObject), caller.response:\(caller?.response)")
-            
+        
+        let assistant = JSONResponseAssistant(forKeyPath: "data", option: .AllowFragments, handler: { (result) in
+            print("result.JSONObject:\(result.JSONObject)")
+        }).addHandler(forKeyPath: "123") { (result) in
+            print("123:\(result.JSONObject)")
         }
-
         
-//        let caller = ACAPICaller(API: api, params: ["fling_hash":"dQAXWbcv"])
-//        caller.addFailedResponseHandler { (data, response, error) -> Void in
-//            print("result:\(data)")
-//        }.addJSONResponseHandler { (JSONObject, response, error) -> Void in
-//            print("JSONObject:\(JSONObject)")
-//            if let dict = JSONObject as? [String: AnyObject] {
-//                print("dict:\(dict)")
-//            }
-//        }.run().cancel()
-        
+        Acclaim.runAPI(API: api, params: ["fling_hash":"dQAXWbcv"])
+        .setFailedResponseHandler{ (result) in
+            print("result.error:\(result.error)")
+        }.addResponseAssistant(responseAssistant: assistant).addJSONResponseHandler { (result) in
+            print("result:\(result.JSONObject)")
+        }
         
         return true
     }
