@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:Samples/OCTest/OCTest.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:Samples/AcclaimDemo/AcclaimDemo.xcodeproj">
    </FileRef>
    <FileRef
