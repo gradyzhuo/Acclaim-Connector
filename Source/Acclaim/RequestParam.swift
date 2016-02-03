@@ -1,5 +1,5 @@
 //
-//  ACRequestParam.swift
+//  ACParameter.swift
 //  Acclaim
 //
 //  Created by Grady Zhuo on 8/18/15.
@@ -8,27 +8,26 @@
 
 import Foundation
 
-extension ACRequestParams : ArrayLiteralConvertible {
-    public typealias Element = ACRequestParam
-}
-
-extension ACRequestParams : DictionaryLiteralConvertible {
-    public typealias Key = String
-    public typealias Value = AnyObject
-}
-
-public struct ACRequestParams {
+public struct Parameter  {
+    public internal(set) var key:String
+    public internal(set) var value:AnyObject
     
-    var params:[String:ACRequestParam]
+    public init(key: String, value: AnyObject){
+        self.key = key
+        self.value = value
+    }
+}
+
+public struct Parameters {
+    
+    var params:[String:Parameter]
     
     public init(){
-        self = ACRequestParams(params: [])
+        self.params = [:]
     }
     
-    public init(params:[ACRequestParam]){
-        self.params = [:]
-        
-        self.params = params.reduce([:], combine: { (var params, param) -> [String:ACRequestParam] in
+    public init(params:[Parameter]){
+        self.params = params.reduce([:], combine: { (var params, param) -> [String:Parameter] in
             params[param.key] = param
             return params
         })
@@ -37,7 +36,7 @@ public struct ACRequestParams {
     
     /// Create an instance initialized with `dictionary elements`.
     public init(dictionary elements: [Key:Value]){
-        self = ACRequestParams()
+        self = Parameters()
         
         elements.forEach {
             self.addParam($0.1, forKey: $0.0)
@@ -47,12 +46,12 @@ public struct ACRequestParams {
     
     /// Create an instance initialized with `elements`.
     public init(arrayLiteral elements: Element...){
-        self = ACRequestParams(params: elements)
+        self = Parameters(params: elements)
     }
     
     /// Create an instance initialized with `elements`.
     public init(dictionaryLiteral elements: (Key, Value)...){
-        self = ACRequestParams()
+        self = Parameters()
         
         elements.forEach {
             self.addParam($0.1, forKey: $0.0)
@@ -62,30 +61,30 @@ public struct ACRequestParams {
     
     
     public mutating func addParam(value: AnyObject, forKey key:String){
-        let param = ACRequestParam(key: key, value: value)
+        let param = Parameter(key: key, value: value)
         self.addParam(param)
     }
     
-    public mutating func addParam(param:ACRequestParam){
+    public mutating func addParam(param:Parameter){
         
         if self.params.indexForKey(param.key) == nil {
             self.params[param.key] = param
         }
     }
     
-    public mutating func addParams(params:ACRequestParams){
+    public mutating func addParams(params:Parameters){
         for (_, param) in params.params {
             self.addParam(param)
         }
     }
     
-    public mutating func removeParam(forKey key:String)->ACRequestParam? {
+    public mutating func removeParam(forKey key:String)->Parameter? {
         return self.params.removeValueForKey(key)
     }
     
-    public mutating func removeParam(forKeys keys:[String])->[ACRequestParam] {
+    public mutating func removeParam(forKeys keys:[String])->[Parameter] {
         
-        let paramsArray = keys.reduce([], combine: { (var array, key) -> [ACRequestParam] in
+        let paramsArray = keys.reduce([], combine: { (var array, key) -> [Parameter] in
             if let param = self.params.removeValueForKey(key) {
                 array.append(param)
             }
@@ -105,13 +104,12 @@ public struct ACRequestParams {
     
 }
 
-
-public struct ACRequestParam  {
-    public internal(set) var key:String
-    public internal(set) var value:AnyObject
-    
-    public init(key: String, value: AnyObject){
-        self.key = key
-        self.value = value
-    }
+extension Parameters : ArrayLiteralConvertible {
+    public typealias Element = Parameter
 }
+
+extension Parameters : DictionaryLiteralConvertible {
+    public typealias Key = String
+    public typealias Value = AnyObject
+}
+

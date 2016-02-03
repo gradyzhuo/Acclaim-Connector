@@ -30,26 +30,26 @@ public enum SerializerType {
 }
 
 //typealias
-extension ACMethod : StringLiteralConvertible {
+extension HTTPMethod : StringLiteralConvertible {
     public typealias StringLiteralType = String
     public typealias ExtendedGraphemeClusterLiteralType = String
     public typealias UnicodeScalarLiteralType = String
     
     /// Create an instance initialized to `value`.
-    public init(stringLiteral value: ACMethod.StringLiteralType){
-        self = ACMethod(rawValue: value)!
+    public init(stringLiteral value: HTTPMethod.StringLiteralType){
+        self = HTTPMethod(rawValue: value)!
     }
     
-    public init(unicodeScalarLiteral value: ACMethod.UnicodeScalarLiteralType) {
-        self = ACMethod(stringLiteral: value)
+    public init(unicodeScalarLiteral value: HTTPMethod.UnicodeScalarLiteralType) {
+        self = HTTPMethod(stringLiteral: value)
     }
     
-    public init(extendedGraphemeClusterLiteral value: ACMethod.ExtendedGraphemeClusterLiteralType) {
-        self = ACMethod(stringLiteral: value)
+    public init(extendedGraphemeClusterLiteral value: HTTPMethod.ExtendedGraphemeClusterLiteralType) {
+        self = HTTPMethod(stringLiteral: value)
     }
 }
 
-public enum ACMethod {
+public enum HTTPMethod {
     
     public typealias RawValue = String
 
@@ -94,8 +94,8 @@ public enum ACMethod {
 }
 
 
-extension ACMethod : RawRepresentable {
-    public init?(rawValue: ACMethod.RawValue) {
+extension HTTPMethod : RawRepresentable {
+    public init?(rawValue: HTTPMethod.RawValue) {
         switch rawValue.uppercaseString {
         case "GET":
             self = .GET
@@ -156,6 +156,6 @@ extension ACMethod : RawRepresentable {
     }
 }
 
-public func ==(lhs: ACMethod, rhs: ACMethod)->Bool{
+public func ==(lhs: HTTPMethod, rhs: HTTPMethod)->Bool{
     return lhs.rawValue == rhs.rawValue
 }

@@ -49,18 +49,6 @@ public struct URLSession : _Connector {
             handler(data: data, response: response, error: error)
         }.resume()
         
-//        let error:ErrorType? = nil
-//        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(NSEC_PER_SEC * 3)), dispatch_get_global_queue(0, 0), { () -> Void in
-//            
-//            let URLResponse = NSURLResponse(URL: request.URL ?? NSURL(), MIMEType: "text/json", expectedContentLength: 0, textEncodingName: "UTF-8")
-//            let data:NSData! = "{\"key\":\"我\"}".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true)
-//            
-//            self.responseHandler?(data: data, response: URLResponse, error: error as? NSError)
-//            
-//            
-//        })
-//        
-        
     }
     
 }
