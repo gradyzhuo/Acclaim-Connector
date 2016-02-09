@@ -7,25 +7,56 @@
 //
 
 import UIKit
-import Acclaim
+@testable import Acclaim
 
-class MappingModel {
-    let dataDict:[String:AnyObject]
-    init(dataDict: [String: AnyObject]){
-        self.dataDict = dataDict
-    }
-}
+//protocol Model:class, NSObjectProtocol {
+//    var model:[String: Any] { set get }
+//    
+//    init(model: [String: Any])
+//    
+//    func set(key key: String, value:Any)
+//    func get(key key: String) -> Any?
+//}
+//
+//extension Model {
+//    func set(key key: String, value:Any){
+//        self.model[key] = value
+//    }
+//    
+//    func get(key key: String)->Any?{
+//        return self.model[key]
+//    }
+//}
+//
+//struct Mapping<ModelType:Model> {
+//    typealias MappingTable = [String:Any]
+//    
+//    var table:MappingTable = [:]
+//    
+//    func map(model: [String: Any])->ModelType{
+//        return ModelType(model: model)
+//    }
+//    
+//    init(table: MappingTable){
+//        self.table = table
+//    }
+//    
+//}
+//
+//
+//class Fling : NSObject, Model {
+//    var model:[String: Any] = [:]
+//    required init(object: AnyObject) {
+//        self.object = object
+//    }
+//}
 
-class Fling : MappingModel {
-    
-}
+struct MyDeserializer : ResponseDeserializer {
+    typealias CallbackType = JSONResponseDeserializer.CallbackType
 
-struct FlingDeserializer : Deserializer {
-    typealias CallbackType = (fling: Fling, connection: Connection)
-    static var identifier: String { return "Fling" }
-    
-    func deserialize(data:NSData?, connection: Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?){
-        return ((fling: Fling(dataDict: [:]), connection: connection), nil)
+    func deserialize(data:NSData?, connection: Acclaim.Connection, connectionError error: ErrorType?) -> (CallbackType?, ErrorType?){
+        let deserializer = JSONResponseDeserializer(keyPath: "data", options: .AllowFragments)
+        return deserializer.deserialize(data, connection: connection, connectionError: error)
     }
     
     init(){
@@ -42,23 +73,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         
         let api:API = "fling"
-        api.addSimpleHTTPCookie(name: "hello", value: "world")
+        api.requestTaskType = .UploadTask(data: NSData())
+        api.configRequest { (request) -> Void in
+            print("headerFields:\(request.allHTTPHeaderFields)")
+        }
         
+        let assistant = JSONResponseAssistant(forKeyPath: "data.content.image.url", option: .AllowFragments, handler: { (result) in
+            
+//            if let urlString = result.JSONObject as? String, url = NSURL(string: urlString) {
+//                let task:NSURLSessionDownloadTask = NSURLSession.sharedSession().downloadTaskWithURL(url, completionHandler: { (url, response, error) in
+//                    print("url:\(url)")
+//                    print("data:\(NSData(contentsOfURL: url!))")
+//                    
+//                })
+//                task.resume()
+//            }
+////            print("result.JSONObject:\(result.JSONObject)")
+        })
         
-        let assistant = JSONResponseAssistant(forKeyPath: "data", option: .AllowFragments, handler: { (result) in
+        let param = RequestParameter(key: "fling_hash", value: "dQAXWbcv")
+        
+        Acclaim.runAPI(API: api, params: [param])
+        .addResponseAssistant(responseAssistant: assistant)
+        .addFailedResponseHandler(statusCode: 404) { (result) in
+            print("result:\(result.connection.response)")
+        }.addFailedResponseHandler { (result) in
+            print("failed:\(result.error)")
+        }.addJSONResponseHandler { (result) in
+            print("cached: \(result.connection.cached)")
             print("result.JSONObject:\(result.JSONObject)")
-        }).addHandler(forKeyPath: "123") { (result) in
-            print("123:\(result.JSONObject)")
-        }
-        
-        Acclaim.runAPI(API: api, params: ["fling_hash":"dQAXWbcv"])
-        .setFailedResponseHandler{ (result) in
-            print("result.error:\(result.error)")
-        }.addResponseAssistant(responseAssistant: assistant).addJSONResponseHandler { (result) in
-            print("result:\(result.JSONObject)")
-        }
-        
+        }//.cacheStoragePolicy = .NotAllowed//.Allowed(renewRule: .RenewSinceData(data: NSDate().dateByAddingTimeInterval(1)))
         return true
+    }
+    
+    override func observeValueForKeyPath(keyPath: String?, ofObject object: AnyObject?, change: [String : AnyObject]?, context: UnsafeMutablePointer<Void>) {
+        print("change:\(change)")
     }
 
     func applicationWillResignActive(application: UIApplication) {

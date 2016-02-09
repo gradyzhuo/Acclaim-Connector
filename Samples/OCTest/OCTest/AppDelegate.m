@@ -23,15 +23,15 @@
         NSLog(@"JSONOBject:%@", JSONObject);
     }];
     
-    [caller addTextResponseHandler:^(NSString * _Nullable text, NSURLResponse * _Nullable response) {
+    [caller addTextResponseHandler:^(NSString * _Nonnull text, NSURLResponse * _Nullable response) {
         NSLog(@"text:%@",text);
     }];
-    
+
     [caller setFailedResponseHandler:^(NSData * _Nullable failedData, NSURLResponse * _Nullable response, NSError * _Nullable error) {
         NSLog(@"failed: %@, error:%@",failedData, error);
     }];
-
-    [caller run:NSURLCacheStorageAllowed priority:ACAPIQueuePriorityDefault];
+    
+    [caller run:NSURLCacheStorageAllowed priority:ACQueuePriorityDefault];
     
     return YES;
 }
