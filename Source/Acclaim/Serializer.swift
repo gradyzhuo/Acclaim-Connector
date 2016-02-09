@@ -8,53 +8,88 @@
 
 import Foundation
 
-typealias Serialization = protocol<Serializer, Deserializer>
-
-
-public protocol Serializer {
-    func serialize(params:Parameters) -> NSData?
+public enum SerializerType {
+    case QueryString
+    case JSON(option: NSJSONWritingOptions)
+    case Custom(serializer: ParametersSerializer)
+    
+    internal var serializer: ParametersSerializer {
+        
+        switch self {
+        case let .JSON(option):
+            return JSONParametersSerializer(option: option)
+        case .QueryString:
+            return QueryStringParametersSerializer()
+        case let .Custom(serializer):
+            return serializer
+        }
+        
+    }
+    
     
 }
 
-public struct ACParamsJSONSerializer : Serializer {
+
+public protocol ParametersSerializer {
+    func serialize(params:RequestParameters) -> NSData?
+}
+
+public struct JSONParametersSerializer : ParametersSerializer {
     public var option: NSJSONWritingOptions
     
     public init(option: NSJSONWritingOptions = .PrettyPrinted){
         self.option = option
     }
     
-    public func serialize(params: Parameters) -> NSData? {
-        return nil
+    public func serialize(params: RequestParameters) -> NSData? {
+
+        var JSONObject = [String:AnyObject]()
+        params.params.forEach {(_, parameter) -> Void in
+            switch parameter {
+            case .StringValue(let key, let value):
+                JSONObject[key] = value
+            case .ArrayValue(let key, let arrayValue):
+                let value = arrayValue.map{ $0 }
+                JSONObject[key] = value
+            case .DictionaryValue(let key, let dictionaryValue):
+                let value = dictionaryValue.reduce([String:AnyObject](), combine: { (dict, element:(key: String, value: String)) -> [String:AnyObject] in
+                    var dictValue = dict
+                    dictValue[element.key] = element.value
+                    return dictValue
+                })
+                JSONObject[key] = value
+            }
+        }
+        
+        
+        return try? NSJSONSerialization.dataWithJSONObject(JSONObject, options: self.option)
     }
     
 }
 
 
-public struct ACParamsQueryStringSerializer : Serializer {
+public struct QueryStringParametersSerializer : ParametersSerializer {
 
-    public func serialize(params: Parameters) -> NSData? {
+    public func serialize(params: RequestParameters) -> NSData? {
         
+        let components = NSURLComponents()
+        components.queryItems = [NSURLQueryItem]()
         
-        
-        let query:String?
-        
-        if #available(iOS 8, *) {
-            let components = NSURLComponents()
-            components.queryItems = params.params.map { (element) -> NSURLQueryItem in
-                return NSURLQueryItem(name: element.1.key, value: element.1.value as? String)
-            }
-            query = components.query
-        } else {
-            
-            query = params.params.enumerate().reduce(String?(), combine: { (query, item:(index: Int, element: (String, Parameter))) -> String? in
-                let value = item.element.1.value as? String ?? ""
-                let parameterString = "\(item.element.0)=\(value)"
-                guard params.params.startIndex.advancedBy(item.index+1) < params.params.endIndex else {
-                    return query?.stringByAppendingString(parameterString)
+        params.params.forEach {(_, parameter) -> Void in
+            switch parameter {
+            case .StringValue(let key, let value):
+                components.queryItems?.append(NSURLQueryItem(name: key, value: value))
+            case .ArrayValue(let key, let arrayValue):
+                let queryItems = arrayValue.map{ NSURLQueryItem(name: "\(key)[]", value: $0) }
+                components.queryItems?.appendContentsOf(queryItems)
+            case .DictionaryValue(let key, let dictionaryValue):
+                dictionaryValue.forEach { (element:(key:String, value:String)) in
+                    components.queryItems?.append(NSURLQueryItem(name: "\(key)[\(element.key)]", value: element.value))
                 }
-                return query?.stringByAppendingString("\(parameterString)&")
-            })
+            }
         }
+        
+        let query:String? = components.query
         
         return query?.dataUsingEncoding(NSUTF8StringEncoding)
     }

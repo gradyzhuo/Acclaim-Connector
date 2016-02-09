@@ -1,5 +1,5 @@
 //
-//  ACAPIQueuePriority.swift
+//  ACQueuePriority.swift
 //  Acclaim
 //
 //  Created by Grady Zhuo on 8/19/15.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct APIQueuePriority : Equatable {
+public struct QueuePriority : Equatable {
     
     internal let queue:dispatch_queue_t
     
@@ -17,7 +17,7 @@ public struct APIQueuePriority : Equatable {
     internal var relative_priority:Int32
     
     internal var identifier:String? {
-        let utf8 = dispatch_queue_get_label(APIQueuePriority.Default.queue)
+        let utf8 = dispatch_queue_get_label(QueuePriority.Default.queue)
         return String(CString: utf8, encoding: NSUTF8StringEncoding)
     }
     
@@ -33,23 +33,23 @@ public struct APIQueuePriority : Equatable {
     }
     
     
-    public static let Default:APIQueuePriority = {
-        return APIQueuePriority(identifier:"ACAPIQueue.Default", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_DEFAULT, relative_priority: 0)
+    public static let Default:QueuePriority = {
+        return QueuePriority(identifier:"ACAPIQueue.Default", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_DEFAULT, relative_priority: 0)
         }()
     
-    public static let High:APIQueuePriority = {
-        return APIQueuePriority(identifier:"ACAPIQueue.HIGH", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_USER_INITIATED, relative_priority: 0)
+    public static let High:QueuePriority = {
+        return QueuePriority(identifier:"ACAPIQueue.HIGH", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_USER_INITIATED, relative_priority: 0)
         }()
     
-    public static let Medium:APIQueuePriority = {
-        return APIQueuePriority(identifier:"ACAPIQueue.MEDIUM", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_UTILITY, relative_priority: 0)
+    public static let Medium:QueuePriority = {
+        return QueuePriority(identifier:"ACAPIQueue.MEDIUM", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_UTILITY, relative_priority: 0)
         }()
     
-    public static let Low:APIQueuePriority = {
-        return APIQueuePriority(identifier:"ACAPIQueue.LOW", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_BACKGROUND, relative_priority: 0)
+    public static let Low:QueuePriority = {
+        return QueuePriority(identifier:"ACAPIQueue.LOW", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_BACKGROUND, relative_priority: 0)
         }()
 }
 
-public func ==(lhs: APIQueuePriority, rhs: APIQueuePriority)->Bool{
+public func ==(lhs: QueuePriority, rhs: QueuePriority)->Bool{
     return lhs.identifier == rhs.identifier
 }

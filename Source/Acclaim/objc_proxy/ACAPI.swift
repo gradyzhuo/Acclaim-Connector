@@ -47,12 +47,12 @@ public class ACAPI : NSObject {
         }
     }
     
-    public var HTTPHeaderFields:[String:String]{
+    public class var HTTPHeaderFieldsForAllRequest:[String:String]{
         set{
-            self.api.HTTPHeaderFields = newValue
+            API.HTTPHeaderFieldsForAllRequest = newValue
         }
         get{
-            return self.api.HTTPHeaderFields
+            return API.HTTPHeaderFieldsForAllRequest
         }
     }
     

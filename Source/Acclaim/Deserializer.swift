@@ -9,30 +9,19 @@
 import Foundation
 
 //FIXME: 未來可以加入錯誤的Key，要如何自已處理的方式。
-public protocol Deserializer {
+public protocol ResponseDeserializer {
     typealias CallbackType
-    static var identifier: String { get }
 
-    func deserialize(data:NSData?, connection: Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?)
+    func deserialize(data:NSData?, connection: Acclaim.Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?)
     
     init()
 }
 
-//public protocol ModelDeserializer {
-//    typealias CallbackType
-//    static var identifier: String { get }
-//    
-//    func deserialize(data:[String:AnyObject], connection: Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?)
-//    
-//    init()
-//}
 
+public struct OriginalDataResponseDeserializer : ResponseDeserializer {
+    public typealias CallbackType = (data : NSData, connection: Acclaim.Connection)
 
-public struct OriginalDataResponseDeserializer : Deserializer {
-    public static var identifier: String { return "OriginalData" }
-    public typealias CallbackType = (data : NSData, connection: Connection)
-
-    public func deserialize(data: NSData?, connection: Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?) {
+    public func deserialize(data: NSData?, connection: Acclaim.Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?) {
         let callback = CallbackType(data: data ?? NSData(), connection: connection)
         return (callback, connectionError)
     }
@@ -43,29 +32,25 @@ public struct OriginalDataResponseDeserializer : Deserializer {
     
 }
 
-public struct FailedResponseDeserializer : Deserializer{
-    public static var identifier: String { return "Failed" }
-    public typealias CallbackType = (originalData : NSData?, connection: Connection, error:ErrorType?)
+public struct FailedResponseDeserializer : ResponseDeserializer{
+    public typealias CallbackType = (originalData : NSData?, connection: Acclaim.HTTPConnection, error:ErrorType?)
 
-    public func deserialize(data: NSData?, connection: Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?) {
-        let callback = (originalData: data, connection: connection, error: connectionError)
+    public func deserialize(data: NSData?, connection: Acclaim.Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?) {
+        let callback = (originalData: data, connection: (request: connection.request, response: connection.response as? NSHTTPURLResponse), error: connectionError)
         return (callback, nil)
     }
-    
     
     public init(){
         
     }
 }
 
-public struct TextResponseDeserializer : Deserializer{
-    
-    public static var identifier: String { return "Text" }
-    public typealias CallbackType = (text : String, connection: Connection)
+public struct TextResponseDeserializer : ResponseDeserializer{
+    public typealias CallbackType = (text : String, connection: Acclaim.Connection)
     
     public var encoding:NSStringEncoding
     
-    public func deserialize(data: NSData?, connection: Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?) {
+    public func deserialize(data: NSData?, connection: Acclaim.Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?) {
         guard let data = data else {
             return (nil, error: NSError(domain: "ACTextResponseDeserializer", code: 9, userInfo: [NSLocalizedFailureReasonErrorKey:"Original Data is nil."]))
         }
@@ -87,15 +72,18 @@ public struct TextResponseDeserializer : Deserializer{
     }
 }
 
-public struct JSONResponseDeserializer : Deserializer{
+public struct JSONResponseDeserializer : ResponseDeserializer, KeyPathParser{
     internal var options: NSJSONReadingOptions
-    public static var identifier: String { return "JSON" }
-    public typealias CallbackType = (JSONObject : AnyObject?, connection: Connection)
-
-    public func deserialize(data: NSData?, connection: Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?) {
+    public typealias CallbackType = (JSONObject : AnyObject?, connection: Acclaim.Connection)
+    public var keyPath:String?
+    
+    public func deserialize(data: NSData?, connection: Acclaim.Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?) {
 
         do {
             let json = try NSJSONSerialization.JSONObjectWithData(data ?? NSData(), options: self.options)
+            if let keyPath = keyPath {
+                return ((JSONObject: self.parse(json, forKeyPath: keyPath), connection: connection), nil)
+            }
             return ((JSONObject: json, connection: connection), nil)
         } catch let error as NSError {
             return (nil, error)
@@ -111,21 +99,25 @@ public struct JSONResponseDeserializer : Deserializer{
         self.options = options
     }
     
+    public init(keyPath:String, options: NSJSONReadingOptions){
+        self.keyPath = keyPath
+        self.options = options
+    }
+    
+    
+    
 }
 
-public struct ImageResponseDeserializer : Deserializer{
-    public static var identifier: String { return "Image" }
-    public typealias CallbackType = (image : UIImage?, connection: Connection)
+public struct ImageResponseDeserializer : ResponseDeserializer{
+    public typealias CallbackType = (image : UIImage, connection: Acclaim.Connection)
     
-    public func deserialize(data: NSData?, connection: Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?) {
+    public func deserialize(data: NSData?, connection: Acclaim.Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?) {
         guard let data = data else {
             return (nil, error: NSError(domain: "ACImageResponseDeserializer", code: 9, userInfo: [NSLocalizedFailureReasonErrorKey:"Original Data is nil."]))
         }
         
-        let image = UIImage(data: data )
-        let error:NSError? = (image == nil) ? NSError(domain: "Acclaim.error.deserializer.image", code: 999, userInfo: [NSLocalizedFailureReasonErrorKey:"The data can't convert to image."]) : nil
-        
-        guard error == nil else {
+        guard let image = UIImage(data: data) else {
+            let error = NSError(domain: "Acclaim.error.deserializer.image", code: 999, userInfo: [NSLocalizedFailureReasonErrorKey:"The data can't convert to image."])
             return (nil, error)
         }
         

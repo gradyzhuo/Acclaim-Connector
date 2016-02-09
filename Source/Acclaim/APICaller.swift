@@ -10,14 +10,77 @@ internal protocol Caller{
     
 }
 
-public typealias Connection = (request: NSURLRequest, response: NSHTTPURLResponse?)
-
 public class APICaller : Caller {
     
-    public internal(set) var priority:APIQueuePriority = .Default
-    public internal(set) var cacheStoragePolicy:NSURLCacheStoragePolicy = .Allowed
+    /// A enum describes should Response Cached to a storage forever.
+    public enum CacheStoragePolicy{
+        
+        /// A enum describes the renew rule by the response failed.
+        public enum RenewRule {
+            case NotRenewed
+//            case RenewSinceDate(data: NSDate)
+//            case RenewByRetry(limitCount: Int)
+            
+            internal static let DefaultRetryCount = 4
+        }
+        
+        /// Response will be cached into a storage.
+        case Allowed(renewRule: RenewRule)
+        /// Response will be cached into a memory only.
+        case AllowedInMemoryOnly(renewRule: RenewRule)
+        /// Response should not be cached.
+        case NotAllowed
+        
+        init(_ rawValue: NSURLCacheStoragePolicy){
+            switch rawValue {
+            case .Allowed:
+                self = .Allowed(renewRule: .NotRenewed)
+            case .AllowedInMemoryOnly:
+                self = .AllowedInMemoryOnly(renewRule: .NotRenewed)
+            case .NotAllowed:
+                self = .NotAllowed
+            }
+        }
+        
+        internal var _NSURLCacheStoragePolicy: NSURLCacheStoragePolicy {
+            switch self{
+            case .Allowed:
+                return .Allowed
+            case .AllowedInMemoryOnly:
+                return .AllowedInMemoryOnly
+            case .NotAllowed:
+                return .NotAllowed
+            }
+        }
+        
+        internal var renewRule: RenewRule {
+            switch self {
+            case .Allowed(let renewRule):
+                return renewRule
+            case .AllowedInMemoryOnly(let renewRule):
+                return renewRule
+            case .NotAllowed:
+                return .NotRenewed
+            }
+        }
+    }
     
-    /** (read only) */
+    /**
+     The queue priority level configure of sending a request. (readonly)
+     
+     There are 3 levels as below:
+     - High
+     - Medium
+     - Low
+     
+     Otherwise:
+     - Default = Medium
+     */
+    public internal(set) var priority:QueuePriority = .Default
+    public internal(set) var cacheStoragePolicy:CacheStoragePolicy = .AllowedInMemoryOnly(renewRule: .NotRenewed)
+    
+    
+    /** (readonly) */
     public  var cancelled:Bool {
         if let queue = self.blockInQueue {
             let testResult = dispatch_block_testcancel(queue)
@@ -34,32 +97,29 @@ public class APICaller : Caller {
     
     //MARK: internal variables
     internal var blockInQueue:dispatch_block_t!
-    internal var params:Parameters = Parameters()
+    internal var params:RequestParameters = []
+    
     
     internal var responseAssistants:[_ResponseAssistantProtocol] = []
-    internal var failedResponseAssistant:_ResponseAssistantProtocol?
+    internal var failedResponseAssistants:[_ResponseAssistantProtocol] = []
     
     internal var connector: Connector
     
     public convenience init(API api:API, params:[String: String], connector: Connector = Acclaim.defaultConnector) {
-        self.init(API: api, params: Parameters(dictionary: params), connector: connector)
+        self.init(API: api, params: RequestParameters(dictionary: params), connector: connector)
     }
     
-    public convenience init(API api:API, params:[Parameter], connector: Connector = Acclaim.defaultConnector) {
-        self.init(API: api, params: Parameters(params: params), connector: connector)
+    public convenience init(API api:API, params:[RequestParameter], connector: Connector = Acclaim.defaultConnector) {
+        self.init(API: api, params: RequestParameters(params: params), connector: connector)
     }
     
-    internal init(API api:API, params:Parameters, connector: Connector = Acclaim.defaultConnector) {
+    internal init(API api:API, params:RequestParameters, connector: Connector = Acclaim.defaultConnector) {
         self.api = api
         self.params = params
         self.connector = connector
     }
     
-    public func handleProgress()->APICaller{
-        return self
-    }
-    
-    public func run(cacheStoragePolicy:NSURLCacheStoragePolicy = .Allowed, priority: APIQueuePriority = .Default)->APICaller{
+    public func run(cacheStoragePolicy:APICaller.CacheStoragePolicy = .AllowedInMemoryOnly(renewRule: .NotRenewed), priority: QueuePriority = .Default)->APICaller{
         
         self.cacheStoragePolicy = cacheStoragePolicy
         self.priority = priority
@@ -71,31 +131,38 @@ public class APICaller : Caller {
     
     internal func run(var connector connector: Connector){
         
-        if !self.running {
+        let request = self.api.generateRequest(self.params)
+        
+        guard !self.running else {
             return
         }
         
-        let request = self.api.getRequest(self.params)
-        
-        connector.sendRequest(request) {[weak self] (data, response, error) -> Void in
-
+        // set
+        let dataTask = connector.sendRequest(request, taskType: self.api.requestTaskType) {[weak self] (data, response, error) in
+            
             guard let weakSelf = self else {
                 return
             }
             
-            weakSelf.handleResponses(data: data, connection: Connection(request, response as? NSHTTPURLResponse), error: error)
+            weakSelf.handleResponses(data: data, connection: (request, response, false), error: error)
             
+            defer {
+                //Remove caller after response completion.
+                Acclaim.removeRunningCaller(API: weakSelf.api)
+            }
+        }
+
+        defer{
+            self.running = true
         }
         
     }
     
     internal func retry(API api:API){
-        
+
     }
     
     public func resume(){
-        
-        self.running = true
         
         let block = dispatch_block_create_with_qos_class(DISPATCH_BLOCK_DETACHED, priority.qos_class, priority.relative_priority) {[unowned self] () -> Void in
             self.run(connector: self.connector)
@@ -126,7 +193,6 @@ public class APICaller : Caller {
         ACDebugLog("Caller is cancelled.")
     }
     
-    
     deinit{
         ACDebugLog("APICaller : [\(unsafeAddressOf(self))] deinit")
     }
@@ -134,34 +200,50 @@ public class APICaller : Caller {
 
 extension APICaller {
     
+    internal func handleCachedResponse(cachedResponse: NSCachedURLResponse, byRequest request: NSURLRequest){
+        self.handleResponses(fromCached: true)(data: cachedResponse.data, connection: (request: request, response: cachedResponse.response, cached: true), error: nil)
+    }
 
-    internal func handleResponses(data data:NSData?, connection: Connection, error:ErrorType?)->Void{
+    internal func handleResponses(data data:NSData?, connection: Acclaim.Connection, error:ErrorType?){
+        self.handleResponses()(data: data, connection: connection, error: error)
+    }
+    
+    internal func handleResponses(fromCached cached: Bool = false)->(data:NSData?, connection: Acclaim.Connection, error:ErrorType?)->Void{
         
-        defer {
-            //Remove caller after response completion.
-            Acclaim.removeRunningCaller(API: self.api)
-        }
-        
-        guard error == nil else {
-            self.failedResponseAssistant?.handle(data, connection: connection, error: error)
-            return
-        }
-        
-        if let response = connection.response, let data = data{
-            let cachedResponse = NSCachedURLResponse(response: response, data: data, userInfo: nil, storagePolicy: self.cacheStoragePolicy)
-            Acclaim.storeCachedResponse(cachedResponse, forRequest: connection.request)
-        }
-        
-        self.responseAssistants.forEach { reciver in
+        return {[unowned self] (data:NSData?, connection: Acclaim.Connection, error:ErrorType?)->Void in
             
-            if let error = reciver.handle(data, connection: connection, error: error) as? NSError {
-                self.failedResponseAssistant?.handle(data, connection: connection, error: error)
+            guard error == nil else {
+                //remove cached response data by renewRule : RenewByRetry
+                
+                //before this request
+                if let cachedResponse = Acclaim.cachedResponse(request: connection.request) {
+                    self.handleCachedResponse(cachedResponse, byRequest: connection.request)
+                }
+                
+                self.handleFailedResponse(data: data, connection: connection, error: error)
+                return
+            }
+            
+            if let response = connection.response, let data = data where cached == false{
+                let cacheStoragePolicy = self.cacheStoragePolicy._NSURLCacheStoragePolicy
+                let cachedResponse = NSCachedURLResponse(response: response, data: data, userInfo: nil, storagePolicy: cacheStoragePolicy)
+                Acclaim.storeCachedResponse(cachedResponse, forRequest: connection.request)
+            }
+            
+            self.responseAssistants.forEach { reciver in
+                
+                if let error = reciver.handle(data, connection: connection, error: error) as? NSError {
+                    self.handleFailedResponse(data: data, connection: connection, error: error)
+                }
             }
         }
         
-        
-        
     }
+    
+    internal func handleFailedResponse(data data:NSData?, connection: Acclaim.Connection, error:ErrorType?) {
+        self.failedResponseAssistants.forEach { $0.handle(data, connection: connection, error: error) }
+    }
+    
     
     public func addResponseAssistant<T:ResponseAssistantProtocol>(responseAssistant assistant: T)->APICaller{
         self.responseAssistants.append(assistant)
@@ -173,8 +255,8 @@ extension APICaller {
 // convenience response handler function
 extension APICaller {
     
-    public func setFailedResponseHandler(handler:FailedResponseAssistant.Handler)->APICaller{
-        self.failedResponseAssistant = FailedResponseAssistant(handler: handler)
+    public func addFailedResponseHandler(statusCode statusCode:Int? = nil, handler:HTTPResponseAssistant.Handler)->APICaller{
+        self.failedResponseAssistants.append(HTTPResponseAssistant(statusCode: statusCode, handler: handler))
         return self
     }
     
@@ -183,7 +265,8 @@ extension APICaller {
         return self
     }
     
-    public func addImageResponseHandler(handler:ImageResponseAssistant.Handler)->APICaller{
+    public func addImageResponseHandler(resumeData:NSData? = nil, handler:ImageResponseAssistant.Handler)->APICaller{
+        self.api.requestTaskType = .DownloadTask(resumeData: nil)
         self.addResponseAssistant(responseAssistant: ImageResponseAssistant(handler: handler))
         return self
     }
@@ -205,3 +288,17 @@ extension APICaller {
 
 }
 
+//MARK: - RenewRule internal methods
+extension APICaller.CacheStoragePolicy.RenewRule {
+    
+    internal var _method:String{
+        switch self {
+        case .NotRenewed:
+            return "NotRenewed"
+//        case .RenewSinceDate:
+//            return "RenewSinceDate"
+//        case .RenewByRetry:
+//            return "RenewByRetry"
+        }
+    }
+}

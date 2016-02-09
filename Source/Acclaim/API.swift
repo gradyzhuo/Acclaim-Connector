@@ -8,6 +8,12 @@
 
 import Foundation
 
+public enum RequestTaskType {
+    case DataTask
+    case DownloadTask(resumeData: NSData?)
+    case UploadTask(data: NSData)
+}
+
 public class  API : StringLiteralConvertible {
     
     public typealias StringLiteralType = String
@@ -17,18 +23,19 @@ public class  API : StringLiteralConvertible {
     public internal(set) var apiURL:NSURL
     
     public var method:HTTPMethod = .GET
-    
+    public var requestTaskType: RequestTaskType = .DataTask
     public var timeoutInterval:NSTimeInterval = 30
     
     public var cachePolicy:NSURLRequestCachePolicy = .UseProtocolCachePolicy
     
-    public var HTTPHeaderFields:[String:String] = [:]
+    public var HTTPHeaderFields:[String: String] = [:]
     public internal(set) var cookies:[NSHTTPCookie] = []
     
     internal var identifier: String = String(NSDate().timeIntervalSince1970)
     
     /** the request will be generated after getRequest() is called. default value is nil. (readonly) */
     public internal(set) var request: NSURLRequest?
+    internal var requestConfigurationHandler: (request: NSMutableURLRequest)->Void = { _ in }
     
     public convenience init(api:String, host:NSURL! = Acclaim.hostURLFromInfoDictionary(), method:HTTPMethod = .GET) throws {
         
@@ -76,11 +83,29 @@ public class  API : StringLiteralConvertible {
         self.init(stringLiteral: value)
     }
     
+}
+
+
+extension API {
     
+    static var HTTPHeaderFieldsForAllRequest:[String: String] = [:]
+    
+    func configRequest(handler: (request: NSMutableURLRequest)->Void) {
+        self.requestConfigurationHandler = handler
+    }
     
 }
 
+
+//MARK: - Handle HTTPCookies
 extension API {
+    /**
+     add the simple string cookie.
+     - parameters:
+        - name: the name of cookie.
+        - value: the value of cookie.
+     - returns: object of NSHTTPCookie. (Optional)
+     */
     public func addSimpleHTTPCookie(name name:String, value: String)->NSHTTPCookie?{
         let properties = [NSHTTPCookieName:name, NSHTTPCookieValue:value, NSHTTPCookieDomain:self.apiURL.host ?? "", NSHTTPCookieOriginURL:self.apiURL.absoluteString, NSHTTPCookiePath:self.apiURL.path ?? "", NSHTTPCookieVersion:"0"]
         guard let cookie = NSHTTPCookie(properties: properties) else {
@@ -91,6 +116,12 @@ extension API {
         return cookie
     }
     
+    /**
+     add the cookie object of NSHTTPCookie.
+     - parameters:
+     - cookie: the instance of NSHTTPCookie.
+     - returns: API.
+     */
     public func addHTTPCookie(cookie: NSHTTPCookie)->Self{
         self.cookies.append(cookie)
         return self
@@ -99,7 +130,13 @@ extension API {
 
 extension API {
     
-    internal func getRequest(params: Parameters)->NSURLRequest {
+    /**
+     .
+     - parameters:
+     - cookie: the instance of NSHTTPCookie.
+     - returns: API.
+     */
+    internal func generateRequest(params: RequestParameters)->NSURLRequest {
         
         let request:NSMutableURLRequest = NSMutableURLRequest(URL: self.apiURL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
         
@@ -120,11 +157,17 @@ extension API {
             request.addValue(field.1, forHTTPHeaderField: field.0)
         }
         
+        API.HTTPHeaderFieldsForAllRequest.forEach { (key:String, value: String) -> () in
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+        
         self.HTTPHeaderFields.forEach { (key:String, value: String) -> () in
             request.addValue(value, forHTTPHeaderField: key)
         }
         
-        self.request = request.copy() as! NSURLRequest
+        self.requestConfigurationHandler(request: request)
+        
+        self.request = request.copy() as? NSURLRequest
         return self.request!
         
     }

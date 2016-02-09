@@ -1,5 +1,5 @@
 //
-//  ACAPIQueuePriority.swift
+//  ACQueuePriority.swift
 //  Acclaim
 //
 //  Created by Grady Zhuo on 1/26/16.
@@ -9,22 +9,22 @@
 import Foundation
 
 @objc
-public enum ACAPIQueuePriority : Int {
+public enum ACQueuePriority : Int {
     case Default
     case High
     case Medium
     case Low
 }
 
-internal func APIQueuePriorityMake(priority: ACAPIQueuePriority)->APIQueuePriority {
+internal func QueuePriorityMake(priority: ACQueuePriority)->QueuePriority {
     switch priority {
     case .Default:
-        return APIQueuePriority.Default
+        return QueuePriority.Default
     case .High:
-        return APIQueuePriority.High
+        return QueuePriority.High
     case .Medium:
-        return APIQueuePriority.Medium
+        return QueuePriority.Medium
     case .Low:
-        return APIQueuePriority.Low
+        return QueuePriority.Low
     }
 }

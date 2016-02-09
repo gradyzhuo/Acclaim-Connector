@@ -9,12 +9,12 @@
 import Foundation
 
 public protocol _ResponseAssistantProtocol{
-    func handle(data:NSData?, connection: Connection, error:ErrorType?)->(ErrorType?)
+    func handle(data:NSData?, connection: Acclaim.Connection, error:ErrorType?)->(ErrorType?)
 }
 
 public protocol ResponseAssistantProtocol : _ResponseAssistantProtocol {
     
-    typealias DeserializerType : Deserializer
+    typealias DeserializerType : ResponseDeserializer
 
     var deserializer: DeserializerType { set get }
     func handle(callback:DeserializerType.CallbackType)
@@ -29,7 +29,7 @@ extension ResponseAssistantProtocol {
 
 extension ResponseAssistantProtocol{
     
-    public func handle(data: NSData?, connection: Connection, error: ErrorType?) -> (ErrorType?) {
+    public func handle(data: NSData?, connection: Acclaim.Connection, error: ErrorType?) -> (ErrorType?) {
         let result:(callback:DeserializerType.CallbackType?, error: ErrorType?) = self.deserializer.deserialize(data, connection: connection, connectionError: error)
         
         guard let callback = result.callback where result.error == nil else {
@@ -44,7 +44,7 @@ extension ResponseAssistantProtocol{
     
 }
 
-public class ResponseAssistant<DeserializerType : Deserializer> : ResponseAssistantProtocol {
+public class ResponseAssistant<DeserializerType : ResponseDeserializer> : ResponseAssistantProtocol {
     
     public typealias Handler = (result:DeserializerType.CallbackType)->Void
     
@@ -65,50 +65,10 @@ public class ResponseAssistant<DeserializerType : Deserializer> : ResponseAssist
     }
     
     deinit{
-        ACDebugLog("Response(\(DeserializerType.identifier)) : [\(unsafeAddressOf(self))] deinit")
+        ACDebugLog("Response(\(DeserializerType.self)) : [\(unsafeAddressOf(self))] deinit")
     }
 }
 
-public class KeyPathResponseAssistant<DeserializerType : Deserializer> : ResponseAssistant<DeserializerType> {
-    public typealias Handler = (result:DeserializerType.CallbackType)->Void
-    
-    public internal(set) var handlers:[String : Handler] = [:]
-    
-    public override init(deserializer: DeserializerType = DeserializerType()){
-        super.init(deserializer: deserializer)
-    }
-
-    public init(forKeyPath keyPath:String? = nil, deserializer: DeserializerType = DeserializerType(), handler: Handler) {
-        super.init(deserializer: deserializer)
-        
-        if let keyPath = keyPath {
-            self.handlers[keyPath] = handler
-        }else{
-            self.handler = handler
-        }
-        
-    }
-    
-    public func addHandler(forKeyPath keyPath: String, handler: Handler)->KeyPathResponseAssistant<DeserializerType>{
-        self.handlers[keyPath] = handler
-        return self
-    }
-    
-    deinit{
-        ACDebugLog("KeyPathResponseAssistant(\(DeserializerType.identifier)) : [\(unsafeAddressOf(self))] deinit")
-    }
-}
-
-//public enum ResponseAssistantType {
-//    case OriginalData(handler: (data: NSData, connection: Connection)->Void)
-//    case JSON(keyPath: String, option: NSJSONReadingOptions, handler: (JSONObject: AnyObject?, connection: Connection)->Void)
-//    case Image(handler: (image: UIImage, connection: Connection)->Void)
-//    case Text(handler: (text: String, connection: Connection)->Void)
-//
-//    public func responseAssistant<T:Deserializer>(deserializer: T)->ResponseAssistant<T> {
-//        return ResponseAssistant<T>(deserializer: deserializer)
-//    }
-//}
 
 public final class OriginalDataResponseAssistant:ResponseAssistant<OriginalDataResponseDeserializer>{
     public init(handler: Handler) {
@@ -116,10 +76,31 @@ public final class OriginalDataResponseAssistant:ResponseAssistant<OriginalDataR
     }
 }
 
-public final class FailedResponseAssistant : ResponseAssistant<FailedResponseDeserializer>{
-    public init(handler: Handler) {
-        super.init(handler: handler)
+public final class HTTPResponseAssistant : ResponseAssistant<FailedResponseDeserializer>{
+    public internal(set) var handlers:[Int : Handler] = [:]
+    
+    public init(statusCode:Int? = nil, handler: Handler) {
+        super.init()
+        
+        if let statusCode = statusCode {
+            self.handlers[statusCode] = handler
+        }else{
+            self.handler = handler
+        }
     }
+    
+    
+    public override func handle(callback: FailedResponseDeserializer.CallbackType) {
+        let connection = callback.connection
+        
+        if let statusCode = connection.response?.statusCode where self.handlers.keys.contains(statusCode) {
+            self.handlers[statusCode]?(result: callback)
+        }else{
+            self.handler?(result: callback)
+        }
+        
+    }
+    
 }
 
 public final class ImageResponseAssistant : ResponseAssistant<ImageResponseDeserializer>{
@@ -132,22 +113,4 @@ public final class TextResponseAssistant : ResponseAssistant<TextResponseDeseria
     public init(encoding: NSStringEncoding = NSUTF8StringEncoding ,handler: Handler) {
         super.init(deserializer: TextResponseDeserializer(encoding: encoding), handler: handler)
     }
-}
-
-public final class JSONResponseAssistant : KeyPathResponseAssistant<JSONResponseDeserializer> {
-    
-    public init(forKeyPath keyPath:String? = nil, option: NSJSONReadingOptions = NSJSONReadingOptions.AllowFragments, handler: Handler) {
-        super.init(forKeyPath: keyPath, deserializer: JSONResponseDeserializer(options: option), handler: handler)
-    }
-    
-    public override func handle(callback: JSONResponseDeserializer.CallbackType) {
-        super.handle(callback)
-        
-        
-        for (keyPath, handler) in handlers {
-            handler(result: (JSONObject: callback.JSONObject?[keyPath], connection: callback.connection))
-        }
-    }
-
-    
 }

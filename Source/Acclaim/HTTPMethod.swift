@@ -8,47 +8,7 @@
 
 import Foundation
 
-public enum SerializerType {
-    case QueryString
-    case JSON(option: NSJSONWritingOptions)
-    case Custom(serializer: Serializer)
-    
-    internal var serializer: Serializer {
-        
-        switch self {
-        case let .JSON(option):
-            return ACParamsJSONSerializer(option: option)
-        case .QueryString:
-            return ACParamsQueryStringSerializer()
-        case let .Custom(serializer):
-            return serializer
-        }
-        
-    }
-
-    
-}
-
-//typealias
-extension HTTPMethod : StringLiteralConvertible {
-    public typealias StringLiteralType = String
-    public typealias ExtendedGraphemeClusterLiteralType = String
-    public typealias UnicodeScalarLiteralType = String
-    
-    /// Create an instance initialized to `value`.
-    public init(stringLiteral value: HTTPMethod.StringLiteralType){
-        self = HTTPMethod(rawValue: value)!
-    }
-    
-    public init(unicodeScalarLiteral value: HTTPMethod.UnicodeScalarLiteralType) {
-        self = HTTPMethod(stringLiteral: value)
-    }
-    
-    public init(extendedGraphemeClusterLiteral value: HTTPMethod.ExtendedGraphemeClusterLiteralType) {
-        self = HTTPMethod(stringLiteral: value)
-    }
-}
-
+/// The method of HTTP request.
 public enum HTTPMethod {
     
     public typealias RawValue = String
@@ -69,7 +29,7 @@ public enum HTTPMethod {
     case OPTIONSWith(serialize: SerializerType)
     case CONNECTWith(serialize: SerializerType)
     
-    internal var serializer: Serializer {
+    internal var serializer: ParametersSerializer {
         switch self {
         case let .POSTWith(serialize):
             return serialize.serializer
@@ -93,7 +53,7 @@ public enum HTTPMethod {
     
 }
 
-
+//MARK: - RawRepresentable Extension
 extension HTTPMethod : RawRepresentable {
     public init?(rawValue: HTTPMethod.RawValue) {
         switch rawValue.uppercaseString {
@@ -158,4 +118,24 @@ extension HTTPMethod : RawRepresentable {
 
 public func ==(lhs: HTTPMethod, rhs: HTTPMethod)->Bool{
     return lhs.rawValue == rhs.rawValue
+}
+
+//typealias
+extension HTTPMethod : StringLiteralConvertible {
+    public typealias StringLiteralType = String
+    public typealias ExtendedGraphemeClusterLiteralType = String
+    public typealias UnicodeScalarLiteralType = String
+    
+    /// Create an instance initialized to `value`.
+    public init(stringLiteral value: HTTPMethod.StringLiteralType){
+        self = HTTPMethod(rawValue: value)!
+    }
+    
+    public init(unicodeScalarLiteral value: HTTPMethod.UnicodeScalarLiteralType) {
+        self = HTTPMethod(stringLiteral: value)
+    }
+    
+    public init(extendedGraphemeClusterLiteral value: HTTPMethod.ExtendedGraphemeClusterLiteralType) {
+        self = HTTPMethod(stringLiteral: value)
+    }
 }

@@ -15,6 +15,9 @@ public let ACAPIHostURLInfoKey:String = Acclaim.hostURLInfoKey
 
 public class Acclaim {
     
+    public typealias Connection = (request: NSURLRequest, response: NSURLResponse?, cached: Bool)
+    public typealias HTTPConnection = (request: NSURLRequest, response: NSHTTPURLResponse?)
+
     public static let version = AcclaimVersionNumber
     
     public static var allowsCellularAccess: Bool = true
@@ -64,7 +67,11 @@ public class Acclaim {
         return NSURLCache.sharedURLCache()
     }
     
-    internal class func cachedResponseForRequest(request: NSURLRequest) -> NSCachedURLResponse?{
+    internal class func cachedResponse(API api: API, parameters: RequestParameters) -> NSCachedURLResponse?{
+        return Acclaim.sharedURLCache.cachedResponseForRequest(api.generateRequest(parameters))
+    }
+    
+    internal class func cachedResponse(request request: NSURLRequest) -> NSCachedURLResponse?{
         return Acclaim.sharedURLCache.cachedResponseForRequest(request)
     }
 
@@ -72,9 +79,31 @@ public class Acclaim {
         Acclaim.sharedURLCache.storeCachedResponse(cachedResponse, forRequest: request)
     }
     
-    public class func runAPI(API api:API, params:Parameters = [], priority: APIQueuePriority = .Default)->APICaller{
+    internal static func removeAllCachedResponsesSinceDate(date: NSDate){
+        Acclaim.sharedURLCache.removeCachedResponsesSinceDate(date)
+    }
+    
+    internal static func removeAllCachedResponses(){
+        Acclaim.sharedURLCache.removeAllCachedResponses()
+    }
+    
+    
+    internal class func removeCachedResponse(request: NSURLRequest){
+        return Acclaim.sharedURLCache.removeCachedResponseForRequest(request)
+    }
+    
+    internal class func removeCachedResponse(API api: API, parameters: RequestParameters){
+        
+        return Acclaim.removeCachedResponse(api.generateRequest(parameters))
+    }
+    
+    ///
+    public class func runAPI(API api:API, params:RequestParameters = [:], priority: QueuePriority = .Default)->APICaller{
+
         let caller = APICaller(API: api, params: params)
+        caller.priority = priority
         caller.run()
+        
         return caller
     }
     
