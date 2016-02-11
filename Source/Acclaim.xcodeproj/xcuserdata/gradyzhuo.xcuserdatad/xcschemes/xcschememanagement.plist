@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Acclaim-OC.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>3</integer>
+		</dict>
 		<key>Acclaim.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -18,6 +23,11 @@
 			<true/>
 		</dict>
 		<key>79213F1E1B7B04C500A527DE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>793C546E1C6ACDC700CC2432</key>
 		<dict>
 			<key>primary</key>
 			<true/>

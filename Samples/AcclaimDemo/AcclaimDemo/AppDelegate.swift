@@ -103,6 +103,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             print("cached: \(result.connection.cached)")
             print("result.JSONObject:\(result.JSONObject)")
         }//.cacheStoragePolicy = .NotAllowed//.Allowed(renewRule: .RenewSinceData(data: NSDate().dateByAddingTimeInterval(1)))
+        .api.method = .POST
         return true
     }
     

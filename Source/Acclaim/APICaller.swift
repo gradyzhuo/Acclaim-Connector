@@ -17,9 +17,12 @@ public class APICaller : Caller {
         
         /// A enum describes the renew rule by the response failed.
         public enum RenewRule {
+            
             case NotRenewed
-//            case RenewSinceDate(data: NSDate)
-//            case RenewByRetry(limitCount: Int)
+            /// Not implemented.
+            case RenewSinceDate(data: NSDate)
+            /// Not implemented.
+            case RenewByRetry(limitCount: Int)
             
             internal static let DefaultRetryCount = 4
         }
@@ -30,28 +33,6 @@ public class APICaller : Caller {
         case AllowedInMemoryOnly(renewRule: RenewRule)
         /// Response should not be cached.
         case NotAllowed
-        
-        init(_ rawValue: NSURLCacheStoragePolicy){
-            switch rawValue {
-            case .Allowed:
-                self = .Allowed(renewRule: .NotRenewed)
-            case .AllowedInMemoryOnly:
-                self = .AllowedInMemoryOnly(renewRule: .NotRenewed)
-            case .NotAllowed:
-                self = .NotAllowed
-            }
-        }
-        
-        internal var _NSURLCacheStoragePolicy: NSURLCacheStoragePolicy {
-            switch self{
-            case .Allowed:
-                return .Allowed
-            case .AllowedInMemoryOnly:
-                return .AllowedInMemoryOnly
-            case .NotAllowed:
-                return .NotAllowed
-            }
-        }
         
         internal var renewRule: RenewRule {
             switch self {
@@ -105,7 +86,7 @@ public class APICaller : Caller {
     
     internal var connector: Connector
     
-    public convenience init(API api:API, params:[String: String], connector: Connector = Acclaim.defaultConnector) {
+    public convenience init(API api:API, params:[String: ParameterValueType], connector: Connector = Acclaim.defaultConnector) {
         self.init(API: api, params: RequestParameters(dictionary: params), connector: connector)
     }
     
@@ -119,14 +100,17 @@ public class APICaller : Caller {
         self.connector = connector
     }
     
-    public func run(cacheStoragePolicy:APICaller.CacheStoragePolicy = .AllowedInMemoryOnly(renewRule: .NotRenewed), priority: QueuePriority = .Default)->APICaller{
+    public func run()->APICaller{
+        self.resume()
+        return self
+    }
+    
+    public func run(cacheStoragePolicy:APICaller.CacheStoragePolicy, priority: QueuePriority = .Default)->APICaller{
         
         self.cacheStoragePolicy = cacheStoragePolicy
         self.priority = priority
-        
-        self.resume()
-        
-        return self
+
+        return self.run()
     }
     
     internal func run(var connector connector: Connector){
@@ -225,7 +209,7 @@ extension APICaller {
             }
             
             if let response = connection.response, let data = data where cached == false{
-                let cacheStoragePolicy = self.cacheStoragePolicy._NSURLCacheStoragePolicy
+                let cacheStoragePolicy = NSURLCacheStoragePolicy(self.cacheStoragePolicy)
                 let cachedResponse = NSCachedURLResponse(response: response, data: data, userInfo: nil, storagePolicy: cacheStoragePolicy)
                 Acclaim.storeCachedResponse(cachedResponse, forRequest: connection.request)
             }
@@ -295,10 +279,10 @@ extension APICaller.CacheStoragePolicy.RenewRule {
         switch self {
         case .NotRenewed:
             return "NotRenewed"
-//        case .RenewSinceDate:
-//            return "RenewSinceDate"
-//        case .RenewByRetry:
-//            return "RenewByRetry"
+        case .RenewSinceDate:
+            return "RenewSinceDate"
+        case .RenewByRetry:
+            return "RenewByRetry"
         }
     }
 }

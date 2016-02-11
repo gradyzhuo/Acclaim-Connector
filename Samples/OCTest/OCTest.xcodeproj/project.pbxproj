@@ -7,8 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		793DF5561C5BD02000420089 /* Acclaim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 793DF5551C5BD02000420089 /* Acclaim.framework */; };
-		793DF5571C5BD02000420089 /* Acclaim.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 793DF5551C5BD02000420089 /* Acclaim.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		793C54951C6B124400CC2432 /* Acclaim_OC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 793C54941C6B124400CC2432 /* Acclaim_OC.framework */; };
+		793C54961C6B124400CC2432 /* Acclaim_OC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 793C54941C6B124400CC2432 /* Acclaim_OC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		793C54981C6B127200CC2432 /* Acclaim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 793C54971C6B127200CC2432 /* Acclaim.framework */; };
+		793C54991C6B127200CC2432 /* Acclaim.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 793C54971C6B127200CC2432 /* Acclaim.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		795432D81C5545E50011A522 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 795432D71C5545E50011A522 /* main.m */; };
 		795432DB1C5545E50011A522 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 795432DA1C5545E50011A522 /* AppDelegate.m */; };
 		795432DE1C5545E50011A522 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 795432DD1C5545E50011A522 /* ViewController.m */; };
@@ -24,7 +26,8 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				793DF5571C5BD02000420089 /* Acclaim.framework in Embed Frameworks */,
+				793C54961C6B124400CC2432 /* Acclaim_OC.framework in Embed Frameworks */,
+				793C54991C6B127200CC2432 /* Acclaim.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -32,7 +35,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		793DF5551C5BD02000420089 /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Acclaim.framework; path = "/Users/gradyzhuo/Library/Developer/Xcode/DerivedData/Acclaim-cvyirjorhotobufqrvisqsslkbcy/Build/Products/Debug-iphoneos/Acclaim.framework"; sourceTree = "<absolute>"; };
+		793C54941C6B124400CC2432 /* Acclaim_OC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Acclaim_OC.framework; path = "/Users/gradyzhuo/Library/Developer/Xcode/DerivedData/Acclaim-cvyirjorhotobufqrvisqsslkbcy/Build/Products/Debug-iphoneos/Acclaim_OC.framework"; sourceTree = "<absolute>"; };
+		793C54971C6B127200CC2432 /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Acclaim.framework; path = "/Users/gradyzhuo/Library/Developer/Xcode/DerivedData/Acclaim-cvyirjorhotobufqrvisqsslkbcy/Build/Products/Debug-iphoneos/Acclaim.framework"; sourceTree = "<absolute>"; };
 		795432D31C5545E50011A522 /* OCTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OCTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		795432D71C5545E50011A522 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		795432D91C5545E50011A522 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -50,7 +54,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				793DF5561C5BD02000420089 /* Acclaim.framework in Frameworks */,
+				793C54951C6B124400CC2432 /* Acclaim_OC.framework in Frameworks */,
+				793C54981C6B127200CC2432 /* Acclaim.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,7 +65,8 @@
 		795432CA1C5545E50011A522 = {
 			isa = PBXGroup;
 			children = (
-				793DF5551C5BD02000420089 /* Acclaim.framework */,
+				793C54971C6B127200CC2432 /* Acclaim.framework */,
+				793C54941C6B124400CC2432 /* Acclaim_OC.framework */,
 				795432D51C5545E50011A522 /* OCTest */,
 				795432D41C5545E50011A522 /* Products */,
 			);

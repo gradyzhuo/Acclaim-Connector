@@ -7,6 +7,8 @@
 //
 
 import Foundation
+import Acclaim
+
 
 public class ACAPICaller : NSObject {
     var apiCaller: APICaller!
@@ -24,7 +26,7 @@ public class ACAPICaller : NSObject {
     }
     
     public var cacheStoragePolicy:NSURLCacheStoragePolicy{
-        return self.apiCaller.cacheStoragePolicy._NSURLCacheStoragePolicy
+        return NSURLCacheStoragePolicy(self.apiCaller.cacheStoragePolicy)
     }
     
     /** (read only) */

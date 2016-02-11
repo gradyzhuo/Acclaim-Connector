@@ -88,9 +88,9 @@ public class  API : StringLiteralConvertible {
 
 extension API {
     
-    static var HTTPHeaderFieldsForAllRequest:[String: String] = [:]
+    public static var HTTPHeaderFieldsForAllRequest:[String: String] = [:]
     
-    func configRequest(handler: (request: NSMutableURLRequest)->Void) {
+    public func configRequest(handler: (request: NSMutableURLRequest)->Void) {
         self.requestConfigurationHandler = handler
     }
     

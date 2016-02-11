@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 @import Acclaim;
+@import Acclaim_OC;
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 

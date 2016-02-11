@@ -18,10 +18,14 @@
 		792E979E1C5E82C6004A411E /* Deserializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 792E979D1C5E82C6004A411E /* Deserializer.swift */; };
 		79309BA01B82404D00C6B426 /* RequestParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79309B9F1B82404D00C6B426 /* RequestParameter.swift */; };
 		79309BA31B82506E00C6B426 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79309BA21B82506E00C6B426 /* API.swift */; };
-		795432C51C553F220011A522 /* ACAPICaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795432C41C553F220011A522 /* ACAPICaller.swift */; };
-		795432C71C5541910011A522 /* ACHTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795432C61C5541910011A522 /* ACHTTPMethod.swift */; };
-		795432C91C5541A00011A522 /* ACAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795432C81C5541A00011A522 /* ACAPI.swift */; };
-		795432F21C5687AE0011A522 /* ACAPIQueuePriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 795432F11C5687AE0011A522 /* ACAPIQueuePriority.swift */; };
+		793C54721C6ACDC700CC2432 /* Acclaim-OC.h in Headers */ = {isa = PBXBuildFile; fileRef = 793C54711C6ACDC700CC2432 /* Acclaim-OC.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		793C54771C6ACDD400CC2432 /* Acclaim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79213F141B7B04C500A527DE /* Acclaim.framework */; };
+		793C548D1C6ACE6900CC2432 /* ACAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793C54891C6ACE6900CC2432 /* ACAPI.swift */; };
+		793C548E1C6ACE6900CC2432 /* ACAPICaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793C548A1C6ACE6900CC2432 /* ACAPICaller.swift */; };
+		793C548F1C6ACE6900CC2432 /* ACAPIQueuePriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793C548B1C6ACE6900CC2432 /* ACAPIQueuePriority.swift */; };
+		793C54901C6ACE6900CC2432 /* ACHTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793C548C1C6ACE6900CC2432 /* ACHTTPMethod.swift */; };
+		793C54921C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793C54911C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */; };
+		793C549C1C6B9EA300CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793C549B1C6B9EA300CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */; };
 		7959D0431B805541003F0AE3 /* Connector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7959D0421B805541003F0AE3 /* Connector.swift */; };
 		797AFE3C1B8396BA009E9227 /* QueuePriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797AFE3B1B8396BA009E9227 /* QueuePriority.swift */; };
 		7994F1511B8313C10016ADB1 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7994F1501B8313C10016ADB1 /* Serializer.swift */; };
@@ -55,10 +59,15 @@
 		792E979D1C5E82C6004A411E /* Deserializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Deserializer.swift; path = ../Deserializer.swift; sourceTree = "<group>"; };
 		79309B9F1B82404D00C6B426 /* RequestParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestParameter.swift; sourceTree = "<group>"; };
 		79309BA21B82506E00C6B426 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
-		795432C41C553F220011A522 /* ACAPICaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACAPICaller.swift; sourceTree = "<group>"; };
-		795432C61C5541910011A522 /* ACHTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACHTTPMethod.swift; sourceTree = "<group>"; };
-		795432C81C5541A00011A522 /* ACAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACAPI.swift; sourceTree = "<group>"; };
-		795432F11C5687AE0011A522 /* ACAPIQueuePriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACAPIQueuePriority.swift; sourceTree = "<group>"; };
+		793C546F1C6ACDC700CC2432 /* Acclaim_OC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Acclaim_OC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		793C54711C6ACDC700CC2432 /* Acclaim-OC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Acclaim-OC.h"; sourceTree = "<group>"; };
+		793C54731C6ACDC700CC2432 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		793C54891C6ACE6900CC2432 /* ACAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACAPI.swift; sourceTree = "<group>"; };
+		793C548A1C6ACE6900CC2432 /* ACAPICaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACAPICaller.swift; sourceTree = "<group>"; };
+		793C548B1C6ACE6900CC2432 /* ACAPIQueuePriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACAPIQueuePriority.swift; sourceTree = "<group>"; };
+		793C548C1C6ACE6900CC2432 /* ACHTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACHTTPMethod.swift; sourceTree = "<group>"; };
+		793C54911C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift"; sourceTree = "<group>"; };
+		793C549B1C6B9EA300CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift"; sourceTree = "<group>"; };
 		7959D0421B805541003F0AE3 /* Connector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Connector.swift; sourceTree = "<group>"; };
 		797AFE3B1B8396BA009E9227 /* QueuePriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueuePriority.swift; sourceTree = "<group>"; };
 		7994F1501B8313C10016ADB1 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Serializer.swift; path = ../Serializer.swift; sourceTree = "<group>"; };
@@ -80,6 +89,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				79213F201B7B04C500A527DE /* Acclaim.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		793C546B1C6ACDC700CC2432 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				793C54771C6ACDD400CC2432 /* Acclaim.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -110,6 +127,7 @@
 			children = (
 				79213F161B7B04C500A527DE /* Acclaim */,
 				79213F231B7B04C500A527DE /* AcclaimTests */,
+				793C54701C6ACDC700CC2432 /* Acclaim-OC */,
 				79213F151B7B04C500A527DE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -119,6 +137,7 @@
 			children = (
 				79213F141B7B04C500A527DE /* Acclaim.framework */,
 				79213F1F1B7B04C500A527DE /* AcclaimTests.xctest */,
+				793C546F1C6ACDC700CC2432 /* Acclaim_OC.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -126,7 +145,6 @@
 		79213F161B7B04C500A527DE /* Acclaim */ = {
 			isa = PBXGroup;
 			children = (
-				795432C31C553F0C0011A522 /* objc_proxy */,
 				7919D3901C6272B000E3D5B3 /* Serialization */,
 				7919D3911C62743A00E3D5B3 /* ResponseAssistant */,
 				79F1D9ED1C63B57A00FBC6C1 /* Utlitities */,
@@ -138,6 +156,7 @@
 				79309B9F1B82404D00C6B426 /* RequestParameter.swift */,
 				797AFE3B1B8396BA009E9227 /* QueuePriority.swift */,
 				7959D0421B805541003F0AE3 /* Connector.swift */,
+				793C54911C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */,
 				79213F171B7B04C500A527DE /* Supporting Files */,
 				791D80F21C4F8FFA009126E6 /* ResponseStatus.swift */,
 			);
@@ -169,15 +188,18 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		795432C31C553F0C0011A522 /* objc_proxy */ = {
+		793C54701C6ACDC700CC2432 /* Acclaim-OC */ = {
 			isa = PBXGroup;
 			children = (
-				795432C41C553F220011A522 /* ACAPICaller.swift */,
-				795432C61C5541910011A522 /* ACHTTPMethod.swift */,
-				795432C81C5541A00011A522 /* ACAPI.swift */,
-				795432F11C5687AE0011A522 /* ACAPIQueuePriority.swift */,
+				793C549B1C6B9EA300CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */,
+				793C54891C6ACE6900CC2432 /* ACAPI.swift */,
+				793C548A1C6ACE6900CC2432 /* ACAPICaller.swift */,
+				793C548B1C6ACE6900CC2432 /* ACAPIQueuePriority.swift */,
+				793C548C1C6ACE6900CC2432 /* ACHTTPMethod.swift */,
+				793C54711C6ACDC700CC2432 /* Acclaim-OC.h */,
+				793C54731C6ACDC700CC2432 /* Info.plist */,
 			);
-			path = objc_proxy;
+			path = "Acclaim-OC";
 			sourceTree = "<group>";
 		};
 		79F1D9ED1C63B57A00FBC6C1 /* Utlitities */ = {
@@ -196,6 +218,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				79213F1A1B7B04C500A527DE /* Acclaim.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		793C546C1C6ACDC700CC2432 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				793C54721C6ACDC700CC2432 /* Acclaim-OC.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -238,6 +268,24 @@
 			productReference = 79213F1F1B7B04C500A527DE /* AcclaimTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		793C546E1C6ACDC700CC2432 /* Acclaim_OC */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 793C54761C6ACDC700CC2432 /* Build configuration list for PBXNativeTarget "Acclaim_OC" */;
+			buildPhases = (
+				793C546A1C6ACDC700CC2432 /* Sources */,
+				793C546B1C6ACDC700CC2432 /* Frameworks */,
+				793C546C1C6ACDC700CC2432 /* Headers */,
+				793C546D1C6ACDC700CC2432 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Acclaim_OC;
+			productName = "Acclaim-OC";
+			productReference = 793C546F1C6ACDC700CC2432 /* Acclaim_OC.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -256,6 +304,9 @@
 						CreatedOnToolsVersion = 6.4;
 						TestTargetID = 79E4CC2F1B7B4DC1000EC9EB;
 					};
+					793C546E1C6ACDC700CC2432 = {
+						CreatedOnToolsVersion = 7.3;
+					};
 				};
 			};
 			buildConfigurationList = 79213F0E1B7B04C500A527DE /* Build configuration list for PBXProject "Acclaim" */;
@@ -273,6 +324,7 @@
 			targets = (
 				79213F131B7B04C500A527DE /* Acclaim */,
 				79213F1E1B7B04C500A527DE /* AcclaimTests */,
+				793C546E1C6ACDC700CC2432 /* Acclaim_OC */,
 			);
 		};
 /* End PBXProject section */
@@ -292,6 +344,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		793C546D1C6ACDC700CC2432 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -304,19 +363,16 @@
 				7959D0431B805541003F0AE3 /* Connector.swift in Sources */,
 				7919D3931C62745800E3D5B3 /* KeyPathResponseAssistant.swift in Sources */,
 				79309BA31B82506E00C6B426 /* API.swift in Sources */,
+				793C54921C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift in Sources */,
 				7994F1511B8313C10016ADB1 /* Serializer.swift in Sources */,
 				791D80F31C4F8FFA009126E6 /* ResponseStatus.swift in Sources */,
 				7919D38F1C62728300E3D5B3 /* ModelDeserializer.swift in Sources */,
 				79F1D9EF1C63B59200FBC6C1 /* KeyPathParser.swift in Sources */,
-				795432C91C5541A00011A522 /* ACAPI.swift in Sources */,
-				795432F21C5687AE0011A522 /* ACAPIQueuePriority.swift in Sources */,
 				79309BA01B82404D00C6B426 /* RequestParameter.swift in Sources */,
 				797AFE3C1B8396BA009E9227 /* QueuePriority.swift in Sources */,
 				792E979E1C5E82C6004A411E /* Deserializer.swift in Sources */,
 				79213F311B7B4B4600A527DE /* Acclaim.swift in Sources */,
 				79C373E91B7DED2100C809BE /* APICaller.swift in Sources */,
-				795432C71C5541910011A522 /* ACHTTPMethod.swift in Sources */,
-				795432C51C553F220011A522 /* ACAPICaller.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -325,6 +381,18 @@
 			buildActionMask = 2147483647;
 			files = (
 				79213F271B7B04C500A527DE /* AcclaimTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		793C546A1C6ACDC700CC2432 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				793C548F1C6ACE6900CC2432 /* ACAPIQueuePriority.swift in Sources */,
+				793C54901C6ACE6900CC2432 /* ACHTTPMethod.swift in Sources */,
+				793C548E1C6ACE6900CC2432 /* ACAPICaller.swift in Sources */,
+				793C549C1C6B9EA300CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift in Sources */,
+				793C548D1C6ACE6900CC2432 /* ACAPI.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -506,6 +574,41 @@
 			};
 			name = Release;
 		};
+		793C54741C6ACDC700CC2432 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Acclaim-OC/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.offsky.Acclaim-OC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		793C54751C6ACDC700CC2432 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Acclaim-OC/Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.offsky.Acclaim-OC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -535,6 +638,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		793C54761C6ACDC700CC2432 /* Build configuration list for PBXNativeTarget "Acclaim_OC" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				793C54741C6ACDC700CC2432 /* Debug */,
+				793C54751C6ACDC700CC2432 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};

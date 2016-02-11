@@ -111,7 +111,7 @@ public class Acclaim {
 
 extension Acclaim {
     
-    internal class func hostURLFromInfoDictionary()->NSURL? {
+    public class func hostURLFromInfoDictionary()->NSURL? {
         
         guard let urlStr = NSBundle.mainBundle().infoDictionary?[ACAPIHostURLInfoKey] as? String else{
             return nil

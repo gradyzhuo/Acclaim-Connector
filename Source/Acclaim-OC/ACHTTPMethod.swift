@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Acclaim
 
 @objc
 public enum ACHTTPMethod : Int {
