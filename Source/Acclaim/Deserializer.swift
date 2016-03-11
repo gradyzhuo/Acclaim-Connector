@@ -10,7 +10,7 @@ import Foundation
 
 //FIXME: 未來可以加入錯誤的Key，要如何自已處理的方式。
 public protocol ResponseDeserializer {
-    typealias CallbackType
+    associatedtype CallbackType
 
     func deserialize(data:NSData?, connection: Acclaim.Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?)
     

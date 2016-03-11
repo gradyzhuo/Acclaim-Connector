@@ -22,7 +22,7 @@ public class Acclaim {
     
     public static var allowsCellularAccess: Bool = true
     
-    public static var defaultConnector: Connector = URLSession()
+    public static var defaultConnector: Connector = ACURLSession()
     
     internal static let deafultHostURLInfoKey:String = "ACAPIHostURLInfoKey"
     public static var hostURLInfoKey:String = Acclaim.deafultHostURLInfoKey
@@ -103,6 +103,8 @@ public class Acclaim {
         let caller = APICaller(API: api, params: params)
         caller.priority = priority
         caller.run()
+        
+        
         
         return caller
     }

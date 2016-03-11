@@ -80,17 +80,27 @@ public class APICaller : Caller {
     internal var blockInQueue:dispatch_block_t!
     internal var params:RequestParameters = []
     
+    internal var sessionTask:NSURLSessionTask?{
+        didSet{
+            sessionTask?.receivingProcessHandler = self.receivingProcessHandler
+            sessionTask?.sendingProcessHandler = self.sendingProcessHandler
+        }
+    }
     
     internal var responseAssistants:[_ResponseAssistantProtocol] = []
     internal var failedResponseAssistants:[_ResponseAssistantProtocol] = []
     
-    internal var connector: Connector
+    
+    internal var sendingProcessHandler: ProcessHandler?
+    internal var receivingProcessHandler: ProcessHandler?
+    
+    internal var connector: Connector!
     
     public convenience init(API api:API, params:[String: ParameterValueType], connector: Connector = Acclaim.defaultConnector) {
         self.init(API: api, params: RequestParameters(dictionary: params), connector: connector)
     }
     
-    public convenience init(API api:API, params:[RequestParameter], connector: Connector = Acclaim.defaultConnector) {
+    public convenience init(API api:API, params:[Parameter], connector: Connector = Acclaim.defaultConnector ) {
         self.init(API: api, params: RequestParameters(params: params), connector: connector)
     }
     
@@ -109,11 +119,11 @@ public class APICaller : Caller {
         
         self.cacheStoragePolicy = cacheStoragePolicy
         self.priority = priority
-
+        
         return self.run()
     }
     
-    internal func run(var connector connector: Connector){
+    internal func run(connector connector: Connector){
         
         let request = self.api.generateRequest(self.params)
         
@@ -122,8 +132,7 @@ public class APICaller : Caller {
         }
         
         // set
-        let dataTask = connector.sendRequest(request, taskType: self.api.requestTaskType) {[weak self] (data, response, error) in
-            
+        self.sessionTask = connector.sendRequest(self.api, params: self.params) {[weak self] (data, response, error) in
             guard let weakSelf = self else {
                 return
             }
@@ -134,8 +143,9 @@ public class APICaller : Caller {
                 //Remove caller after response completion.
                 Acclaim.removeRunningCaller(API: weakSelf.api)
             }
+            
         }
-
+        
         defer{
             self.running = true
         }
@@ -250,7 +260,6 @@ extension APICaller {
     }
     
     public func addImageResponseHandler(resumeData:NSData? = nil, handler:ImageResponseAssistant.Handler)->APICaller{
-        self.api.requestTaskType = .DownloadTask(resumeData: nil)
         self.addResponseAssistant(responseAssistant: ImageResponseAssistant(handler: handler))
         return self
     }
@@ -270,6 +279,19 @@ extension APICaller {
         return self
     }
 
+}
+
+//handle sending/receving processing
+extension APICaller {
+    public func setSendingProcessHandler(handler: ProcessHandler)->APICaller {
+        self.sendingProcessHandler = handler
+        return self
+    }
+    
+    public func setRecevingProcessHandler(handler: ProcessHandler)->APICaller {
+        self.receivingProcessHandler = handler
+        return self
+    }
 }
 
 //MARK: - RenewRule internal methods

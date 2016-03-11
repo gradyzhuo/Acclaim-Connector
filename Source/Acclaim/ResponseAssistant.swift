@@ -14,7 +14,7 @@ public protocol _ResponseAssistantProtocol{
 
 public protocol ResponseAssistantProtocol : _ResponseAssistantProtocol {
     
-    typealias DeserializerType : ResponseDeserializer
+    associatedtype DeserializerType : ResponseDeserializer
 
     var deserializer: DeserializerType { set get }
     func handle(callback:DeserializerType.CallbackType)

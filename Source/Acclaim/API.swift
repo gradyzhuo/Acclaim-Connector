@@ -9,9 +9,20 @@
 import Foundation
 
 public enum RequestTaskType {
-    case DataTask
-    case DownloadTask(resumeData: NSData?)
-    case UploadTask(data: NSData)
+    case DataTask(method: HTTPMethod)
+    case DownloadTask(method:HTTPMethod, resumeData: NSData?)
+    case UploadTask(method: HTTPMethod)
+    
+    internal var method: HTTPMethod {
+        switch self {
+        case .DataTask(let method):
+            return method
+        case .DownloadTask(let method, _):
+            return method
+        case .UploadTask(let method):
+            return method
+        }
+    }
 }
 
 public class  API : StringLiteralConvertible {
@@ -22,8 +33,12 @@ public class  API : StringLiteralConvertible {
     
     public internal(set) var apiURL:NSURL
     
-    public var method:HTTPMethod = .GET
-    public var requestTaskType: RequestTaskType = .DataTask
+    /**  Convenience property from RequestTaskType. (readonly) */
+    internal var method: HTTPMethod {
+        return self.requestTaskType.method
+    }
+    
+    public var requestTaskType: RequestTaskType = .DataTask(method: .GET)
     public var timeoutInterval:NSTimeInterval = 30
     
     public var cachePolicy:NSURLRequestCachePolicy = .UseProtocolCachePolicy
@@ -37,7 +52,7 @@ public class  API : StringLiteralConvertible {
     public internal(set) var request: NSURLRequest?
     internal var requestConfigurationHandler: (request: NSMutableURLRequest)->Void = { _ in }
     
-    public convenience init(api:String, host:NSURL! = Acclaim.hostURLFromInfoDictionary(), method:HTTPMethod = .GET) throws {
+    public convenience init(api:String, host:NSURL! = Acclaim.hostURLFromInfoDictionary(), taskType:RequestTaskType = .DataTask(method: .GET)) throws {
         
         guard let validHostURL = host else {
             
@@ -49,13 +64,13 @@ public class  API : StringLiteralConvertible {
         
         let apiURL = validHostURL.URLByAppendingPathComponent(api)
         
-        self.init(URL: apiURL, method: method)
+        self.init(URL: apiURL, taskType: taskType)
         
     }
 
-    public init(URL:NSURL, method:HTTPMethod = .GET){
+    public init(URL:NSURL, taskType:RequestTaskType = .DataTask(method: .GET)){
         self.apiURL = URL
-        self.method = method
+        self.requestTaskType = taskType
         
         for cookie in NSHTTPCookieStorage.sharedHTTPCookieStorage().cookies ?? [] where cookie.domain == URL.host!{
             self.addHTTPCookie(cookie)
@@ -136,18 +151,20 @@ extension API {
      - cookie: the instance of NSHTTPCookie.
      - returns: API.
      */
-    internal func generateRequest(params: RequestParameters)->NSURLRequest {
+    internal func generateRequest(params: RequestParameters? = nil)->NSURLRequest {
         
         let request:NSMutableURLRequest = NSMutableURLRequest(URL: self.apiURL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
         
-        let body = self.method.serializer.serialize(params)
-        
-        if let body = body where self.method == HTTPMethod.GET {
-            let components = NSURLComponents(URL: self.apiURL, resolvingAgainstBaseURL: false)
-            components?.query = String(data: body, encoding: NSUTF8StringEncoding)
-            request.URL = (components?.URL)!
-        }else{
-            request.HTTPBody = body
+        if let params = params {
+            let body = self.method.serializer.serialize(params)
+            
+            if let body = body where self.method == HTTPMethod.GET {
+                let components = NSURLComponents(URL: self.apiURL, resolvingAgainstBaseURL: false)
+                components?.query = String(data: body, encoding: NSUTF8StringEncoding)
+                request.URL = (components?.URL)!
+            }else{
+                request.HTTPBody = body
+            }
         }
         
         request.HTTPMethod = self.method.rawValue

@@ -16,7 +16,7 @@ public class MappingModel {
 }
 
 public protocol ModelDeserializer {
-    typealias ModelType:MappingModel
+    associatedtype ModelType:MappingModel
     static var identifier: String { get }
     
     func deserialize(data:AnyObject) -> (ModelType?, ErrorType?)
