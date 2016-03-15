@@ -8,22 +8,69 @@
 
 import Foundation
 
-public enum RequestTaskType {
-    case DataTask(method: HTTPMethod)
-    case DownloadTask(method:HTTPMethod, resumeData: NSData?)
-    case UploadTask(method: HTTPMethod)
+public struct RequestTaskType {
+    public var method: HTTPMethod
+    internal var resumeData: NSData?
+    internal var identifier: String
     
-    internal var method: HTTPMethod {
-        switch self {
-        case .DataTask(let method):
-            return method
-        case .DownloadTask(let method, _):
-            return method
-        case .UploadTask(let method):
-            return method
-        }
+    internal init(identifier: String, method: HTTPMethod, resumeData: NSData? = nil){
+        self.method = method
+        self.resumeData = resumeData
+        self.identifier = identifier
     }
+    
+    public static func DataTask(method method: HTTPMethod = .GET)->RequestTaskType{
+        return RequestTaskType(identifier: "DataTask", method: method)
+    }
+    
+    public static func DownloadTask(method method: HTTPMethod = .GET, resumeData: NSData? = nil)->RequestTaskType{
+        return RequestTaskType(identifier: "DownloadTask", method: method, resumeData: resumeData)
+    }
+    
+    public static func UploadTask(method method: HTTPMethod = .POSTWith(serializer: SerializerType.MultipartForm))->RequestTaskType {
+        return RequestTaskType(identifier: "UploadTask", method: method)
+    }
+    
 }
+
+
+extension RequestTaskType : Equatable {
+    
+    internal static var DataTask: RequestTaskType = RequestTaskType.DataTask()
+    internal static var DownloadTask: RequestTaskType = RequestTaskType.DownloadTask()
+    internal static var UploadTask : RequestTaskType = RequestTaskType.UploadTask()
+    
+}
+
+public func ==(lhs: RequestTaskType, rhs: RequestTaskType)->Bool{
+    return lhs.identifier == rhs.identifier
+}
+
+//public enum RequestTaskType {
+//    case DataTask(method: HTTPMethod)
+//    case DownloadTask(method:HTTPMethod, resumeData: NSData?)
+//    case UploadTask(method: HTTPMethod)
+//    
+//    internal var method:HTTPMethod  {
+//        switch self {
+//        case .DataTask(let method):
+//            return method
+//        case .DownloadTask(let method, _):
+//            return method
+//        case .UploadTask(let method):
+////            if method == .GET {
+////                ACDebugLog("The method of UploadTask can't be GET, it is be POST instead.")
+////                method = .POST
+////            }
+////            
+////            method = method.HTTPMethodByReplaceSerializer(SerializerType.MultipartForm)
+////            
+////            self = RequestTaskType.UploadTask(method: method)
+//    
+//            return method
+//        }
+//    }
+//}
 
 public class  API : StringLiteralConvertible {
     
@@ -34,7 +81,7 @@ public class  API : StringLiteralConvertible {
     public internal(set) var apiURL:NSURL
     
     /**  Convenience property from RequestTaskType. (readonly) */
-    internal var method: HTTPMethod {
+    public var method: HTTPMethod {
         return self.requestTaskType.method
     }
     
@@ -45,8 +92,6 @@ public class  API : StringLiteralConvertible {
     
     public var HTTPHeaderFields:[String: String] = [:]
     public internal(set) var cookies:[NSHTTPCookie] = []
-    
-    internal var identifier: String = String(NSDate().timeIntervalSince1970)
     
     /** the request will be generated after getRequest() is called. default value is nil. (readonly) */
     public internal(set) var request: NSURLRequest?
@@ -151,20 +196,18 @@ extension API {
      - cookie: the instance of NSHTTPCookie.
      - returns: API.
      */
-    internal func generateRequest(params: RequestParameters? = nil)->NSURLRequest {
+    internal func generateRequest(params: RequestParameters = [])->NSURLRequest {
         
         let request:NSMutableURLRequest = NSMutableURLRequest(URL: self.apiURL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
         
-        if let params = params {
-            let body = self.method.serializer.serialize(params)
-            
-            if let body = body where self.method == HTTPMethod.GET {
-                let components = NSURLComponents(URL: self.apiURL, resolvingAgainstBaseURL: false)
-                components?.query = String(data: body, encoding: NSUTF8StringEncoding)
-                request.URL = (components?.URL)!
-            }else{
-                request.HTTPBody = body
-            }
+        let body = self.method.serializer.serialize(params)
+        
+        if let body = body where self.method == HTTPMethod.GET {
+            let components = NSURLComponents(URL: self.apiURL, resolvingAgainstBaseURL: false)
+            components?.query = String(data: body, encoding: NSUTF8StringEncoding)
+            request.URL = (components?.URL)!
+        }else{
+            request.HTTPBody = body
         }
         
         request.HTTPMethod = self.method.rawValue
@@ -191,13 +234,12 @@ extension API {
     
 }
 
-
-extension API : Hashable {
-    public var hashValue: Int {
-        return self.identifier.hashValue
-    }
-}
-
-public func ==(lhs:API, rhs:API)->Bool{
-    return lhs.hashValue == rhs.hashValue
-}
+//
+//extension API : Hashable {
+//    public var hashValue: Int {
+//        return self.identifier.hashValue
+//    }
+//}
+//public func ==(lhs:API, rhs:API)->Bool{
+//    return lhs.hashValue == rhs.hashValue
+//}

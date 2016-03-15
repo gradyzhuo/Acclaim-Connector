@@ -17,7 +17,11 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
-    ACAPICaller *caller = [[ACAPICaller alloc] initWithAPI:[ACAPI APIWithPath:@"" baseHost:[NSURL URLWithString:@"http://www.google.com.tw"] HTTPMethod:ACHTTPMethodGET] params:@{@"fling_hash":@"dQAXWbcv"}];
+    
+    ACRequestParameters *params = [[ACRequestParameters alloc] init];
+    [params addFormParamStringValue:@"dQAXWbcv" forKey:@"fling_hash"];
+    
+    ACRestfulAPI *caller = [ACRestfulAPI restfulAPICallerWithAPI:[ACAPI APIWithPath:@"fling" HTTPMethod:ACHTTPMethodGET] params:params];
     
     [caller addJSONResponseHandler:^(id _Nullable JSONObject, NSURLResponse * _Nullable response) {
         NSLog(@"JSONOBject:%@", JSONObject);
@@ -31,7 +35,20 @@
         NSLog(@"failed: %@, error:%@",failedData, error);
     }];
     
+    [caller setRecevingProcessHandler:^(int64_t bytes, int64_t totalBytes, int64_t totalBytesExpected) {
+        NSLog(@"%ld, %ld, %ld", bytes, totalBytes, totalBytesExpected);
+    }];
+    
     [caller run:NSURLCacheStorageAllowed priority:ACQueuePriorityDefault];
+    
+    NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:@""];
+    NSURLSession *session = [NSURLSession sharedSession];
+    NSURLSessionDataTask *dataTask = [session dataTaskWithURL:[NSURL URLWithString:@"http://www.google.com.tw"] completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+    }];
+    
+    
+    [dataTask resume];
+    [dataTask cancel];
     
     return YES;
 }

@@ -6,11 +6,14 @@
 //  Copyright (c) 2015 Grady Zhuo. All rights reserved.
 //
 
-internal protocol Caller{
-    
+public protocol Caller{
+    init(API api: API, params: RequestParameters, connector: Connector)
+//    func addFailedResponseHandler(statusCode statusCode:Int?, handler:HTTPResponseAssistant.Handler)->Self
 }
 
 public class APICaller : Caller {
+    
+    internal var identifier: String = String(NSDate().timeIntervalSince1970)
     
     /// A enum describes should Response Cached to a storage forever.
     public enum CacheStoragePolicy{
@@ -80,19 +83,16 @@ public class APICaller : Caller {
     internal var blockInQueue:dispatch_block_t!
     internal var params:RequestParameters = []
     
-    internal var sessionTask:NSURLSessionTask?{
-        didSet{
-            sessionTask?.receivingProcessHandler = self.receivingProcessHandler
-            sessionTask?.sendingProcessHandler = self.sendingProcessHandler
-        }
-    }
+    internal var sessionTask:NSURLSessionTask?
     
     internal var responseAssistants:[_ResponseAssistantProtocol] = []
     internal var failedResponseAssistants:[_ResponseAssistantProtocol] = []
-    
+    internal var cancelledAssistant: _ResponseAssistantProtocol?
     
     internal var sendingProcessHandler: ProcessHandler?
     internal var receivingProcessHandler: ProcessHandler?
+    
+    internal var cancelledResumeData:NSData?
     
     internal var connector: Connector!
     
@@ -104,7 +104,7 @@ public class APICaller : Caller {
         self.init(API: api, params: RequestParameters(params: params), connector: connector)
     }
     
-    internal init(API api:API, params:RequestParameters, connector: Connector = Acclaim.defaultConnector) {
+    public required init(API api:API, params:RequestParameters = [], connector: Connector = Acclaim.defaultConnector) {
         self.api = api
         self.params = params
         self.connector = connector
@@ -125,26 +125,22 @@ public class APICaller : Caller {
     
     internal func run(connector connector: Connector){
         
-        let request = self.api.generateRequest(self.params)
-        
         guard !self.running else {
             return
         }
         
         // set
-        self.sessionTask = connector.sendRequest(self.api, params: self.params) {[weak self] (data, response, error) in
-            guard let weakSelf = self else {
-                return
-            }
+        self.sessionTask = connector.request(API: self.api, params: self.params) {[unowned self] (data, response, error) in
             
-            weakSelf.handleResponses(data: data, connection: (request, response, false), error: error)
+            let request:NSURLRequest! = self.sessionTask?.currentRequest
             
-            defer {
-                //Remove caller after response completion.
-                Acclaim.removeRunningCaller(API: weakSelf.api)
-            }
+            self.handleResponses(data: data, connection: (request, response, false), error: error)
+            
+            //remove
+            Acclaim.removeRunningCaller(APICaller: self)
             
         }
+        self.sessionTask?.apiCaller = self
         
         defer{
             self.running = true
@@ -165,6 +161,7 @@ public class APICaller : Caller {
         self.blockInQueue = block
         dispatch_barrier_async(priority.queue, block)
         
+        //add
         Acclaim.addRunningCaller(self)
         
     }
@@ -172,19 +169,35 @@ public class APICaller : Caller {
     public func cancel(){
         
         guard self.running else {
-            ACDebugLog("Caller is not running. Please perform call() to run your api.")
             return
         }
         
-        guard !self.cancelled else {
-            return
+        //透過非同步，插入cancel指令到running之後
+        dispatch_async(dispatch_get_main_queue()) {
+            
+            guard self.running else {
+                ACDebugLog("Caller is not running. Please perform `func call()` to run your api.")
+                return
+            }
+            
+            guard !self.cancelled else {
+                return
+            }
+            
+            if let downloadTask = self.sessionTask as? NSURLSessionDownloadTask {
+                downloadTask.cancelByProducingResumeData{[unowned self] data in
+                    self.cancelledResumeData = data
+                }
+            }else{
+                self.sessionTask?.cancel()
+            }
+            
+            
+            dispatch_block_cancel(self.blockInQueue)
+            
+            ACDebugLog("Caller is cancelled.")
         }
         
-        self.running = false
-        
-        dispatch_block_cancel(self.blockInQueue)
-        Acclaim.removeRunningCaller(API: self.api)
-        ACDebugLog("Caller is cancelled.")
     }
     
     deinit{
@@ -205,6 +218,12 @@ extension APICaller {
     internal func handleResponses(fromCached cached: Bool = false)->(data:NSData?, connection: Acclaim.Connection, error:ErrorType?)->Void{
         
         return {[unowned self] (data:NSData?, connection: Acclaim.Connection, error:ErrorType?)->Void in
+            
+            guard !self.cancelled else {
+                //檢查cancel的訊息，並在這裡回傳resumedData
+                self.cancelledAssistant?.handle(self.cancelledResumeData, connection: connection, error: nil)
+                return
+            }
             
             guard error == nil else {
                 //remove cached response data by renewRule : RenewByRetry
@@ -248,8 +267,8 @@ extension APICaller {
 
 // convenience response handler function
 extension APICaller {
-    
-    public func addFailedResponseHandler(statusCode statusCode:Int? = nil, handler:HTTPResponseAssistant.Handler)->APICaller{
+
+    public func addFailedResponseHandler(statusCode statusCode:Int? = nil, handler:HTTPResponseAssistant.Handler)->Self{
         self.failedResponseAssistants.append(HTTPResponseAssistant(statusCode: statusCode, handler: handler))
         return self
     }
@@ -258,37 +277,23 @@ extension APICaller {
         self.addResponseAssistant(responseAssistant: OriginalDataResponseAssistant(handler: handler))
         return self
     }
-    
-    public func addImageResponseHandler(resumeData:NSData? = nil, handler:ImageResponseAssistant.Handler)->APICaller{
-        self.addResponseAssistant(responseAssistant: ImageResponseAssistant(handler: handler))
-        return self
-    }
-    
-    public func addJSONResponseHandler(keyPath keyPath:String, option:NSJSONReadingOptions = .AllowFragments, handler:JSONResponseAssistant.Handler)->APICaller{
-        self.addResponseAssistant(responseAssistant: JSONResponseAssistant(forKeyPath: keyPath, option: option, handler: handler))
-        return self
-    }
-    
-    public func addJSONResponseHandler(option:NSJSONReadingOptions = .AllowFragments, handler:JSONResponseAssistant.Handler)->APICaller{
-        self.addResponseAssistant(responseAssistant: JSONResponseAssistant(option: option, handler: handler))
-        return self
-    }
-    
-    public func addTextResponseHandler(encoding: NSStringEncoding = NSUTF8StringEncoding, handler:TextResponseAssistant.Handler)->APICaller{
-        self.addResponseAssistant(responseAssistant: TextResponseAssistant(encoding: encoding, handler: handler))
-        return self
-    }
 
 }
 
 //handle sending/receving processing
 extension APICaller {
-    public func setSendingProcessHandler(handler: ProcessHandler)->APICaller {
+    
+    public func setCancelledResponseHandler(handler:ResumeDataResponseAssistant.Handler)->Self{
+        self.cancelledAssistant = ResumeDataResponseAssistant(handler: handler)
+        return self
+    }
+    
+    public func setSendingProcessHandler(handler: ProcessHandler)->Self {
         self.sendingProcessHandler = handler
         return self
     }
     
-    public func setRecevingProcessHandler(handler: ProcessHandler)->APICaller {
+    public func setRecevingProcessHandler(handler: ProcessHandler)->Self {
         self.receivingProcessHandler = handler
         return self
     }

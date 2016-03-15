@@ -23,6 +23,7 @@ public enum ACHTTPMethod : Int {
 public enum ACSerializerType : Int {
     case QueryString
     case JSON
+    case MultipartForm
 }
 
 internal func ACMethodMake(method: ACHTTPMethod, serializerType: ACSerializerType?)->HTTPMethod{
@@ -39,11 +40,11 @@ internal func ACMethodMake(method: ACHTTPMethod, serializerType: ACSerializerTyp
         case .GET:
             return HTTPMethod.GET
         case .POST:
-            return HTTPMethod.POSTWith(serialize: type)
+            return HTTPMethod.POSTWith(serializer: type)
         case .PUT:
-            return HTTPMethod.PUTWith(serialize: type)
+            return HTTPMethod.PUTWith(serializer: type)
         case .DELETE:
-            return HTTPMethod.DELETEWith(serialize: type)
+            return HTTPMethod.DELETEWith(serializer: type)
         }
     }
     

@@ -159,16 +159,6 @@ extension RequestParameters : DictionaryLiteralConvertible {
         
         elements.forEach {
             self.addParam(FormParameter(key: $0.0, value: $0.1))
-//            if let value = $0.1 as? ParameterValueType {
-//                self.addParam(RequestParameter(key: $0.0, value: value))
-//            }else if let arrayValue = $0.1 as? [ParameterValueType]{
-//                let value:[ParameterValueType] = arrayValue.map{ $0  }
-//                self.addParam(RequestParameter(key: $0.0, value: value))
-//            }else if let dictionaryValue = $0.1 as? [String:ParameterValueType]{
-//                self.addParam(RequestParameter(key: $0.0, value: dictionaryValue))
-//            }else {
-//                ACDebugLog("The type of \($0.1) by key:\($0.0) is not supported.")
-//            }
         }
         
     }

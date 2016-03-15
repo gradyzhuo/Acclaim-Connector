@@ -8,22 +8,25 @@
 
 /* Begin PBXBuildFile section */
 		7914ADCE1C3BCFF30089FEF0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7914ADCD1C3BCFF30089FEF0 /* AppDelegate.swift */; };
-		7914ADD01C3BCFF30089FEF0 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7914ADCF1C3BCFF30089FEF0 /* ViewController.swift */; };
 		7914ADD31C3BCFF30089FEF0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7914ADD11C3BCFF30089FEF0 /* Main.storyboard */; };
 		7914ADD51C3BCFF30089FEF0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7914ADD41C3BCFF30089FEF0 /* Assets.xcassets */; };
 		7914ADD81C3BCFF30089FEF0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7914ADD61C3BCFF30089FEF0 /* LaunchScreen.storyboard */; };
-		793C54681C685B0600CC2432 /* Acclaim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 793C54671C685B0600CC2432 /* Acclaim.framework */; };
-		793C54691C685B0600CC2432 /* Acclaim.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 793C54671C685B0600CC2432 /* Acclaim.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7990F8B61C93353E00590679 /* DataTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8B51C93353E00590679 /* DataTaskViewController.swift */; };
+		7990F8B81C93354A00590679 /* DownloadTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8B71C93354A00590679 /* DownloadTaskViewController.swift */; };
+		7990F8BA1C93355300590679 /* UploadTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8B91C93355300590679 /* UploadTaskViewController.swift */; };
+		7990F8C01C93F38D00590679 /* ConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8BF1C93F38D00590679 /* ConnectionViewController.swift */; };
+		79C415FA1C972725008B3496 /* Acclaim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79C415F91C972725008B3496 /* Acclaim.framework */; };
+		79C415FB1C972725008B3496 /* Acclaim.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 79C415F91C972725008B3496 /* Acclaim.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		79F008DC1C482E1000A8CBB7 /* Embed Frameworks */ = {
+		79C415FC1C972726008B3496 /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				793C54691C685B0600CC2432 /* Acclaim.framework in Embed Frameworks */,
+				79C415FB1C972725008B3496 /* Acclaim.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -33,12 +36,16 @@
 /* Begin PBXFileReference section */
 		7914ADCA1C3BCFF30089FEF0 /* AcclaimDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AcclaimDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7914ADCD1C3BCFF30089FEF0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		7914ADCF1C3BCFF30089FEF0 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		7914ADD21C3BCFF30089FEF0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		7914ADD41C3BCFF30089FEF0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7914ADD71C3BCFF30089FEF0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7914ADD91C3BCFF30089FEF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		793C54671C685B0600CC2432 /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Acclaim.framework; path = "/Users/gradyzhuo/Library/Developer/Xcode/DerivedData/Acclaim-cvyirjorhotobufqrvisqsslkbcy/Build/Products/Debug-iphonesimulator/Acclaim.framework"; sourceTree = "<absolute>"; };
+		7990F8B51C93353E00590679 /* DataTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataTaskViewController.swift; sourceTree = "<group>"; };
+		7990F8B71C93354A00590679 /* DownloadTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadTaskViewController.swift; sourceTree = "<group>"; };
+		7990F8B91C93355300590679 /* UploadTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadTaskViewController.swift; sourceTree = "<group>"; };
+		7990F8BB1C93E34600590679 /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Acclaim.framework; path = "/Users/gradyzhuo/Library/Developer/Xcode/DerivedData/Acclaim-cvyirjorhotobufqrvisqsslkbcy/Build/Products/Release-iphonesimulator/Acclaim.framework"; sourceTree = "<absolute>"; };
+		7990F8BF1C93F38D00590679 /* ConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionViewController.swift; sourceTree = "<group>"; };
+		79C415F91C972725008B3496 /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Acclaim.framework; path = "/Users/gradyzhuo/Library/Developer/Xcode/DerivedData/Acclaim-cvyirjorhotobufqrvisqsslkbcy/Build/Products/Debug-iphonesimulator/Acclaim.framework"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,7 +53,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				793C54681C685B0600CC2432 /* Acclaim.framework in Frameworks */,
+				79C415FA1C972725008B3496 /* Acclaim.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -56,7 +63,8 @@
 		7914ADC11C3BCFF30089FEF0 = {
 			isa = PBXGroup;
 			children = (
-				793C54671C685B0600CC2432 /* Acclaim.framework */,
+				79C415F91C972725008B3496 /* Acclaim.framework */,
+				7990F8BB1C93E34600590679 /* Acclaim.framework */,
 				7914ADCC1C3BCFF30089FEF0 /* AcclaimDemo */,
 				7914ADCB1C3BCFF30089FEF0 /* Products */,
 			);
@@ -74,11 +82,14 @@
 			isa = PBXGroup;
 			children = (
 				7914ADCD1C3BCFF30089FEF0 /* AppDelegate.swift */,
-				7914ADCF1C3BCFF30089FEF0 /* ViewController.swift */,
 				7914ADD11C3BCFF30089FEF0 /* Main.storyboard */,
 				7914ADD41C3BCFF30089FEF0 /* Assets.xcassets */,
 				7914ADD61C3BCFF30089FEF0 /* LaunchScreen.storyboard */,
 				7914ADD91C3BCFF30089FEF0 /* Info.plist */,
+				7990F8B51C93353E00590679 /* DataTaskViewController.swift */,
+				7990F8B71C93354A00590679 /* DownloadTaskViewController.swift */,
+				7990F8B91C93355300590679 /* UploadTaskViewController.swift */,
+				7990F8BF1C93F38D00590679 /* ConnectionViewController.swift */,
 			);
 			path = AcclaimDemo;
 			sourceTree = "<group>";
@@ -93,7 +104,7 @@
 				7914ADC61C3BCFF30089FEF0 /* Sources */,
 				7914ADC71C3BCFF30089FEF0 /* Frameworks */,
 				7914ADC81C3BCFF30089FEF0 /* Resources */,
-				79F008DC1C482E1000A8CBB7 /* Embed Frameworks */,
+				79C415FC1C972726008B3496 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -156,8 +167,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7914ADD01C3BCFF30089FEF0 /* ViewController.swift in Sources */,
 				7914ADCE1C3BCFF30089FEF0 /* AppDelegate.swift in Sources */,
+				7990F8B81C93354A00590679 /* DownloadTaskViewController.swift in Sources */,
+				7990F8C01C93F38D00590679 /* ConnectionViewController.swift in Sources */,
+				7990F8B61C93353E00590679 /* DataTaskViewController.swift in Sources */,
+				7990F8BA1C93355300590679 /* UploadTaskViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

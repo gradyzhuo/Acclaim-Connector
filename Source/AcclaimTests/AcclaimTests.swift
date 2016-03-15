@@ -8,7 +8,11 @@
 
 import UIKit
 import XCTest
+#if DEBUG
 @testable import Acclaim
+#else
+import Acclaim
+#endif
 
 class AcclaimTests: XCTestCase {
     

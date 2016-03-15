@@ -9,7 +9,6 @@
 import Foundation
 import Acclaim
 
-
 public class ACAPICaller : NSObject {
     var apiCaller: APICaller!
     
@@ -55,9 +54,14 @@ public class ACAPICaller : NSObject {
         self.apiCaller.cancel()
     }
     
-    public init(API api:ACAPI, params:[String: String]) {
+    public init(API api:ACAPI, params:ACRequestParameters) {
         super.init()
-        self.apiCaller = APICaller(API: api.api, params: params, connector: Acclaim.defaultConnector)
+        
+        self.setup(API: api, params: params)
+    }
+    
+    internal func setup(API api:ACAPI, params:ACRequestParameters){
+        self.apiCaller = APICaller(API: api.api, params: params.requestParameters(), connector: Acclaim.defaultConnector)
     }
     
 }
@@ -69,27 +73,7 @@ extension ACAPICaller {
         }
     }
     
-    public func addImageResponseHandler(handler: @convention(block)(image: UIImage, response: NSURLResponse?)->Void){
-        
-        self.apiCaller.addImageResponseHandler { (image, connection) in
-            handler(image: image, response: connection.response)
-        }
-        
-    }
     
-    public func addJSONResponseHandler(handler:@convention(block)(JSONObject: AnyObject?, response: NSURLResponse?)->Void){
-        
-        self.apiCaller.addJSONResponseHandler { (JSONObject, connection) in
-            handler(JSONObject: JSONObject, response: connection.response)
-        }
-        
-    }
-    
-    public func addTextResponseHandler(handler:@convention(block)(text: String, response: NSURLResponse?)->Void){
-        self.apiCaller.addTextResponseHandler { (text, connection) in
-            handler(text: text, response: connection.response)
-        }
-    }
     
     public func setFailedResponseHandler(handler:@convention(block)(data: NSData?, response: NSHTTPURLResponse?, error: NSError?)->Void){
         self.apiCaller.addFailedResponseHandler { (originalData, connection, error) in
@@ -97,4 +81,75 @@ extension ACAPICaller {
         }
     }
     
+    public func setCancelledResponseHandler(handler:@convention(block)(resumedata: NSData?, response: NSURLResponse?, error: NSError?)->Void){
+        
+        self.apiCaller.setCancelledResponseHandler { (result) in
+            handler(resumedata: result.resumeData, response: result.connection.response, error: nil)
+        }
+    }
+    
+    public func setSendingProcessHandler(handler: @convention(block)(bytes: Int64, totalBytes: Int64, totalBytesExpected: Int64)->Void) {
+        self.apiCaller.setSendingProcessHandler { (bytes, totalBytes, totalBytesExpected) in
+            handler(bytes: bytes, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
+        }
+    }
+    
+    public func setRecevingProcessHandler(handler: @convention(block)(bytes: Int64, totalBytes: Int64, totalBytesExpected: Int64)->Void) {
+        self.apiCaller.setRecevingProcessHandler { (bytes, totalBytes, totalBytesExpected) in
+            handler(bytes: bytes, totalBytes: totalBytes, totalBytesExpected: totalBytesExpected)
+        }
+    }
+
+    
+}
+
+public class ACDownloader : ACAPICaller {
+    
+    var downloader: Downloader!
+    
+    public static func downloadCallerWith(API api:ACAPI, params: ACRequestParameters)->ACDownloader{
+        return ACDownloader(API: api, params: params)
+    }
+    
+    override func setup(API api: ACAPI, params: ACRequestParameters) {
+        self.downloader = Downloader(API: api.api, params: params.requestParameters(), connector: Acclaim.defaultConnector)
+        self.apiCaller = self.downloader
+    }
+    
+    public func addImageResponseHandler(handler: @convention(block)(image: UIImage, response: NSURLResponse?)->Void){
+        
+        self.downloader.addImageResponseHandler { (image, connection) in
+            handler(image: image, response: connection.response)
+        }
+        
+    }
+    
+}
+
+public class ACRestfulAPI : ACAPICaller {
+    
+    var restfulAPI: RestfulAPI!
+    
+    public static func restfulAPICallerWith(API api:ACAPI, params: ACRequestParameters)->ACRestfulAPI{
+        return ACRestfulAPI(API: api, params: params)
+    }
+    
+    override func setup(API api: ACAPI, params: ACRequestParameters) {
+        self.restfulAPI = RestfulAPI(API: api.api, params: params.requestParameters())
+        self.apiCaller = self.restfulAPI
+    }
+    
+    public func addJSONResponseHandler(handler:@convention(block)(JSONObject: AnyObject?, response: NSURLResponse?)->Void){
+        
+        self.restfulAPI.addJSONResponseHandler { (JSONObject, connection) in
+            handler(JSONObject: JSONObject, response: connection.response)
+        }
+        
+    }
+    
+    public func addTextResponseHandler(handler:@convention(block)(text: String, response: NSURLResponse?)->Void){
+        self.restfulAPI.addTextResponseHandler { (text, connection) in
+            handler(text: text, response: connection.response)
+        }
+    }
 }

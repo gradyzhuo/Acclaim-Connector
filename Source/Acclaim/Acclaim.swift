@@ -8,8 +8,8 @@
 
 import Foundation
 
-//public typealias HTTPMethod = Method
-//public typealias Parameter = Parameter
+//FIXME: 需要加入 ParameterTable，就以指定什麼Key是必填，什麼Key是選填
+//FIXME: 可能還可以加入 ResponseTable 去驗證回傳的JSON是否正確
 
 public let ACAPIHostURLInfoKey:String = Acclaim.hostURLInfoKey
 
@@ -31,24 +31,18 @@ public class Acclaim {
         self.hostURLInfoKey = self.deafultHostURLInfoKey
     }
     
-    internal static var running:[API:APICaller] = [:]
+    internal static var running:[String:APICaller] = [:]
     
-    internal class func addRunningCaller(caller: APICaller){
-        self.running[caller.api] = caller
+    internal static func addRunningCaller(caller: APICaller){
+        self.running[caller.identifier] = caller
     }
     
-    internal class func removeRunningCaller(API api:API){
-        weak var caller = self.running[api]
-        self.removeRunningCaller(APICaller: caller)
-    }
+    internal static func removeRunningCaller(APICaller caller: APICaller?){
 
-    
-    internal class func removeRunningCaller(APICaller caller: APICaller?){
-
-        if let api = caller?.api where self.running.keys.contains(api){
-            self.running.removeValueForKey(api)
-        }
         
+        if let caller = caller  where self.running.keys.contains(caller.identifier){
+            self.running.removeValueForKey(caller.identifier)
+        }
         
         caller?.blockInQueue = nil
         caller?.running = false
@@ -67,15 +61,15 @@ public class Acclaim {
         return NSURLCache.sharedURLCache()
     }
     
-    internal class func cachedResponse(API api: API, parameters: RequestParameters) -> NSCachedURLResponse?{
+    internal static func cachedResponse(API api: API, parameters: RequestParameters) -> NSCachedURLResponse?{
         return Acclaim.sharedURLCache.cachedResponseForRequest(api.generateRequest(parameters))
     }
     
-    internal class func cachedResponse(request request: NSURLRequest) -> NSCachedURLResponse?{
+    internal static func cachedResponse(request request: NSURLRequest) -> NSCachedURLResponse?{
         return Acclaim.sharedURLCache.cachedResponseForRequest(request)
     }
 
-    internal class func storeCachedResponse(cachedResponse: NSCachedURLResponse, forRequest request: NSURLRequest){
+    internal static func storeCachedResponse(cachedResponse: NSCachedURLResponse, forRequest request: NSURLRequest){
         Acclaim.sharedURLCache.storeCachedResponse(cachedResponse, forRequest: request)
     }
     
@@ -88,32 +82,20 @@ public class Acclaim {
     }
     
     
-    internal class func removeCachedResponse(request: NSURLRequest){
+    internal static func removeCachedResponse(request: NSURLRequest){
         return Acclaim.sharedURLCache.removeCachedResponseForRequest(request)
     }
     
-    internal class func removeCachedResponse(API api: API, parameters: RequestParameters){
+    internal static func removeCachedResponse(API api: API, parameters: RequestParameters){
         
         return Acclaim.removeCachedResponse(api.generateRequest(parameters))
-    }
-    
-    ///
-    public class func runAPI(API api:API, params:RequestParameters = [:], priority: QueuePriority = .Default)->APICaller{
-
-        let caller = APICaller(API: api, params: params)
-        caller.priority = priority
-        caller.run()
-        
-        
-        
-        return caller
     }
     
 }
 
 extension Acclaim {
     
-    public class func hostURLFromInfoDictionary()->NSURL? {
+    public static func hostURLFromInfoDictionary()->NSURL? {
         
         guard let urlStr = NSBundle.mainBundle().infoDictionary?[ACAPIHostURLInfoKey] as? String else{
             return nil

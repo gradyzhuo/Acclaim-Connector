@@ -22,33 +22,44 @@ public class Handler<Type> {
 
 private let kRecevingProcessHandler = unsafeAddressOf("kProcessHandler")
 private let kSendingProcessHandler = unsafeAddressOf("kProcessHandler")
+private let kAPICaller = unsafeAddressOf("kAPICaller")
 private let kCompletionHandler = unsafeAddressOf("kCompletionHandler")
 private let kData = unsafeAddressOf("kData")
 
 extension NSURLSessionTask {
     typealias ResponseHandlerType = Handler<ResponseHandler>
     
-    internal var sendingProcessHandler: ProcessHandler? {
+    internal var apiCaller: APICaller? {
         set{
-            let handler = Handler<ProcessHandler>(newValue)
-            objc_setAssociatedObject(self, kSendingProcessHandler, handler, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+            objc_setAssociatedObject(self, kAPICaller, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get{
-            let handler = objc_getAssociatedObject(self, kSendingProcessHandler) as? Handler<ProcessHandler>
-            return handler?.handler
+            let apiCaller = objc_getAssociatedObject(self, kAPICaller) as? APICaller
+            return apiCaller
         }
     }
     
-    internal var receivingProcessHandler: ProcessHandler? {
-        set{
-            let handler = Handler<ProcessHandler>(newValue)
-            objc_setAssociatedObject(self, kRecevingProcessHandler, handler, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
-        }
-        get{
-            let handler = objc_getAssociatedObject(self, kRecevingProcessHandler) as? Handler<ProcessHandler>
-            return handler?.handler
-        }
-    }
+//    internal var sendingProcessHandler: ProcessHandler? {
+//        set{
+//            let handler = Handler<ProcessHandler>(newValue)
+//            objc_setAssociatedObject(self, kSendingProcessHandler, handler, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+//        }
+//        get{
+//            let handler = objc_getAssociatedObject(self, kSendingProcessHandler) as? Handler<ProcessHandler>
+//            return handler?.handler
+//        }
+//    }
+//    
+//    internal var receivingProcessHandler: ProcessHandler? {
+//        set{
+//            let handler = Handler<ProcessHandler>(newValue)
+//            objc_setAssociatedObject(self, kRecevingProcessHandler, handler, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+//        }
+//        get{
+//            let handler = objc_getAssociatedObject(self, kRecevingProcessHandler) as? Handler<ProcessHandler>
+//            return handler?.handler
+//        }
+//    }
     
     internal var completionHandler:ResponseHandlerType.HandlerType? {
         set{
@@ -81,6 +92,20 @@ extension NSURLSessionTask {
 }
 
 
+////MARK: -
+//extension NSURLSessionTask {
+//    @objc(_setSendingProcessHandler:)
+//    public func setSendingProcessHandler(handler: ProcessHandler)->NSURLSessionTask? {
+//        self.sendingProcessHandler = handler
+//        return self
+//    }
+//    
+//    @objc(_setRecevingProcessHandler:)
+//    public func setRecevingProcessHandler(handler: ProcessHandler)->NSURLSessionTask? {
+//        self.receivingProcessHandler = handler
+//        return self
+//    }
+//}
 
 
 public protocol Connector : class {
@@ -98,10 +123,10 @@ extension Connector {
         task.resume()
     }
     
-    internal func sendRequest(api: API, params: RequestParameters, completionHandler handler: ResponseHandler) -> NSURLSessionTask? {
+    public func request(API api: API, params: RequestParameters = [], completionHandler handler: ResponseHandler) -> NSURLSessionTask? {
         
         let task:NSURLSessionTask = self.generateTask(api, params: params, completionHandler: handler)
-
+        
         defer{
             self.handle(task)
         }
@@ -109,8 +134,8 @@ extension Connector {
         return task
     }
 
-}
 
+}
 
 public class ACURLSession : NSObject, _Connector {
     
@@ -133,36 +158,39 @@ public class ACURLSession : NSObject, _Connector {
         self.session = NSURLSession(configuration: configuration, delegate: delegate, delegateQueue: self.delegateQueue)
     }
     
-    public func generateTask(api: API, params: RequestParameters, completionHandler handler: ResponseHandler) -> NSURLSessionTask {
+    public func generateTask(api: API, params: RequestParameters = [], completionHandler handler: ResponseHandler) -> NSURLSessionTask {
         
         let taskType = api.requestTaskType
         
         let task:NSURLSessionTask
-        if case let .DownloadTask(_, resumeData) = taskType {
+        
+        if taskType == .DownloadTask {
             
             let request = api.generateRequest(params)
             
-            if let resumeData = resumeData {
+            if let resumeData = taskType.resumeData {
                 task = self.session.downloadTaskWithResumeData(resumeData)
             }else{
                 task = self.session.downloadTaskWithRequest(request)
             }
+        }else if taskType == .UploadTask {
             
-        }else if case let .UploadTask = taskType {
+            let mutableRequest:NSMutableURLRequest! = api.generateRequest().mutableCopy() as! NSMutableURLRequest
+            let uploadData = params.serialize(taskType.method.serializer) ?? NSData()
             
-            let serializer = MultipartFormSerializer()
-            let uploadData = params.serialize(serializer) ?? NSData()
+            if let multipartSerializer = taskType.method.serializer as? MultipartFormSerializer {
+                
+                mutableRequest.setValue("\(uploadData.length)", forHTTPHeaderField: "Content-Length")
+                
+                let charset = CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding))
+                let contentType = "multipart/form-data; charset=\(charset); boundary=\(multipartSerializer.boundary)"
+                mutableRequest.setValue(contentType, forHTTPHeaderField: "Content-Type")
+                
+            }
             
-            let request = api.generateRequest().mutableCopy() as! NSMutableURLRequest
-            request.setValue("\(uploadData.length)", forHTTPHeaderField: "Content-Length")
-            
-            let charset = CFStringConvertEncodingToIANACharSetName(CFStringConvertNSStringEncodingToEncoding(NSUTF8StringEncoding))
-            let contentType = "multipart/form-data; charset=\(charset); boundary=\(serializer.boundary)"
-            request.setValue(contentType, forHTTPHeaderField: "Content-Type")
-            
-            task = self.session.uploadTaskWithRequest(request, fromData: uploadData)
-            
-        }else{
+            task = self.session.uploadTaskWithRequest(mutableRequest, fromData: uploadData)
+        }
+        else{
             
             let request = api.generateRequest(params)
             //FIXME: 如果要使用Delegate，就一定要使用沒有CompletionHandler的版本
@@ -203,7 +231,8 @@ extension URLSessionDelegate : NSURLSessionDelegate {
 extension URLSessionDelegate : NSURLSessionTaskDelegate {
     
     public func URLSession(session: NSURLSession, task: NSURLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
-        task.sendingProcessHandler?(bytes: bytesSent, totalBytes: totalBytesSent, totalBytesExpected: totalBytesExpectedToSend)
+        
+        task.apiCaller?.sendingProcessHandler?(bytes: bytesSent, totalBytes: totalBytesSent, totalBytesExpected: totalBytesExpectedToSend)
     }
     
     public func URLSession(session: NSURLSession, task: NSURLSessionTask, willPerformHTTPRedirection response: NSHTTPURLResponse, newRequest request: NSURLRequest, completionHandler: (NSURLRequest?) -> Void) {
@@ -224,7 +253,7 @@ extension URLSessionDelegate : NSURLSessionTaskDelegate {
 extension URLSessionDelegate : NSURLSessionDataDelegate {
     
     public func URLSession(session: NSURLSession, didReceiveChallenge challenge: NSURLAuthenticationChallenge, completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
-        completionHandler(NSURLSessionAuthChallengeDisposition.UseCredential, nil)
+        completionHandler(.UseCredential, challenge.proposedCredential)
     }
     
     
@@ -246,7 +275,7 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
         let countOfBytesReceived = dataTask.countOfBytesReceived
         let countOfBytesExpectedToReceive = dataTask.countOfBytesExpectedToReceive > 0 ? dataTask.countOfBytesExpectedToReceive : countOfBytesReceived
         
-        dataTask.receivingProcessHandler?(bytes: Int64(data.length), totalBytes: countOfBytesReceived, totalBytesExpected: countOfBytesExpectedToReceive)
+        dataTask.apiCaller?.receivingProcessHandler?(bytes: Int64(data.length), totalBytes: countOfBytesReceived, totalBytesExpected: countOfBytesExpectedToReceive)
     }
     
     public func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
@@ -279,7 +308,7 @@ extension URLSessionDelegate : NSURLSessionDownloadDelegate {
     
     public func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         
-        downloadTask.receivingProcessHandler?(bytes: bytesWritten, totalBytes: totalBytesWritten, totalBytesExpected: totalBytesExpectedToWrite)
+        downloadTask.apiCaller?.receivingProcessHandler?(bytes: bytesWritten, totalBytes: totalBytesWritten, totalBytesExpected: totalBytesExpectedToWrite)
     }
     
     public func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didResumeAtOffset fileOffset: Int64, expectedTotalBytes: Int64) {

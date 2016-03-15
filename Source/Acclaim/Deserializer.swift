@@ -32,6 +32,20 @@ public struct OriginalDataResponseDeserializer : ResponseDeserializer {
     
 }
 
+public struct ResumeDataResponseDeserializer : ResponseDeserializer {
+    public typealias CallbackType = (resumeData : NSData?, connection: Acclaim.Connection)
+    
+    public func deserialize(data: NSData?, connection: Acclaim.Connection, connectionError: ErrorType?) -> (CallbackType?, ErrorType?) {
+        let callback = CallbackType(resumeData: data, connection: connection)
+        return (callback, connectionError)
+    }
+    
+    public init(){
+        
+    }
+    
+}
+
 public struct FailedResponseDeserializer : ResponseDeserializer{
     public typealias CallbackType = (originalData : NSData?, connection: Acclaim.HTTPConnection, error:ErrorType?)
 

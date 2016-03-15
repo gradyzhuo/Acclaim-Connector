@@ -70,6 +70,12 @@ public class ResponseAssistant<DeserializerType : ResponseDeserializer> : Respon
 }
 
 
+public final class ResumeDataResponseAssistant:ResponseAssistant<ResumeDataResponseDeserializer>{
+    public init(handler: Handler) {
+        super.init(handler: handler)
+    }
+}
+
 public final class OriginalDataResponseAssistant:ResponseAssistant<OriginalDataResponseDeserializer>{
     public init(handler: Handler) {
         super.init(handler: handler)

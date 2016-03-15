@@ -19,14 +19,13 @@ public class ACAPI : NSObject {
     
     public var method:ACHTTPMethod = .GET{
         didSet{
-            self.api.method = ACMethodMake(method, serializerType: nil)
+            self.api.requestTaskType = RequestTaskType.DataTask(method: ACMethodMake(method, serializerType: nil))
         }
-
     }
     
     public var serialType: ACSerializerType = .QueryString {
         didSet{
-            self.api.method = ACMethodMake(self.method, serializerType: serialType)
+            self.api.requestTaskType.method = ACMethodMake(self.method, serializerType: serialType)
         }
     }
     
@@ -61,24 +60,30 @@ public class ACAPI : NSObject {
         return self.api.cookies
     }
     
-    public static func APIWith(Path api:String, baseHost host:NSURL!, HTTPMethod method:ACHTTPMethod)->ACAPI{
-        if let host = host {
-            return ACAPI(api: api, host: host, method: method)
-        }else{
-            return ACAPI(api: api, host: Acclaim.hostURLFromInfoDictionary(), method: method)
-        }
-        
+    public static func APIWith(Path api:String, baseHost host:NSURL, HTTPMethod method:ACHTTPMethod)->ACAPI{
+        return ACAPI(api: api, host: host, method: method)
+    }
+    
+    public static func APIWith(Path api:String, HTTPMethod method:ACHTTPMethod)->ACAPI{
+        return ACAPI(api: api, host: Acclaim.hostURLFromInfoDictionary(), method: method)
     }
     
     public init(api:String, host:NSURL! = Acclaim.hostURLFromInfoDictionary(), method:ACHTTPMethod = .GET) {
         super.init()
         
-        self.api = try! API(api: api, host: host, method: ACMethodMake(method, serializerType: nil))
+        let method = ACMethodMake(method, serializerType: nil)
+        let taskType = RequestTaskType.DataTask(method: method)
+        
+        self.api = try! API(api: api, host: host, taskType: taskType)
     }
     
-    public init(URL:NSURL, method:HTTPMethod = .GET){
+    public init(URL:NSURL, method:ACHTTPMethod){
         super.init()
-        self.api = API(URL: URL, method: method)
+        
+        let method = ACMethodMake(method, serializerType: nil)
+        let taskType = RequestTaskType.DataTask(method: method)
+        
+        self.api = API(URL: URL, taskType: taskType)
     }
     
     internal init(_ api: API){

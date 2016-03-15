@@ -11,6 +11,7 @@ import Foundation
 public enum SerializerType {
     case QueryString
     case JSON(option: NSJSONWritingOptions)
+    case MultipartForm
     case Custom(serializer: ParametersSerializer)
     
     internal var serializer: ParametersSerializer {
@@ -20,6 +21,8 @@ public enum SerializerType {
             return JSONParametersSerializer(option: option)
         case .QueryString:
             return QueryStringParametersSerializer()
+        case .MultipartForm:
+            return MultipartFormSerializer()
         case let .Custom(serializer):
             return serializer
         }
@@ -85,7 +88,7 @@ public struct MultipartFormSerializer: ParametersSerializer {
                 
                 data.appendData("Content-Disposition: form-data; name=\"\(parameter.key)\"; filename=\"\(parameter.fileName)\"\r\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
                 data.appendData("Content-Type: \(parameter.MIME)\r\n\r\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
-                data.appendData(parameter.data as! NSData)
+                data.appendData(parameter.data)
                 data.appendData("\r\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
                 
             }

@@ -22,12 +22,12 @@ public enum HTTPMethod {
     case OPTIONS
     case CONNECT
     
-    case POSTWith(serialize: SerializerType)
-    case PUTWith(serialize: SerializerType)
-    case DELETEWith(serialize: SerializerType)
-    case HEADWith(serialize: SerializerType)
-    case OPTIONSWith(serialize: SerializerType)
-    case CONNECTWith(serialize: SerializerType)
+    case POSTWith(serializer: SerializerType)
+    case PUTWith(serializer: SerializerType)
+    case DELETEWith(serializer: SerializerType)
+    case HEADWith(serializer: SerializerType)
+    case OPTIONSWith(serializer: SerializerType)
+    case CONNECTWith(serializer: SerializerType)
     
     internal var serializer: ParametersSerializer {
         switch self {
@@ -49,7 +49,40 @@ public enum HTTPMethod {
         }
     }
     
-    
+    public func HTTPMethodByReplaceSerializer(serializer: SerializerType)->HTTPMethod {
+        
+        switch self {
+        
+        case .POST:
+            return .POSTWith(serializer: serializer)
+        case .PUT:
+            return .PUTWith(serializer: serializer)
+        case .DELETE:
+            return .DELETEWith(serializer: serializer)
+        case .HEAD:
+            return .HEADWith(serializer: serializer)
+        case .OPTIONS:
+            return .OPTIONSWith(serializer: serializer)
+        case .CONNECT:
+            return .CONNECTWith(serializer: serializer)
+        
+        case .POSTWith:
+            fallthrough
+        case .PUTWith:
+            fallthrough
+        case .DELETEWith:
+            fallthrough
+        case .OPTIONSWith:
+            fallthrough
+        case .CONNECTWith:
+            return self
+            
+        default:
+            ACDebugLog("[Failed]: The method of itself, \(self.rawValue) can't append a serializer to serialize.")
+            return self
+        }
+        
+    }
     
 }
 
