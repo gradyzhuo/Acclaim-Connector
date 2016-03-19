@@ -38,18 +38,15 @@ class AcclaimTests: XCTestCase {
         let caller = Acclaim.call(API: api,  params: ["fling_hash":"dQAXWbcv"])
         .addFailedResponseHandler { (result) in
             print("failed:\(result.error)")
-            
-            
-            
-//            TextResponseDeserializer(encoding: NSUTF8StringEncoding).deserialize(result.originalData, connection: <#T##Connection#>, connectionError: <#T##ErrorType?#>)
-            
         }.addJSONResponseHandler { (result) in
             expectation.fulfill()
-        }
+        }.addResponseAssistant(forType: .Failed, responseAssistant: TextResponseAssistant(handler: { (result) in
+            print("text:", result.text)
+        }))
         
         XCTAssert(caller.responseAssistants.count == 1, "ResponseAssistants count is failed.")
-        caller.failedResponseAssistants.count == 1
-            
+//        caller.failedResponseAssistants.count == 1
+        
         self.waitForExpectationsWithTimeout(self.timeoutInterval) { (error) in
             XCTAssertNil(error)
         }

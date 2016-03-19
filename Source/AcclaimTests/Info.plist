@@ -3,8 +3,6 @@
 <plist version="1.0">
 <dict>
 	<key>ACAPIHostURLInfoKey</key>
-	<string>http://flin.gy</string>
-	<key>ACAPIHostURLInfoKey - 2</key>
 	<string>http://api.flin.gy/rest/</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
