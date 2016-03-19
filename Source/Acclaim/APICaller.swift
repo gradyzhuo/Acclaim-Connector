@@ -257,8 +257,14 @@ extension APICaller {
     }
     
     
-    public func addResponseAssistant<T:ResponseAssistantProtocol>(responseAssistant assistant: T)->APICaller{
-        self.responseAssistants.append(assistant)
+    public func addResponseAssistant<T:ResponseAssistantProtocol>(forType type:ResponseAssistantType = .Normal, responseAssistant assistant: T)->APICaller{
+        switch type {
+        case .Normal:
+            self.responseAssistants.append(assistant)
+        case .Failed:
+            self.failedResponseAssistants.append(assistant)
+        }
+        
         return self
     }
     
@@ -271,6 +277,8 @@ extension APICaller {
         self.failedResponseAssistants.append(HTTPResponseAssistant(statusCode: statusCode, handler: handler))
         return self
     }
+    
+    
     
     public func addOriginalDataResponseHandler(handler:OriginalDataResponseAssistant.Handler)->APICaller{
         self.addResponseAssistant(responseAssistant: OriginalDataResponseAssistant(handler: handler))

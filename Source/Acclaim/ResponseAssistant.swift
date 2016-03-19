@@ -45,6 +45,11 @@ extension ResponseAssistantProtocol{
     
 }
 
+public enum ResponseAssistantType:Int {
+    case Normal
+    case Failed
+}
+
 public class ResponseAssistant<DeserializerType : ResponseDeserializer> : ResponseAssistantProtocol {
     
     public typealias Handler = (result:DeserializerType.CallbackType)->Void
