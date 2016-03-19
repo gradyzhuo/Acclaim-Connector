@@ -8,32 +8,52 @@
 
 import UIKit
 import XCTest
-#if DEBUG
 @testable import Acclaim
-#else
-import Acclaim
-#endif
 
 class AcclaimTests: XCTestCase {
     
-    override func setUp() {
-        super.setUp()
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    let timeoutInterval: NSTimeInterval = 30
+    
+    func testAcclaimRunningCallers(){
         
     }
     
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-        super.tearDown()
+    func testAPIURL(){
+        
+    }
+    
+    override func setUp() {
+        let bundle = NSBundle(forClass: AcclaimTests.self)
+        Acclaim.configuration.bundleForHostURLInfo = bundle
     }
     
     func testMethodStringLiteralConverted() {
         // This is an example of a functional test case.
-
+        typealias JSONResult = JSONResponseAssistant.DeserializerType.CallbackType
         
-//        XCTAssertEqual("POST", ACMethod.POST, "pass")
-//        XCTAssertEqual("GET", ACMethod.GET, "pass")
-//        XCTAssertEqual("G", ACMethod.GET, "If method not found, 'GET' instead.")
+        let expectation = self.expectationWithDescription("test")
+        
+        let api:API = "fling"
+        
+        let caller = Acclaim.call(API: api,  params: ["fling_hash":"dQAXWbcv"])
+        .addFailedResponseHandler { (result) in
+            print("failed:\(result.error)")
+            
+            
+            
+//            TextResponseDeserializer(encoding: NSUTF8StringEncoding).deserialize(result.originalData, connection: <#T##Connection#>, connectionError: <#T##ErrorType?#>)
+            
+        }.addJSONResponseHandler { (result) in
+            expectation.fulfill()
+        }
+        
+        XCTAssert(caller.responseAssistants.count == 1, "ResponseAssistants count is failed.")
+        caller.failedResponseAssistants.count == 1
+            
+        self.waitForExpectationsWithTimeout(self.timeoutInterval) { (error) in
+            XCTAssertNil(error)
+        }
+        
         
     }
 

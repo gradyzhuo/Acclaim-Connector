@@ -8,7 +8,6 @@
 
 public protocol Caller{
     init(API api: API, params: RequestParameters, connector: Connector)
-//    func addFailedResponseHandler(statusCode statusCode:Int?, handler:HTTPResponseAssistant.Handler)->Self
 }
 
 public class APICaller : Caller {
@@ -96,15 +95,15 @@ public class APICaller : Caller {
     
     internal var connector: Connector!
     
-    public convenience init(API api:API, params:[String: ParameterValueType], connector: Connector = Acclaim.defaultConnector) {
+    public convenience init(API api:API, params:[String: ParameterValueType], connector: Connector = Acclaim.configuration.connector) {
         self.init(API: api, params: RequestParameters(dictionary: params), connector: connector)
     }
     
-    public convenience init(API api:API, params:[Parameter], connector: Connector = Acclaim.defaultConnector ) {
+    public convenience init(API api:API, params:[Parameter], connector: Connector = Acclaim.configuration.connector ) {
         self.init(API: api, params: RequestParameters(params: params), connector: connector)
     }
     
-    public required init(API api:API, params:RequestParameters = [], connector: Connector = Acclaim.defaultConnector) {
+    public required init(API api:API, params:RequestParameters = [], connector: Connector = Acclaim.configuration.connector) {
         self.api = api
         self.params = params
         self.connector = connector

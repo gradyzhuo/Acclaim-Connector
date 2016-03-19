@@ -30,6 +30,7 @@ extension ResponseAssistantProtocol {
 extension ResponseAssistantProtocol{
     
     public func handle(data: NSData?, connection: Acclaim.Connection, error: ErrorType?) -> (ErrorType?) {
+        
         let result:(callback:DeserializerType.CallbackType?, error: ErrorType?) = self.deserializer.deserialize(data, connection: connection, connectionError: error)
         
         guard let callback = result.callback where result.error == nil else {

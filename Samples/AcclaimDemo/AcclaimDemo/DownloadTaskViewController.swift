@@ -21,7 +21,8 @@ class DownloadTaskViewController: UIViewController {
         
 //        self.apiCaller = Acclaim.download(API: api)
         
-        self.apiCaller = Acclaim.download(API: api).addImageResponseHandler { (result) in
+        self.apiCaller = Acclaim.download(API: api)
+        .addImageResponseHandler { (result) in
             print(result.image)
         }.setRecevingProcessHandler { (bytes, totalBytes, totalBytesExpected) -> Void in
             let percent = Float(totalBytes) / Float(totalBytesExpected)

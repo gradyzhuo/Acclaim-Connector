@@ -11,7 +11,24 @@ import Foundation
 //FIXME: 需要加入 ParameterTable，就以指定什麼Key是必填，什麼Key是選填
 //FIXME: 可能還可以加入 ResponseTable 去驗證回傳的JSON是否正確
 
-public let ACAPIHostURLInfoKey:String = Acclaim.hostURLInfoKey
+public let ACAPIHostURLInfoKey:String = "ACAPIHostURLInfoKey"
+
+public struct AcclaimConfiguration{
+    var connector: Connector
+    var hostURLInfoKey: String
+    var bundleForHostURLInfo: NSBundle
+    
+    public init(connector: Connector, hostURLInfoKey key: String, bundleForHostURLInfo bundle: NSBundle){
+        self.connector = connector
+        self.hostURLInfoKey = key
+        self.bundleForHostURLInfo = bundle
+    }
+    
+    public static var defaultConfiguration: AcclaimConfiguration = {
+        return AcclaimConfiguration(connector: URLSession(), hostURLInfoKey: ACAPIHostURLInfoKey, bundleForHostURLInfo: NSBundle.mainBundle())
+    }()
+    
+}
 
 public class Acclaim {
     
@@ -22,14 +39,7 @@ public class Acclaim {
     
     public static var allowsCellularAccess: Bool = true
     
-    public static var defaultConnector: Connector = ACURLSession()
-    
-    internal static let deafultHostURLInfoKey:String = "ACAPIHostURLInfoKey"
-    public static var hostURLInfoKey:String = Acclaim.deafultHostURLInfoKey
-    
-    public static func resetToDeafultHostURLInfoKey(){
-        self.hostURLInfoKey = self.deafultHostURLInfoKey
-    }
+    public static var configuration: AcclaimConfiguration = AcclaimConfiguration.defaultConfiguration
     
     internal static var running:[String:APICaller] = [:]
     
@@ -97,7 +107,7 @@ extension Acclaim {
     
     public static func hostURLFromInfoDictionary()->NSURL? {
         
-        guard let urlStr = NSBundle.mainBundle().infoDictionary?[ACAPIHostURLInfoKey] as? String else{
+        guard let urlStr = self.configuration.bundleForHostURLInfo.infoDictionary?[ACAPIHostURLInfoKey] as? String else{
             return nil
         }
         

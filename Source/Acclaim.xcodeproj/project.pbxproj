@@ -26,16 +26,21 @@
 		793C54901C6ACE6900CC2432 /* ACHTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793C548C1C6ACE6900CC2432 /* ACHTTPMethod.swift */; };
 		793C54921C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793C54911C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */; };
 		793C549C1C6B9EA300CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 793C549B1C6B9EA300CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */; };
-		7959D0431B805541003F0AE3 /* Connector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7959D0421B805541003F0AE3 /* Connector.swift */; };
 		797AFE3C1B8396BA009E9227 /* QueuePriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 797AFE3B1B8396BA009E9227 /* QueuePriority.swift */; };
 		7990F8C21C93F6B100590679 /* MIME.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8C11C93F6B100590679 /* MIME.swift */; };
 		7990F8CC1C96588B00590679 /* Downloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8CA1C96588B00590679 /* Downloader.swift */; };
 		7990F8CD1C96588B00590679 /* RestfulAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8CB1C96588B00590679 /* RestfulAPI.swift */; };
 		7994F1511B8313C10016ADB1 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7994F1501B8313C10016ADB1 /* Serializer.swift */; };
+		79ABDB261C9C7C2C0097658B /* protocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79ABDB251C9C7C2C0097658B /* protocol.swift */; };
 		79C373E91B7DED2100C809BE /* APICaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C373E81B7DED2100C809BE /* APICaller.swift */; };
 		79C373ED1B7DF19800C809BE /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C373EC1B7DF19800C809BE /* HTTPMethod.swift */; };
 		79C415F81C96A31E008B3496 /* Uploader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C415F71C96A31E008B3496 /* Uploader.swift */; };
 		79C416051C972AF1008B3496 /* ACRequestParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C416041C972AF1008B3496 /* ACRequestParameters.swift */; };
+		79C416071C989218008B3496 /* APIBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C416061C989218008B3496 /* APIBundle.swift */; };
+		79C4160C1C99DF9B008B3496 /* Connector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C4160B1C99DF9B008B3496 /* Connector.swift */; };
+		79C4160E1C99DFB1008B3496 /* URLSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C4160D1C99DFB1008B3496 /* URLSession.swift */; };
+		79C416101C99DFCA008B3496 /* URLSessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C4160F1C99DFCA008B3496 /* URLSessionDelegate.swift */; };
+		79C416121C99E048008B3496 /* NSURLSessionTask+ACSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79C416111C99E048008B3496 /* NSURLSessionTask+ACSupport.swift */; };
 		79F1D9EF1C63B59200FBC6C1 /* KeyPathParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79F1D9EE1C63B59200FBC6C1 /* KeyPathParser.swift */; };
 /* End PBXBuildFile section */
 
@@ -73,16 +78,21 @@
 		793C548C1C6ACE6900CC2432 /* ACHTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACHTTPMethod.swift; sourceTree = "<group>"; };
 		793C54911C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift"; sourceTree = "<group>"; };
 		793C549B1C6B9EA300CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift"; sourceTree = "<group>"; };
-		7959D0421B805541003F0AE3 /* Connector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Connector.swift; sourceTree = "<group>"; };
 		797AFE3B1B8396BA009E9227 /* QueuePriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueuePriority.swift; sourceTree = "<group>"; };
 		7990F8C11C93F6B100590679 /* MIME.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MIME.swift; sourceTree = "<group>"; };
 		7990F8CA1C96588B00590679 /* Downloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Downloader.swift; sourceTree = "<group>"; };
 		7990F8CB1C96588B00590679 /* RestfulAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestfulAPI.swift; sourceTree = "<group>"; };
 		7994F1501B8313C10016ADB1 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Serializer.swift; path = ../Serializer.swift; sourceTree = "<group>"; };
+		79ABDB251C9C7C2C0097658B /* protocol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = protocol.swift; sourceTree = "<group>"; };
 		79C373E81B7DED2100C809BE /* APICaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APICaller.swift; sourceTree = "<group>"; };
 		79C373EC1B7DF19800C809BE /* HTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
 		79C415F71C96A31E008B3496 /* Uploader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Uploader.swift; sourceTree = "<group>"; };
 		79C416041C972AF1008B3496 /* ACRequestParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACRequestParameters.swift; sourceTree = "<group>"; };
+		79C416061C989218008B3496 /* APIBundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIBundle.swift; sourceTree = "<group>"; };
+		79C4160B1C99DF9B008B3496 /* Connector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Connector.swift; sourceTree = "<group>"; };
+		79C4160D1C99DFB1008B3496 /* URLSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLSession.swift; sourceTree = "<group>"; };
+		79C4160F1C99DFCA008B3496 /* URLSessionDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLSessionDelegate.swift; sourceTree = "<group>"; };
+		79C416111C99E048008B3496 /* NSURLSessionTask+ACSupport.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NSURLSessionTask+ACSupport.swift"; sourceTree = "<group>"; };
 		79F1D9EE1C63B59200FBC6C1 /* KeyPathParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyPathParser.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -155,6 +165,8 @@
 		79213F161B7B04C500A527DE /* Acclaim */ = {
 			isa = PBXGroup;
 			children = (
+				79ABDB241C9C7C180097658B /* Connection */,
+				79C416091C99DF86008B3496 /* Connector */,
 				7990F8C91C96588B00590679 /* Callers */,
 				7919D3901C6272B000E3D5B3 /* Serialization */,
 				7919D3911C62743A00E3D5B3 /* ResponseAssistant */,
@@ -166,7 +178,6 @@
 				79C373EC1B7DF19800C809BE /* HTTPMethod.swift */,
 				79309B9F1B82404D00C6B426 /* RequestParameter.swift */,
 				797AFE3B1B8396BA009E9227 /* QueuePriority.swift */,
-				7959D0421B805541003F0AE3 /* Connector.swift */,
 				793C54911C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */,
 				79213F171B7B04C500A527DE /* Supporting Files */,
 				791D80F21C4F8FFA009126E6 /* ResponseStatus.swift */,
@@ -220,8 +231,36 @@
 				7990F8CA1C96588B00590679 /* Downloader.swift */,
 				7990F8CB1C96588B00590679 /* RestfulAPI.swift */,
 				79C415F71C96A31E008B3496 /* Uploader.swift */,
+				79C416061C989218008B3496 /* APIBundle.swift */,
 			);
 			path = Callers;
+			sourceTree = "<group>";
+		};
+		79ABDB241C9C7C180097658B /* Connection */ = {
+			isa = PBXGroup;
+			children = (
+				79ABDB251C9C7C2C0097658B /* protocol.swift */,
+			);
+			path = Connection;
+			sourceTree = "<group>";
+		};
+		79C416091C99DF86008B3496 /* Connector */ = {
+			isa = PBXGroup;
+			children = (
+				79C4160B1C99DF9B008B3496 /* Connector.swift */,
+				79C4160A1C99DF86008B3496 /* URLSession */,
+			);
+			path = Connector;
+			sourceTree = "<group>";
+		};
+		79C4160A1C99DF86008B3496 /* URLSession */ = {
+			isa = PBXGroup;
+			children = (
+				79C4160D1C99DFB1008B3496 /* URLSession.swift */,
+				79C4160F1C99DFCA008B3496 /* URLSessionDelegate.swift */,
+				79C416111C99E048008B3496 /* NSURLSessionTask+ACSupport.swift */,
+			);
+			path = URLSession;
 			sourceTree = "<group>";
 		};
 		79F1D9ED1C63B57A00FBC6C1 /* Utlitities */ = {
@@ -383,17 +422,22 @@
 			files = (
 				790162EB1B7FD28700DDD8A5 /* ResponseAssistant.swift in Sources */,
 				79C373ED1B7DF19800C809BE /* HTTPMethod.swift in Sources */,
-				7959D0431B805541003F0AE3 /* Connector.swift in Sources */,
+				79C4160E1C99DFB1008B3496 /* URLSession.swift in Sources */,
 				7919D3931C62745800E3D5B3 /* KeyPathResponseAssistant.swift in Sources */,
 				79309BA31B82506E00C6B426 /* API.swift in Sources */,
 				793C54921C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift in Sources */,
+				79C416071C989218008B3496 /* APIBundle.swift in Sources */,
 				7994F1511B8313C10016ADB1 /* Serializer.swift in Sources */,
 				7990F8CC1C96588B00590679 /* Downloader.swift in Sources */,
 				79C415F81C96A31E008B3496 /* Uploader.swift in Sources */,
 				791D80F31C4F8FFA009126E6 /* ResponseStatus.swift in Sources */,
 				7990F8CD1C96588B00590679 /* RestfulAPI.swift in Sources */,
+				79C416121C99E048008B3496 /* NSURLSessionTask+ACSupport.swift in Sources */,
 				7919D38F1C62728300E3D5B3 /* ModelDeserializer.swift in Sources */,
+				79ABDB261C9C7C2C0097658B /* protocol.swift in Sources */,
+				79C4160C1C99DF9B008B3496 /* Connector.swift in Sources */,
 				79F1D9EF1C63B59200FBC6C1 /* KeyPathParser.swift in Sources */,
+				79C416101C99DFCA008B3496 /* URLSessionDelegate.swift in Sources */,
 				79309BA01B82404D00C6B426 /* RequestParameter.swift in Sources */,
 				797AFE3C1B8396BA009E9227 /* QueuePriority.swift in Sources */,
 				792E979E1C5E82C6004A411E /* Deserializer.swift in Sources */,

@@ -8,19 +8,6 @@
 
 import Foundation
 
-
-extension Acclaim {
-    ///
-    public static func runAPI(API api:API, params:RequestParameters = [:], priority: QueuePriority = .Default)->RestfulAPI{
-        
-        let caller = RestfulAPI(API: api, params: params)
-        caller.priority = priority
-        caller.run()
-        
-        return caller
-    }
-}
-
 public class RestfulAPI : APICaller {
     
     public func addTextResponseHandler(encoding: NSStringEncoding = NSUTF8StringEncoding, handler:TextResponseAssistant.Handler)->Self{
@@ -38,4 +25,21 @@ public class RestfulAPI : APICaller {
         return self
     }
     
+}
+
+extension Acclaim {
+    ///
+    public static func call(API api:API, params:RequestParameters = [:], priority: QueuePriority = .Default)->RestfulAPI{
+        
+        let caller = RestfulAPI(API: api, params: params)
+        caller.priority = priority
+        caller.run()
+        
+        return caller
+    }
+    
+    public static func call(APIBundle bundle:APIBundle)->RestfulAPI{
+        bundle.prepare()
+        return Acclaim.call(API: bundle.api, params: bundle.params, priority: bundle.priority)
+    }
 }

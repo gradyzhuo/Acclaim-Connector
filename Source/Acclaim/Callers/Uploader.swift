@@ -9,6 +9,10 @@
 import Foundation
 
 
+public final class Uploader : RestfulAPI {
+    
+}
+
 extension Acclaim {
     
     public static func upload(API api:API, params:RequestParameters = [:], priority: QueuePriority = .Default)->Uploader{
@@ -23,8 +27,9 @@ extension Acclaim {
         return caller
     }
     
-}
-
-public final class Uploader : RestfulAPI {
+    public static func upload(APIBundle bundle:APIBundle)->Uploader{
+        bundle.prepare()
+        return Acclaim.upload(API: bundle.api, params: bundle.params, priority: bundle.priority)
+    }
     
 }

@@ -19,7 +19,7 @@ class DataTaskViewController: UIViewController {
         
         let api:API = "fling"
 
-        self.apiCaller = Acclaim.runAPI(API: api,  params: ["fling_hash":"dQAXWbcv"])
+        self.apiCaller = Acclaim.call(API: api,  params: ["fling_hash":"dQAXWbcv"])
         .addFailedResponseHandler { (result) in
             print("failed:\(result.error)")
         }.addJSONResponseHandler { (result) in
