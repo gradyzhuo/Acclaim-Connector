@@ -18,13 +18,17 @@ class DataTaskViewController: UIViewController {
         super.viewDidLoad()
         
         let api:API = "fling"
-
         self.apiCaller = Acclaim.call(API: api,  params: ["fling_hash":"dQAXWbcv"])
         .addFailedResponseHandler { (result) in
             print("failed:\(result.error)")
         }.addJSONResponseHandler { (result) in
             print("cached: \(result.connection.cached)")
             print("result.JSONObject:\(result.JSONObject)")
+        }.addTextResponseHandler { (text, connection) in
+            print("text:\(text)")
+        }.addOriginalDataResponseHandler{ (data, connection) in
+            let result = TextDeserializer().deserialize(data)
+            print("ttt:", result.outcome)
         }
 
         //.cacheStoragePolicy = .NotAllowed//.Allowed(renewRule: .RenewSinceData(data: NSDate().dateByAddingTimeInterval(1)))

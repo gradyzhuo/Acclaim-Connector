@@ -26,7 +26,10 @@ internal class URLSessionDelegate : NSObject {
 
 extension URLSessionDelegate : NSURLSessionDelegate {
     internal func URLSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
-        task.completionHandler?(data: task.data.copy() as? NSData, response: task.response, error: error)
+        
+        let data = task.data.copy() as? NSData
+        let connection = Connection(originalRequest: task.originalRequest, currentRequest: task.currentRequest, response: task.response, cached: false)
+        task.completionHandler?(data: data, connection: connection, error: error)
     }
 }
 
@@ -105,7 +108,9 @@ extension URLSessionDelegate : NSURLSessionDownloadDelegate {
     
     internal func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didFinishDownloadingToURL location: NSURL) {
         
-        downloadTask.completionHandler?(data: NSData(contentsOfURL: location), response: downloadTask.response, error: downloadTask.error)
+        let data = NSData(contentsOfURL: location)
+        let connection = Connection(originalRequest: downloadTask.originalRequest, currentRequest: downloadTask.currentRequest, response: downloadTask.response, cached: false)
+        downloadTask.completionHandler?(data: data, connection: connection, error: downloadTask.error)
     }
     
     internal func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {

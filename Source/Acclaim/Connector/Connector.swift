@@ -9,7 +9,7 @@
 import Foundation
 
 public typealias ProcessHandler = (bytes: Int64, totalBytes: Int64, totalBytesExpected: Int64)->Void
-public typealias ResponseHandler = (data: NSData?, response: NSURLResponse?, error: NSError?)->Void
+public typealias ResponseHandler = (data: NSData?, connection: Connection, error: NSError?)->Void
 
 public class Handler<Type> {
     internal typealias HandlerType = Type

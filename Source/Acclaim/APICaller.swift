@@ -84,9 +84,9 @@ public class APICaller : Caller {
     
     internal var sessionTask:NSURLSessionTask?
     
-    internal var responseAssistants:[_ResponseAssistantProtocol] = []
-    internal var failedResponseAssistants:[_ResponseAssistantProtocol] = []
-    internal var cancelledAssistant: _ResponseAssistantProtocol?
+    internal var responseAssistants:[Assistant] = []
+    internal var failedResponseAssistants:[Assistant] = []
+    internal var cancelledAssistant: Assistant?
     
     internal var sendingProcessHandler: ProcessHandler?
     internal var receivingProcessHandler: ProcessHandler?
@@ -129,16 +129,17 @@ public class APICaller : Caller {
         }
         
         // set
-        self.sessionTask = connector.request(API: self.api, params: self.params) {[unowned self] (data, response, error) in
+        self.sessionTask = connector.request(API: self.api, params: self.params) { (data, connection, error) in
             
             let request:NSURLRequest! = self.sessionTask?.currentRequest
             
-            self.handleResponses(data: data, connection: (request, response, false), error: error)
+            self.handleResponses(data: data, connection: connection, error: error)
             
             //remove
             Acclaim.removeRunningCaller(APICaller: self)
             
         }
+        
         self.sessionTask?.apiCaller = self
         
         defer{
@@ -207,16 +208,17 @@ public class APICaller : Caller {
 extension APICaller {
     
     internal func handleCachedResponse(cachedResponse: NSCachedURLResponse, byRequest request: NSURLRequest){
-        self.handleResponses(fromCached: true)(data: cachedResponse.data, connection: (request: request, response: cachedResponse.response, cached: true), error: nil)
+        let connection = Connection(originalRequest: request, currentRequest: request, response: cachedResponse.response, cached: true)
+        self.handleResponses(fromCached: true)(data: cachedResponse.data, connection: connection, error: nil)
     }
 
-    internal func handleResponses(data data:NSData?, connection: Acclaim.Connection, error:ErrorType?){
+    internal func handleResponses(data data:NSData?, connection: Connection, error:ErrorType?){
         self.handleResponses()(data: data, connection: connection, error: error)
     }
     
-    internal func handleResponses(fromCached cached: Bool = false)->(data:NSData?, connection: Acclaim.Connection, error:ErrorType?)->Void{
+    internal func handleResponses(fromCached cached: Bool = false)->(data:NSData?, connection: Connection, error:ErrorType?)->Void{
         
-        return {[unowned self] (data:NSData?, connection: Acclaim.Connection, error:ErrorType?)->Void in
+        return {[unowned self] (data:NSData?, connection: Connection, error:ErrorType?)->Void in
             
             guard !self.cancelled else {
                 //檢查cancel的訊息，並在這裡回傳resumedData
@@ -228,8 +230,8 @@ extension APICaller {
                 //remove cached response data by renewRule : RenewByRetry
                 
                 //before this request
-                if let cachedResponse = Acclaim.cachedResponse(request: connection.request) {
-                    self.handleCachedResponse(cachedResponse, byRequest: connection.request)
+                if let cachedResponse = Acclaim.cachedResponse(request: connection.currentRequest) {
+                    self.handleCachedResponse(cachedResponse, byRequest: connection.currentRequest)
                 }
                 
                 self.handleFailedResponse(data: data, connection: connection, error: error)
@@ -239,7 +241,7 @@ extension APICaller {
             if let response = connection.response, let data = data where cached == false{
                 let cacheStoragePolicy = NSURLCacheStoragePolicy(self.cacheStoragePolicy)
                 let cachedResponse = NSCachedURLResponse(response: response, data: data, userInfo: nil, storagePolicy: cacheStoragePolicy)
-                Acclaim.storeCachedResponse(cachedResponse, forRequest: connection.request)
+                Acclaim.storeCachedResponse(cachedResponse, forRequest: connection.currentRequest)
             }
             
             self.responseAssistants.forEach { reciver in
@@ -252,12 +254,12 @@ extension APICaller {
         
     }
     
-    internal func handleFailedResponse(data data:NSData?, connection: Acclaim.Connection, error:ErrorType?) {
+    internal func handleFailedResponse(data data:NSData?, connection: Connection, error:ErrorType?) {
         self.failedResponseAssistants.forEach { $0.handle(data, connection: connection, error: error) }
     }
     
     
-    public func addResponseAssistant<T:ResponseAssistantProtocol>(forType type:ResponseAssistantType = .Normal, responseAssistant assistant: T)->APICaller{
+    public func addResponseAssistant<T:ResponseAssistant>(forType type:ResponseAssistantType = .Normal, responseAssistant assistant: T)->Self{
         switch type {
         case .Normal:
             self.responseAssistants.append(assistant)
@@ -273,14 +275,21 @@ extension APICaller {
 // convenience response handler function
 extension APICaller {
 
-    public func addFailedResponseHandler(statusCode statusCode:Int? = nil, handler:HTTPResponseAssistant.Handler)->Self{
-        self.failedResponseAssistants.append(HTTPResponseAssistant(statusCode: statusCode, handler: handler))
+    public func addFailedResponseHandler(statusCode statusCode:Int? = nil, handler:FailedResponseAssistant.Handler)->Self{
+        let assistant:FailedResponseAssistant
+        if let statusCode = statusCode {
+            assistant = FailedResponseAssistant(statusCode: statusCode, handler: handler)
+        }else{
+            assistant = FailedResponseAssistant(handler: handler)
+        }
+        self.failedResponseAssistants.append(assistant)
+        
         return self
     }
     
     
     
-    public func addOriginalDataResponseHandler(handler:OriginalDataResponseAssistant.Handler)->APICaller{
+    public func addOriginalDataResponseHandler(handler:OriginalDataResponseAssistant.Handler)->Self{
         self.addResponseAssistant(responseAssistant: OriginalDataResponseAssistant(handler: handler))
         return self
     }

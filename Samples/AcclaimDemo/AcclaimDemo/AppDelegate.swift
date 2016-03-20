@@ -51,18 +51,18 @@ import Acclaim
 //    }
 //}
 
-struct MyDeserializer : ResponseDeserializer {
-    typealias CallbackType = JSONResponseDeserializer.CallbackType
-
-    func deserialize(data:NSData?, connection: Acclaim.Connection, connectionError error: ErrorType?) -> (CallbackType?, ErrorType?){
-        let deserializer = JSONResponseDeserializer(keyPath: "data", options: .AllowFragments)
-        return deserializer.deserialize(data, connection: connection, connectionError: error)
-    }
-    
-    init(){
-        
-    }
-}
+//struct MyDeserializer : ResponseDeserializer {
+//    typealias CallbackType = JSONResponseDeserializer.CallbackType
+//
+//    func deserialize(data:NSData?, connection: Acclaim.Connection, connectionError error: ErrorType?) -> (CallbackType?, ErrorType?){
+//        let deserializer = JSONResponseDeserializer(keyPath: "data", options: .AllowFragments)
+//        return deserializer.deserialize(data, connection: connection, connectionError: error)
+//    }
+//    
+//    init(){
+//        
+//    }
+//}
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -71,6 +71,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
+        
+        let string = ["test":"123"]
+        let data = try? NSJSONSerialization.dataWithJSONObject(string, options: .PrettyPrinted)
+        let result = JSONDeserializer(options: .AllowFragments).deserialize(data)
+        print("outcome:\(result.outcome)")
+
         
         return true
     }

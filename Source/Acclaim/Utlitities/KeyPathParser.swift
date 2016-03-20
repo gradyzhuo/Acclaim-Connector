@@ -8,15 +8,63 @@
 
 import Foundation
 
-internal protocol KeyPathParser{
+public struct KeyPath {
+    public typealias ExpectedType = String
+    
+    public internal(set) var path: String
+    public internal(set) var separater:String
+    
+    public init(path: String, separater:String = "."){
+        self.path = path
+        self.separater = separater
+    }
+}
+
+extension KeyPath : Hashable {
+    public var hashValue: Int{
+        return self.path.hash
+    }
+}
+
+public func ==(lhs: KeyPath, rhs: KeyPath)->Bool{
+    return lhs.path == rhs.path
+}
+
+extension KeyPath : StringLiteralConvertible {
+    
+    public typealias StringLiteralType = String
+    public typealias ExtendedGraphemeClusterLiteralType = String
+    public typealias UnicodeScalarLiteralType = String
+    
+    public init(stringLiteral value: StringLiteralType) {
+        self = KeyPath(path: value, separater: ".")
+        
+    }
+    
+    /// Create an instance initialized to `value`.
+    public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
+        self.init(stringLiteral: value)
+    }
+    
+    /// Create an instance initialized to `value`.
+    public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
+        self.init(stringLiteral: value)
+    }
     
 }
 
+
+internal protocol KeyPathParser{
+    func parse(value:AnyObject?, forKeyPath keyPath:KeyPath)->AnyObject?
+}
+
 extension KeyPathParser{
-    func parse(value:AnyObject?, forKeyPath keyPath:String, separater:String = ".")->AnyObject?{
-        let keyPathes = keyPath.componentsSeparatedByString(separater)
+    
+    func parse(value:AnyObject?, forKeyPath keyPath:KeyPath)->AnyObject?{
+
+        let keyPathes = keyPath.path.componentsSeparatedByString(keyPath.separater)
         let result = keyPathes.reduce(value) { (parsedObject, key) -> AnyObject? in
-            return parsedObject?[key]
+            return parsedObject?[key] as? KeyPath.ExpectedType
         }
         return result
     }

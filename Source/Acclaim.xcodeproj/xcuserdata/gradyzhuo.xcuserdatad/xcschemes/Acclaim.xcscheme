@@ -52,6 +52,16 @@
                ReferencedContainer = "container:Acclaim.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "796B34891C9ED8A9004D0F2F"
+               BuildableName = "AcclaimDemoTests.xctest"
+               BlueprintName = "AcclaimDemoTests"
+               ReferencedContainer = "container:../Samples/AcclaimDemo/AcclaimDemo.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference

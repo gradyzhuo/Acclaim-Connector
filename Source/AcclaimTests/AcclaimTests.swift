@@ -8,8 +8,9 @@
 
 import UIKit
 import XCTest
-@testable import Acclaim
 
+@testable import Acclaim
+ 
 class AcclaimTests: XCTestCase {
     
     let timeoutInterval: NSTimeInterval = 30
@@ -19,7 +20,10 @@ class AcclaimTests: XCTestCase {
     }
     
     func testAPIURL(){
-        
+        let string = ["test":"123"]
+        let data = try? NSJSONSerialization.dataWithJSONObject(string, options: .PrettyPrinted)
+        let result = JSONDeserializer(options: .AllowFragments).deserialize(data, keyPath: "test")
+        print("outcome:\(result.outcome)")
     }
     
     override func setUp() {
@@ -29,19 +33,20 @@ class AcclaimTests: XCTestCase {
     
     func testMethodStringLiteralConverted() {
         // This is an example of a functional test case.
-        typealias JSONResult = JSONResponseAssistant.DeserializerType.CallbackType
+        typealias JSONResult = JSONResponseAssistant.DeserializerType.Outcome
         
         let expectation = self.expectationWithDescription("test")
         
         let api:API = "fling"
+        
         
         let caller = Acclaim.call(API: api,  params: ["fling_hash":"dQAXWbcv"])
         .addFailedResponseHandler { (result) in
             print("failed:\(result.error)")
         }.addJSONResponseHandler { (result) in
             expectation.fulfill()
-        }.addResponseAssistant(forType: .Failed, responseAssistant: TextResponseAssistant(handler: { (result) in
-            print("text:", result.text)
+        }.addResponseAssistant(forType: .Failed, responseAssistant: TextResponseAssistant(handler: { (text, connection) in
+            print("text: \(text)")
         }))
         
         XCTAssert(caller.responseAssistants.count == 1, "ResponseAssistants count is failed.")
