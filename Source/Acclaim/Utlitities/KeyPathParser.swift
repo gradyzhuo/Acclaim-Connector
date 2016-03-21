@@ -8,16 +8,22 @@
 
 import Foundation
 
-internal protocol KeyPathParser{
     
+
+
+public protocol KeyPathParser{
+    static func parse<T>(value:AnyObject?, forKeyPath keyPath:KeyPath)->T?
 }
 
 extension KeyPathParser{
-    func parse(value:AnyObject?, forKeyPath keyPath:String, separater:String = ".")->AnyObject?{
-        let keyPathes = keyPath.componentsSeparatedByString(separater)
+    
+    public static func parse<T>(value:AnyObject?, forKeyPath keyPath:KeyPath)->T?{
+
+        let keyPathes = keyPath.path.componentsSeparatedByString(keyPath.separater)
         let result = keyPathes.reduce(value) { (parsedObject, key) -> AnyObject? in
             return parsedObject?[key]
         }
-        return result
+        
+        return result as? T
     }
 }
