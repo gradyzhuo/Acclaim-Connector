@@ -15,13 +15,13 @@ public class RestfulAPI : APICaller {
         return self
     }
     
-    public func addJSONResponseHandler(keyPath keyPath:String, option:NSJSONReadingOptions = .AllowFragments, handler:JSONResponseAssistant.Handler)->Self{
-        self.addResponseAssistant(responseAssistant: JSONResponseAssistant(forKeyPath: keyPath, option: option, handler: handler))
+    public func addJSONResponseHandler(keyPath keyPath:KeyPath, option:NSJSONReadingOptions = .AllowFragments, handler:JSONResponseAssistant.Handler)->Self{
+        self.addResponseAssistant(responseAssistant: JSONResponseAssistant(forKeyPath: keyPath, options: option, handler: handler))
         return self
     }
     
     public func addJSONResponseHandler(option:NSJSONReadingOptions = .AllowFragments, handler:JSONResponseAssistant.Handler)->Self{
-        self.addResponseAssistant(responseAssistant: JSONResponseAssistant(option: option, handler: handler))
+        self.addResponseAssistant(responseAssistant: JSONResponseAssistant(options: option, handler: handler))
         return self
     }
     
