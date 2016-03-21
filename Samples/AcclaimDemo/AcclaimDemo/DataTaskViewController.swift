@@ -18,7 +18,6 @@ class DataTaskViewController: UIViewController {
         super.viewDidLoad()
         
         let api:API = "fling"
-
         self.apiCaller = Acclaim.call(API: api,  params: ["fling_hash":"dQAXWbcv"])
         .addFailedResponseHandler { (result) in
             print("failed:\(result.error)")
@@ -36,6 +35,7 @@ class DataTaskViewController: UIViewController {
         super.viewDidDisappear(animated)
         
         self.apiCaller?.cancel()
+        self.apiCaller = nil
         
     }
 

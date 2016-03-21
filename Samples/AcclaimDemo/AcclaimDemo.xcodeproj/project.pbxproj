@@ -11,6 +11,7 @@
 		7914ADD31C3BCFF30089FEF0 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7914ADD11C3BCFF30089FEF0 /* Main.storyboard */; };
 		7914ADD51C3BCFF30089FEF0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7914ADD41C3BCFF30089FEF0 /* Assets.xcassets */; };
 		7914ADD81C3BCFF30089FEF0 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7914ADD61C3BCFF30089FEF0 /* LaunchScreen.storyboard */; };
+		796B348D1C9ED8A9004D0F2F /* AcclaimDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 796B348C1C9ED8A9004D0F2F /* AcclaimDemoTests.swift */; };
 		7990F8B61C93353E00590679 /* DataTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8B51C93353E00590679 /* DataTaskViewController.swift */; };
 		7990F8B81C93354A00590679 /* DownloadTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8B71C93354A00590679 /* DownloadTaskViewController.swift */; };
 		7990F8BA1C93355300590679 /* UploadTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8B91C93355300590679 /* UploadTaskViewController.swift */; };
@@ -18,6 +19,16 @@
 		79C415FA1C972725008B3496 /* Acclaim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79C415F91C972725008B3496 /* Acclaim.framework */; };
 		79C415FB1C972725008B3496 /* Acclaim.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 79C415F91C972725008B3496 /* Acclaim.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		796B348F1C9ED8A9004D0F2F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7914ADC21C3BCFF30089FEF0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7914ADC91C3BCFF30089FEF0;
+			remoteInfo = AcclaimDemo;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		79C415FC1C972726008B3496 /* Embed Frameworks */ = {
@@ -40,10 +51,12 @@
 		7914ADD41C3BCFF30089FEF0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7914ADD71C3BCFF30089FEF0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7914ADD91C3BCFF30089FEF0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		796B348A1C9ED8A9004D0F2F /* AcclaimDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AcclaimDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		796B348C1C9ED8A9004D0F2F /* AcclaimDemoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcclaimDemoTests.swift; sourceTree = "<group>"; };
+		796B348E1C9ED8A9004D0F2F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7990F8B51C93353E00590679 /* DataTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DataTaskViewController.swift; sourceTree = "<group>"; };
 		7990F8B71C93354A00590679 /* DownloadTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadTaskViewController.swift; sourceTree = "<group>"; };
 		7990F8B91C93355300590679 /* UploadTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadTaskViewController.swift; sourceTree = "<group>"; };
-		7990F8BB1C93E34600590679 /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Acclaim.framework; path = "/Users/gradyzhuo/Library/Developer/Xcode/DerivedData/Acclaim-cvyirjorhotobufqrvisqsslkbcy/Build/Products/Release-iphonesimulator/Acclaim.framework"; sourceTree = "<absolute>"; };
 		7990F8BF1C93F38D00590679 /* ConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionViewController.swift; sourceTree = "<group>"; };
 		79C415F91C972725008B3496 /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Acclaim.framework; path = "/Users/gradyzhuo/Library/Developer/Xcode/DerivedData/Acclaim-cvyirjorhotobufqrvisqsslkbcy/Build/Products/Debug-iphonesimulator/Acclaim.framework"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
@@ -57,6 +70,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		796B34871C9ED8A9004D0F2F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -64,8 +84,8 @@
 			isa = PBXGroup;
 			children = (
 				79C415F91C972725008B3496 /* Acclaim.framework */,
-				7990F8BB1C93E34600590679 /* Acclaim.framework */,
 				7914ADCC1C3BCFF30089FEF0 /* AcclaimDemo */,
+				796B348B1C9ED8A9004D0F2F /* AcclaimDemoTests */,
 				7914ADCB1C3BCFF30089FEF0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -74,6 +94,7 @@
 			isa = PBXGroup;
 			children = (
 				7914ADCA1C3BCFF30089FEF0 /* AcclaimDemo.app */,
+				796B348A1C9ED8A9004D0F2F /* AcclaimDemoTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -92,6 +113,15 @@
 				7990F8BF1C93F38D00590679 /* ConnectionViewController.swift */,
 			);
 			path = AcclaimDemo;
+			sourceTree = "<group>";
+		};
+		796B348B1C9ED8A9004D0F2F /* AcclaimDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				796B348C1C9ED8A9004D0F2F /* AcclaimDemoTests.swift */,
+				796B348E1C9ED8A9004D0F2F /* Info.plist */,
+			);
+			path = AcclaimDemoTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -115,19 +145,41 @@
 			productReference = 7914ADCA1C3BCFF30089FEF0 /* AcclaimDemo.app */;
 			productType = "com.apple.product-type.application";
 		};
+		796B34891C9ED8A9004D0F2F /* AcclaimDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 796B34911C9ED8A9004D0F2F /* Build configuration list for PBXNativeTarget "AcclaimDemoTests" */;
+			buildPhases = (
+				796B34861C9ED8A9004D0F2F /* Sources */,
+				796B34871C9ED8A9004D0F2F /* Frameworks */,
+				796B34881C9ED8A9004D0F2F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				796B34901C9ED8A9004D0F2F /* PBXTargetDependency */,
+			);
+			name = AcclaimDemoTests;
+			productName = AcclaimDemoTests;
+			productReference = 796B348A1C9ED8A9004D0F2F /* AcclaimDemoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
 		7914ADC21C3BCFF30089FEF0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0720;
+				LastSwiftUpdateCheck = 0730;
 				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = Offsky;
 				TargetAttributes = {
 					7914ADC91C3BCFF30089FEF0 = {
 						CreatedOnToolsVersion = 7.2;
 						DevelopmentTeam = XWA3XUFMA8;
+					};
+					796B34891C9ED8A9004D0F2F = {
+						CreatedOnToolsVersion = 7.3;
+						TestTargetID = 7914ADC91C3BCFF30089FEF0;
 					};
 				};
 			};
@@ -145,6 +197,7 @@
 			projectRoot = "";
 			targets = (
 				7914ADC91C3BCFF30089FEF0 /* AcclaimDemo */,
+				796B34891C9ED8A9004D0F2F /* AcclaimDemoTests */,
 			);
 		};
 /* End PBXProject section */
@@ -157,6 +210,13 @@
 				7914ADD81C3BCFF30089FEF0 /* LaunchScreen.storyboard in Resources */,
 				7914ADD51C3BCFF30089FEF0 /* Assets.xcassets in Resources */,
 				7914ADD31C3BCFF30089FEF0 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		796B34881C9ED8A9004D0F2F /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -175,7 +235,23 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		796B34861C9ED8A9004D0F2F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				796B348D1C9ED8A9004D0F2F /* AcclaimDemoTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		796B34901C9ED8A9004D0F2F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 7914ADC91C3BCFF30089FEF0 /* AcclaimDemo */;
+			targetProxy = 796B348F1C9ED8A9004D0F2F /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		7914ADD11C3BCFF30089FEF0 /* Main.storyboard */ = {
@@ -318,6 +394,34 @@
 			};
 			name = Release;
 		};
+		796B34921C9ED8A9004D0F2F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				INFOPLIST_FILE = AcclaimDemoTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.offsky.AcclaimDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AcclaimDemo.app/AcclaimDemo";
+			};
+			name = Debug;
+		};
+		796B34931C9ED8A9004D0F2F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NONNULL = YES;
+				INFOPLIST_FILE = AcclaimDemoTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = org.offsky.AcclaimDemoTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AcclaimDemo.app/AcclaimDemo";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -338,6 +442,14 @@
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
+		};
+		796B34911C9ED8A9004D0F2F /* Build configuration list for PBXNativeTarget "AcclaimDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				796B34921C9ED8A9004D0F2F /* Debug */,
+				796B34931C9ED8A9004D0F2F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
 		};
 /* End XCConfigurationList section */
 	};
