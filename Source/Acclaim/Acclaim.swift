@@ -32,8 +32,7 @@ public struct AcclaimConfiguration{
 
 public class Acclaim {
     
-    public typealias Connection = (request: NSURLRequest, response: NSURLResponse?, cached: Bool)
-    public typealias HTTPConnection = (request: NSURLRequest, response: NSHTTPURLResponse?)
+//    public typealias Connection = (request: NSURLRequest, response: NSURLResponse?, cached: Bool)
 
     public static let version = AcclaimVersionNumber
     
