@@ -18,6 +18,7 @@ public struct KeyPath {
         self.path = path
         self.separater = separater
     }
+    
 }
 
 extension KeyPath : Hashable {
@@ -54,18 +55,19 @@ extension KeyPath : StringLiteralConvertible {
 }
 
 
-internal protocol KeyPathParser{
-    func parse(value:AnyObject?, forKeyPath keyPath:KeyPath)->AnyObject?
+public protocol KeyPathParser{
+    static func parse<T>(value:AnyObject?, forKeyPath keyPath:KeyPath)->T?
 }
 
 extension KeyPathParser{
     
-    func parse(value:AnyObject?, forKeyPath keyPath:KeyPath)->AnyObject?{
+    public static func parse<T>(value:AnyObject?, forKeyPath keyPath:KeyPath)->T?{
 
         let keyPathes = keyPath.path.componentsSeparatedByString(keyPath.separater)
         let result = keyPathes.reduce(value) { (parsedObject, key) -> AnyObject? in
-            return parsedObject?[key] as? KeyPath.ExpectedType
+            return parsedObject?[key]
         }
-        return result
+        
+        return result as? T
     }
 }

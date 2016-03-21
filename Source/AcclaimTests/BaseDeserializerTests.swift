@@ -8,6 +8,7 @@
 
 import XCTest
 
-class BaseDeserializerTests: XCTestCase {
+class BaseDeserializerTests: AcclaimTests {
     var data: NSData?
+    
 }

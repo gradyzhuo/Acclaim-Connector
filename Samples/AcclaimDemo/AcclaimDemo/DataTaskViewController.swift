@@ -24,11 +24,6 @@ class DataTaskViewController: UIViewController {
         }.addJSONResponseHandler { (result) in
             print("cached: \(result.connection.cached)")
             print("result.JSONObject:\(result.JSONObject)")
-        }.addTextResponseHandler { (text, connection) in
-            print("text:\(text)")
-        }.addOriginalDataResponseHandler{ (data, connection) in
-            let result = TextDeserializer().deserialize(data)
-            print("ttt:", result.outcome)
         }
 
         //.cacheStoragePolicy = .NotAllowed//.Allowed(renewRule: .RenewSinceData(data: NSDate().dateByAddingTimeInterval(1)))
@@ -40,6 +35,7 @@ class DataTaskViewController: UIViewController {
         super.viewDidDisappear(animated)
         
         self.apiCaller?.cancel()
+        self.apiCaller = nil
         
     }
 

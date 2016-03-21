@@ -8,6 +8,7 @@
 
 import Foundation
 
+/* not implemented.*/
 public struct MIME  {
 //    /// Convert from a value of `RawValue`, succeeding unconditionally.
 //    public init(rawValue: Self.RawValue)

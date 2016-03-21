@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct JSONResponseAssistant : ResponseAssistant{
+public struct JSONResponseAssistant : ResponseAssistant, KeyPathParser{
     public typealias DeserializerType = JSONDeserializer
     public typealias Handler = (JSONObject : JSONDeserializer.Outcome?, connection: Connection)->Void
     
@@ -45,7 +45,7 @@ public struct JSONResponseAssistant : ResponseAssistant{
         self.handler?(JSONObject : JSON, connection: connection)
 
         for (keyPath, handler) in handlers {
-            handler(JSONObject: self.deserializer.parse(JSON, forKeyPath: keyPath), connection: connection)
+            handler(JSONObject: JSONDeserializer.parse(JSON, forKeyPath: keyPath), connection: connection)
         }
         
         return error
