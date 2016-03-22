@@ -78,22 +78,22 @@
 
 /* Begin PBXFileReference section */
 		79213F141B7B04C500A527DE /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Acclaim.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		79213F181B7B04C500A527DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		79213F181B7B04C500A527DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = ../../Projects/Acclaim/Info.plist; sourceTree = "<group>"; };
 		79213F191B7B04C500A527DE /* Acclaim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Acclaim.h; path = ../../Projects/Acclaim/Acclaim.h; sourceTree = "<group>"; };
 		79213F1F1B7B04C500A527DE /* AcclaimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AcclaimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		79213F251B7B04C500A527DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		79213F261B7B04C500A527DE /* AcclaimTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcclaimTests.swift; sourceTree = "<group>"; };
-		79213F301B7B4B4600A527DE /* Acclaim.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Acclaim.swift; path = ../../Sources/Acclaim.swift; sourceTree = "<group>"; };
-		79309B9F1B82404D00C6B426 /* RequestParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RequestParameter.swift; path = ../../Sources/RequestParameter.swift; sourceTree = "<group>"; };
-		79309BA21B82506E00C6B426 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = API.swift; path = ../../Sources/API.swift; sourceTree = "<group>"; };
+		79213F301B7B4B4600A527DE /* Acclaim.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Acclaim.swift; sourceTree = "<group>"; };
+		79309B9F1B82404D00C6B426 /* RequestParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestParameter.swift; sourceTree = "<group>"; };
+		79309BA21B82506E00C6B426 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = API.swift; sourceTree = "<group>"; };
 		793C546F1C6ACDC700CC2432 /* Acclaim_OC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Acclaim_OC.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		793C54711C6ACDC700CC2432 /* Acclaim-OC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Acclaim-OC.h"; sourceTree = "<group>"; };
-		793C54731C6ACDC700CC2432 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		793C54711C6ACDC700CC2432 /* Acclaim-OC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "Acclaim-OC.h"; path = "../../Projects/Acclaim-OC/Acclaim-OC.h"; sourceTree = "<group>"; };
+		793C54731C6ACDC700CC2432 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Info.plist; path = "../../Projects/Acclaim-OC/Info.plist"; sourceTree = "<group>"; };
 		793C54891C6ACE6900CC2432 /* ACAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACAPI.swift; sourceTree = "<group>"; };
 		793C548A1C6ACE6900CC2432 /* ACAPICaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACAPICaller.swift; sourceTree = "<group>"; };
 		793C548B1C6ACE6900CC2432 /* ACAPIQueuePriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACAPIQueuePriority.swift; sourceTree = "<group>"; };
 		793C548C1C6ACE6900CC2432 /* ACHTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACHTTPMethod.swift; sourceTree = "<group>"; };
-		793C54911C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift"; path = "../../Sources/APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift"; sourceTree = "<group>"; };
+		793C54911C6B096A00CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift"; sourceTree = "<group>"; };
 		793C549B1C6B9EA300CC2432 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift"; sourceTree = "<group>"; };
 		796B34721C9E8D54004D0F2F /* Deserializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deserializer.swift; sourceTree = "<group>"; };
 		796B34741C9E8D7B004D0F2F /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
@@ -111,7 +111,7 @@
 		79719EA01C9E82B90086268A /* OriginalDataResponseAssistant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OriginalDataResponseAssistant.swift; sourceTree = "<group>"; };
 		79719EA11C9E82B90086268A /* ResumeDataResponseAssistant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResumeDataResponseAssistant.swift; sourceTree = "<group>"; };
 		79719EA21C9E82B90086268A /* TextResponseAssistant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextResponseAssistant.swift; sourceTree = "<group>"; };
-		797AFE3B1B8396BA009E9227 /* QueuePriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QueuePriority.swift; path = ../../Sources/QueuePriority.swift; sourceTree = "<group>"; };
+		797AFE3B1B8396BA009E9227 /* QueuePriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueuePriority.swift; sourceTree = "<group>"; };
 		7990F8C11C93F6B100590679 /* MIME.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MIME.swift; sourceTree = "<group>"; };
 		7990F8CA1C96588B00590679 /* Downloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Downloader.swift; sourceTree = "<group>"; };
 		7990F8CB1C96588B00590679 /* RestfulAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestfulAPI.swift; sourceTree = "<group>"; };
@@ -122,8 +122,8 @@
 		7993CC981C9EFE5F002CD6BF /* BaseDeserializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseDeserializerTests.swift; sourceTree = "<group>"; };
 		7993CC9B1C9F9E94002CD6BF /* APITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APITests.swift; sourceTree = "<group>"; };
 		79ABDB251C9C7C2C0097658B /* Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
-		79C373E81B7DED2100C809BE /* APICaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = APICaller.swift; path = ../../Sources/APICaller.swift; sourceTree = "<group>"; };
-		79C373EC1B7DF19800C809BE /* HTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HTTPMethod.swift; path = ../../Sources/HTTPMethod.swift; sourceTree = "<group>"; };
+		79C373E81B7DED2100C809BE /* APICaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APICaller.swift; sourceTree = "<group>"; };
+		79C373EC1B7DF19800C809BE /* HTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HTTPMethod.swift; sourceTree = "<group>"; };
 		79C415F71C96A31E008B3496 /* Uploader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Uploader.swift; sourceTree = "<group>"; };
 		79C416041C972AF1008B3496 /* ACRequestParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ACRequestParameters.swift; sourceTree = "<group>"; };
 		79C416061C989218008B3496 /* APIBundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIBundle.swift; sourceTree = "<group>"; };
@@ -184,8 +184,7 @@
 				79719E8D1C9E81390086268A /* Assistant.swift */,
 				79719E9C1C9E82B90086268A /* Implementations */,
 			);
-			name = ResponseAssistant;
-			path = ../../Sources/ResponseAssistant;
+			path = ResponseAssistant;
 			sourceTree = "<group>";
 		};
 		79213F0A1B7B04C500A527DE = {
@@ -229,7 +228,7 @@
 				79213F171B7B04C500A527DE /* Supporting Files */,
 			);
 			name = Acclaim;
-			path = Projects/Acclaim;
+			path = Sources/Swift;
 			sourceTree = "<group>";
 		};
 		79213F171B7B04C500A527DE /* Supporting Files */ = {
@@ -273,7 +272,7 @@
 				79C416041C972AF1008B3496 /* ACRequestParameters.swift */,
 			);
 			name = "Acclaim-OC";
-			path = "Projects/Acclaim-OC";
+			path = "Sources/Objective-C";
 			sourceTree = "<group>";
 		};
 		796B346E1C9E8D38004D0F2F /* Deserializer */ = {
@@ -337,8 +336,7 @@
 				79C415F71C96A31E008B3496 /* Uploader.swift */,
 				79C416061C989218008B3496 /* APIBundle.swift */,
 			);
-			name = Callers;
-			path = ../../Sources/Callers;
+			path = Callers;
 			sourceTree = "<group>";
 		};
 		7993CC8B1C9EFA9A002CD6BF /* Acclaim_OCTests */ = {
@@ -373,8 +371,7 @@
 			children = (
 				79ABDB251C9C7C2C0097658B /* Connection.swift */,
 			);
-			name = Connection;
-			path = ../../Sources/Connection;
+			path = Connection;
 			sourceTree = "<group>";
 		};
 		79C416091C99DF86008B3496 /* Connector */ = {
@@ -383,8 +380,7 @@
 				79C4160B1C99DF9B008B3496 /* Connector.swift */,
 				79C4160A1C99DF86008B3496 /* URLSession */,
 			);
-			name = Connector;
-			path = ../../Sources/Connector;
+			path = Connector;
 			sourceTree = "<group>";
 		};
 		79C4160A1C99DF86008B3496 /* URLSession */ = {
@@ -404,8 +400,7 @@
 				79F1D9EE1C63B59200FBC6C1 /* KeyPathParser.swift */,
 				7990F8C11C93F6B100590679 /* MIME.swift */,
 			);
-			name = Utlitities;
-			path = ../../Sources/Utlitities;
+			path = Utlitities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
