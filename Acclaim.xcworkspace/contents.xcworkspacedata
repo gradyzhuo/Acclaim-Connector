@@ -5,9 +5,6 @@
       location = "group:Samples/OCTest/OCTest.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Samples/AcclaimDemo/AcclaimDemo.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:Acclaim.xcodeproj">
    </FileRef>
    <FileRef
