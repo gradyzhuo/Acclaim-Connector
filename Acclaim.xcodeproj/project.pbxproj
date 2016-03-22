@@ -230,7 +230,8 @@
 				79213F171B7B04C500A527DE /* Supporting Files */,
 				791D80F21C4F8FFA009126E6 /* ResponseStatus.swift */,
 			);
-			path = Acclaim;
+			name = Acclaim;
+			path = Source/Acclaim;
 			sourceTree = "<group>";
 		};
 		79213F171B7B04C500A527DE /* Supporting Files */ = {

@@ -8,7 +8,7 @@
       location = "group:Samples/AcclaimDemo/AcclaimDemo.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Source/Acclaim.xcodeproj">
+      location = "group:Acclaim.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Playgrounds/MyPlayground.playground">
