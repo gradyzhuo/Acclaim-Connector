@@ -12,6 +12,6 @@ s.social_media_url = "https://about.me/gradyzhuo"
 s.source       = { :git => "https://github.com/gradyzhuo/Acclaim.git", :tag => s.version.to_s }
 s.platform     = :ios, '9.0'
 s.requires_arc = true
-s.source_files = 'Acclaim/Classes/**/*.swift'
+s.source_files = 'AcclaimSwift/Acclaim/Classes/**/*.swift'
 s.frameworks   = 'Foundation'
 end
