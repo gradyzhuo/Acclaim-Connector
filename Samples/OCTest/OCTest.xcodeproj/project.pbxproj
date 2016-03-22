@@ -13,10 +13,6 @@
 		795432E11C5545E50011A522 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 795432DF1C5545E50011A522 /* Main.storyboard */; };
 		795432E31C5545E50011A522 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 795432E21C5545E50011A522 /* Assets.xcassets */; };
 		795432E61C5545E50011A522 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 795432E41C5545E50011A522 /* LaunchScreen.storyboard */; };
-		79C415FE1C972734008B3496 /* Acclaim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79C415FD1C972734008B3496 /* Acclaim.framework */; };
-		79C415FF1C972734008B3496 /* Acclaim.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 79C415FD1C972734008B3496 /* Acclaim.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		79C416011C972734008B3496 /* Acclaim_OC.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79C416001C972734008B3496 /* Acclaim_OC.framework */; };
-		79C416021C972734008B3496 /* Acclaim_OC.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 79C416001C972734008B3496 /* Acclaim_OC.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,8 +22,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				79C415FF1C972734008B3496 /* Acclaim.framework in Embed Frameworks */,
-				79C416021C972734008B3496 /* Acclaim_OC.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -45,8 +39,6 @@
 		795432E21C5545E50011A522 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		795432E51C5545E50011A522 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		795432E71C5545E50011A522 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		79C415FD1C972734008B3496 /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Acclaim.framework; path = "/Users/gradyzhuo/Library/Developer/Xcode/DerivedData/Acclaim-cvyirjorhotobufqrvisqsslkbcy/Build/Products/Debug-iphonesimulator/Acclaim.framework"; sourceTree = "<absolute>"; };
-		79C416001C972734008B3496 /* Acclaim_OC.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; name = Acclaim_OC.framework; path = "/Users/gradyzhuo/Library/Developer/Xcode/DerivedData/Acclaim-cvyirjorhotobufqrvisqsslkbcy/Build/Products/Debug-iphonesimulator/Acclaim_OC.framework"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,8 +46,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				79C415FE1C972734008B3496 /* Acclaim.framework in Frameworks */,
-				79C416011C972734008B3496 /* Acclaim_OC.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -65,8 +55,6 @@
 		795432CA1C5545E50011A522 = {
 			isa = PBXGroup;
 			children = (
-				79C416001C972734008B3496 /* Acclaim_OC.framework */,
-				79C415FD1C972734008B3496 /* Acclaim.framework */,
 				795432D51C5545E50011A522 /* OCTest */,
 				795432D41C5545E50011A522 /* Products */,
 			);

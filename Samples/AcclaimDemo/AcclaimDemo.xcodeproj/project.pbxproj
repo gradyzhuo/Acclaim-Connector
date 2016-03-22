@@ -423,6 +423,7 @@
 					"$(PROJECT_DIR)/AcclaimDemo",
 				);
 				INFOPLIST_FILE = AcclaimDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.offsky.AcclaimDemo;
@@ -443,6 +444,7 @@
 					"$(PROJECT_DIR)/AcclaimDemo",
 				);
 				INFOPLIST_FILE = AcclaimDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = org.offsky.AcclaimDemo;
