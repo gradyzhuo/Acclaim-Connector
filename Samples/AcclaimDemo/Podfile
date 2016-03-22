@@ -3,4 +3,4 @@
 
 use_frameworks!
 
-pod 'Acclaim', :git => 'https://github.com/gradyzhuo/Acclaim.git'
+pod 'Acclaim' #, :git => 'https://github.com/gradyzhuo/Acclaim.git'

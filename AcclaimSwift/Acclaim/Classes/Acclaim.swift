@@ -14,9 +14,9 @@ import Foundation
 public let ACAPIHostURLInfoKey:String = "ACAPIHostURLInfoKey"
 
 public struct AcclaimConfiguration{
-    var connector: Connector
-    var hostURLInfoKey: String
-    var bundleForHostURLInfo: NSBundle
+    public internal(set) var connector: Connector
+    public internal(set) var hostURLInfoKey: String
+    public internal(set) var bundleForHostURLInfo: NSBundle
     
     public init(connector: Connector, hostURLInfoKey key: String, bundleForHostURLInfo bundle: NSBundle){
         self.connector = connector
