@@ -9,7 +9,7 @@
 import Foundation
 
 extension NSURLCacheStoragePolicy {
-    init(_ rawValue: APICaller.CacheStoragePolicy) {
+    public init(_ rawValue: APICaller.CacheStoragePolicy) {
         switch rawValue{
         case .Allowed:
             self = .Allowed
@@ -23,7 +23,7 @@ extension NSURLCacheStoragePolicy {
 
 extension APICaller.CacheStoragePolicy {
     
-    internal init(_ rawValue: NSURLCacheStoragePolicy){
+    public init(_ rawValue: NSURLCacheStoragePolicy){
         switch rawValue {
         case .Allowed:
             self = .Allowed(renewRule: .NotRenewed)
