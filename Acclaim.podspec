@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
 s.name         = "Acclaim"
-s.version      = "0.1"
+s.version      = "0.1.1"
 s.summary      = "整合式 Server API 呼叫的好幫手。"
 s.description  = <<-DESC
 Acclaim 是整合式 Server API 呼叫的好幫手。
