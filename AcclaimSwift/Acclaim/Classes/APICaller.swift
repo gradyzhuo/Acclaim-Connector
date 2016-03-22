@@ -6,6 +6,8 @@
 //  Copyright (c) 2015 Grady Zhuo. All rights reserved.
 //
 
+import Foundation
+
 public protocol Caller{
     init(API api: API, params: RequestParameters, connector: Connector)
 }

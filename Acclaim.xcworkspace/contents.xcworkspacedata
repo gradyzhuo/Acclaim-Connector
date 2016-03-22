@@ -2,10 +2,10 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:Samples/OCTest/OCTest.xcodeproj">
+      location = "group:AcclaimOC/AcclaimOC.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:Acclaim.xcodeproj">
+      location = "group:AcclaimSwift/Acclaim.xcodeproj">
    </FileRef>
    <FileRef
       location = "group:Playgrounds/MyPlayground.playground">
