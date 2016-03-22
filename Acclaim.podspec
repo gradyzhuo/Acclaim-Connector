@@ -14,8 +14,7 @@ s.platform     = :ios, '9.0'
 s.requires_arc = true
 s.source_files = 'Sources/Swift/**/*.swift'
 s.frameworks   = 'Foundation'
-end
-
 subspec 'AcclaimOC' do |sp|
   sp.source_files = 'Sources/Objective-C/**/*.swift'
+end
 end
