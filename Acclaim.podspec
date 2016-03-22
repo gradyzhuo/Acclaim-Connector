@@ -5,7 +5,7 @@ s.summary      = "整合式 Server API 呼叫的好幫手。"
 s.description  = <<-DESC
 整合式 Server API 呼叫的好幫手。
 DESC
-s.homepage     = "https://github.com/gradyzhuo/Acclaim"
+s.homepage     = "https://github.com/gradyzhuo/Acclaim.git"
 s.license      = { :type => 'MIT', :file => 'LICENSE.txt' }
 s.author       = { "Grady Zhuo" => "gradyzhuo@gmail.com" }
 s.social_media_url = "https://about.me/gradyzhuo"
