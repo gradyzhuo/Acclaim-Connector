@@ -4,3 +4,4 @@
 use_frameworks!
 
 pod 'Acclaim', :git => 'https://github.com/gradyzhuo/Acclaim.git'
+pod 'TWMLMatrix', :git => 'https://github.com/gradyzhuo/TWMLMatrix.git'
