@@ -6,7 +6,7 @@ You can do 'addResponse:' to create response handler to fetch the deserialized o
 
 Here is the sample code to try make a caller to do a API path called getName, and expect to fetch the json object and original data to continue the app task.
 
-### Sample: Call Server-API by method `GET`, through DataTask.
+### Sample: Call Server-API by method `GET`, through `RestfulAPI`.
 ```swift
 Acclaim.call(API: "[API Path]",  params: ["key":"value"])
 .addJSONResponseHandler { (JSONObject, connection) in
