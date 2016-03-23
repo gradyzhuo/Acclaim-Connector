@@ -8,7 +8,7 @@ Here is the sample code to try make a caller to do a API path called getName, an
 
 ### Sample: Call Server-API by method `GET`, through DataTask.
 ```swift
-Acclaim.call(API: "[API Path]",  params: ["fling_hash":"dQAXWbcv"])
+Acclaim.call(API: "[API Path]",  params: ["key":"value"])
 .addJSONResponseHandler { (JSONObject, connection) in
     //do something        
 }
