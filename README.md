@@ -15,4 +15,11 @@ Here is the sample code to try make a caller to do a API path called getName, an
          //handle the error with Failed handler, also can use the original data to fix or debug.
      })).run()
 
+    let api:API = "fling"
+    self.apiCaller = Acclaim.call(API: api,  params: ["fling_hash":"dQAXWbcv"])
+    .addJSONResponseHandler { (result) in
+        print("cached: \(result.connection.cached)")
+        print("result.JSONObject:\(result.JSONObject)")
+    }
+
 
