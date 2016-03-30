@@ -12,12 +12,11 @@ public struct TextResponseAssistant : ResponseAssistant{
     public typealias DeserializerType = TextDeserializer
     public typealias Handler = (text : TextDeserializer.Outcome, connection: Connection)->Void
     
-    public var deserializer: DeserializerType
+    public var deserializer: DeserializerType = DeserializerType()
     
-    public internal(set) var handler : Handler?
+    public var handler : Handler?
     
-    public init(deserializer: TextDeserializer = TextDeserializer(), handler: Handler){
-        self.deserializer = deserializer
+    public init(handler: Handler){
         self.handler = handler
     }
     

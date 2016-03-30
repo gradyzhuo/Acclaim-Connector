@@ -17,15 +17,26 @@ class DataTaskViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let api:API = "fling"
-        self.apiCaller = Acclaim.call(API: api,  params: ["fling_hash":"dQAXWbcv"])
-        .addFailedResponseHandler { (result) in
-            print("failed:\(result.error)")
-        }.addJSONResponseHandler { (result) in
-            print("cached: \(result.connection.cached)")
-            print("result.JSONObject:\(result.JSONObject)")
-        }
-
+//        let api:API = "fling"
+//        self.apiCaller = Acclaim.call(API: api,  params: ["fling_hash":"dQAXWbcv"])
+//        .addFailedResponseHandler { (result) in
+//            print("failed:\(result.error)")
+//        }.addJSONResponseHandler { (result) in
+//            print("cached: \(result.connection.cached)")
+//            print("result.JSONObject:\(result.JSONObject)")
+//        }.addJSONResponseHandler(handler: { (JSONObject, connection) in
+//            
+//        })
+        
+        let api:API = "http://data.taipei/opendata/datalist/apiAccess?scope=datasetMetadataSearch"
+        let APICaller = RestfulAPI(API: api, params: ["scope":"datasetMetadataSearch", "q":"id:8ef1626a-892a-4218-8344-f7ac46e1aa48"])
+        APICaller.addJSONResponseHandler(keyPath: "result.count"){ (JSONObject, connection) in
+            print("JSONObject", JSONObject)
+        }.run()
+        
+        
+        
+        
         //.cacheStoragePolicy = .NotAllowed//.Allowed(renewRule: .RenewSinceData(data: NSDate().dateByAddingTimeInterval(1)))
         
     }

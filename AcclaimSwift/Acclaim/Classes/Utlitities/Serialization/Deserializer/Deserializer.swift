@@ -12,4 +12,6 @@ import Foundation
 public protocol Deserializer {
     associatedtype Outcome
     func deserialize(data:NSData?) -> (outcome: Outcome?, error: ErrorType?)
+    
+    init()
 }

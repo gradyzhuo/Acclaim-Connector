@@ -14,12 +14,11 @@ public struct ImageResponseAssistant : ResponseAssistant{
     
     public typealias Handler = (image : ImageDeserializer.Outcome, connection: Connection)->Void
     
-    public var deserializer: DeserializerType
+    public var deserializer: DeserializerType = DeserializerType()
     
-    public internal(set) var handler : Handler?
+    public var handler : Handler?
     
-    public init(deserializer: ImageDeserializer = ImageDeserializer(), handler: Handler){
-        self.deserializer = deserializer
+    public init(handler: Handler){
         self.handler = handler
     }
     

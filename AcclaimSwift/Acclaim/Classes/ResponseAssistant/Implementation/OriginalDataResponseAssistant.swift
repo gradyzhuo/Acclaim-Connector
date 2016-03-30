@@ -13,12 +13,11 @@ public struct OriginalDataResponseAssistant : ResponseAssistant {
     
     public typealias Handler = (data : DataDeserializer.Outcome?, connection: Connection)->Void
     
-    public var deserializer: DeserializerType
+    public var deserializer : DeserializerType = DeserializerType()
     
-    public internal(set) var handler : Handler?
+    public var handler : Handler?
     
-    public init(deserializer: DataDeserializer = DataDeserializer(), handler: Handler){
-        self.deserializer = deserializer
+    public init(handler: Handler){
         self.handler = handler
     }
     

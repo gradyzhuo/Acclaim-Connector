@@ -37,17 +37,3 @@ public struct Connection: _Connection {
         self.cached = cached
     }
 }
-
-//public struct HTTPConnection : Connection {
-//    public typealias ResponseType = NSHTTPURLResponse
-//    
-//    public internal(set) var request: NSURLRequest
-//    public internal(set) var response: HTTPConnection.ResponseType
-//    public internal(set) var cached: Bool
-//    
-//    public init(request: NSURLRequest, response: HTTPConnection.ResponseType, cached: Bool) {
-//        self.request = request
-//        self.response = response
-//        self.cached = cached
-//    }
-//}

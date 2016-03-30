@@ -72,12 +72,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
         // Override point for customization after application launch.
         
-        let string = ["test":"123"]
-        let data = try? NSJSONSerialization.dataWithJSONObject(string, options: .PrettyPrinted)
-        let result = JSONDeserializer(options: .AllowFragments).deserialize(data)
-        print("outcome:\(result.outcome)")
-
-        
         return true
     }
 

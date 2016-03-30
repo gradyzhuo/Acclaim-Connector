@@ -25,4 +25,8 @@ public struct ImageDeserializer : Deserializer{
         
     }
     
+    public init(){
+        
+    }
+    
 }

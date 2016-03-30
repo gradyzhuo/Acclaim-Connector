@@ -12,10 +12,10 @@ public struct JSONResponseAssistant : ResponseAssistant, KeyPathParser{
     public typealias DeserializerType = JSONDeserializer
     public typealias Handler = (JSONObject : JSONDeserializer.Outcome?, connection: Connection)->Void
     
-    public var deserializer: DeserializerType
+    public var deserializer: DeserializerType = DeserializerType(options: .AllowFragments)
     
     public internal(set) var handlers:[KeyPath : Handler] = [:]
-    public internal(set) var handler : Handler?
+    public var handler : Handler?
     
     public init(forKeyPath keyPath:KeyPath, options: NSJSONReadingOptions = NSJSONReadingOptions.AllowFragments, handler: Handler) {
         
@@ -24,8 +24,7 @@ public struct JSONResponseAssistant : ResponseAssistant, KeyPathParser{
         
     }
     
-    public init(deserializer: JSONDeserializer = JSONDeserializer(options: .AllowFragments), handler: Handler){
-        self.deserializer = deserializer
+    public init(handler: Handler){
         self.handler = handler
     }
     

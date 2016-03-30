@@ -39,6 +39,10 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
     }
     
     
+    public init(){
+        self.options = .AllowFragments
+    }
+    
     public init(options: NSJSONReadingOptions){
         self.options = options
     }

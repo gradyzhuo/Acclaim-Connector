@@ -278,11 +278,11 @@ extension APICaller {
 extension APICaller {
 
     public func addFailedResponseHandler(statusCode statusCode:Int? = nil, handler:FailedResponseAssistant.Handler)->Self{
-        let assistant:FailedResponseAssistant
+        var assistant = FailedResponseAssistant()
         if let statusCode = statusCode {
-            assistant = FailedResponseAssistant(statusCode: statusCode, handler: handler)
+            assistant.addHandler(forStatusCode: statusCode, handler: handler)
         }else{
-            assistant = FailedResponseAssistant(handler: handler)
+            assistant.handler = handler
         }
         self.failedResponseAssistants.append(assistant)
         
@@ -328,6 +328,35 @@ extension APICaller.CacheStoragePolicy.RenewRule {
             return "RenewSinceDate"
         case .RenewByRetry:
             return "RenewByRetry"
+        }
+    }
+}
+
+
+
+extension NSURLCacheStoragePolicy {
+    public init(_ rawValue: APICaller.CacheStoragePolicy) {
+        switch rawValue{
+        case .Allowed:
+            self = .Allowed
+        case .AllowedInMemoryOnly:
+            self = .AllowedInMemoryOnly
+        case .NotAllowed:
+            self = .NotAllowed
+        }
+    }
+}
+
+extension APICaller.CacheStoragePolicy {
+    
+    public init(_ rawValue: NSURLCacheStoragePolicy){
+        switch rawValue {
+        case .Allowed:
+            self = .Allowed(renewRule: .NotRenewed)
+        case .AllowedInMemoryOnly:
+            self = .AllowedInMemoryOnly(renewRule: .NotRenewed)
+        case .NotAllowed:
+            self = .NotAllowed
         }
     }
 }

@@ -13,7 +13,7 @@ public protocol APIBundle : class{
     var params: RequestParameters { get }
     var priority: QueuePriority { get }
     
-    var connector: Connector { get }
+    var connector: Connector { set get }
     
     func prepare()
 }

@@ -14,4 +14,8 @@ public struct DataDeserializer : Deserializer {
     public func deserialize(data: NSData?) -> (outcome: Outcome?, error: ErrorType?) {
         return (data, nil)
     }
+    
+    public init(){
+        
+    }
 }

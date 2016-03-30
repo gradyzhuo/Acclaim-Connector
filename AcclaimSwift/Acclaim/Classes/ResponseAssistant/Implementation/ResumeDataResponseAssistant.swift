@@ -15,10 +15,9 @@ public struct ResumeDataResponseAssistant:ResponseAssistant{
     
     public var deserializer: DeserializerType = DataDeserializer()
     
-    public internal(set) var handler : Handler?
+    public var handler : Handler?
     
-    public init(deserializer: DataDeserializer = DataDeserializer(), handler: Handler){
-        self.deserializer = deserializer
+    public init(handler: Handler){
         self.handler = handler
     }
     

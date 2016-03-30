@@ -12,6 +12,8 @@
 		7993CC971C9EFCFF002CD6BF /* DeserializerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7993CC961C9EFCFF002CD6BF /* DeserializerTests.swift */; };
 		7993CC991C9EFE5F002CD6BF /* BaseDeserializerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7993CC981C9EFE5F002CD6BF /* BaseDeserializerTests.swift */; };
 		7993CC9C1C9F9E94002CD6BF /* APITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7993CC9B1C9F9E94002CD6BF /* APITests.swift */; };
+		7994B0E51CA7B38100BD73B3 /* FailedAssistantTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7994B0E41CA7B38100BD73B3 /* FailedAssistantTests.swift */; };
+		799FBFC11CAC53BE0000DACF /* QueuePriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799FBFC01CAC53BE0000DACF /* QueuePriority.swift */; };
 		79DFD8E31CA19AD400A87D02 /* APIBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8B51CA19AD400A87D02 /* APIBundle.swift */; };
 		79DFD8E41CA19AD400A87D02 /* Downloader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8B61CA19AD400A87D02 /* Downloader.swift */; };
 		79DFD8E51CA19AD400A87D02 /* RestfulAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8B71CA19AD400A87D02 /* RestfulAPI.swift */; };
@@ -41,11 +43,8 @@
 		79DFD8FD1CA19AD400A87D02 /* Serializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8DA1CA19AD400A87D02 /* Serializer.swift */; };
 		79DFD8FE1CA19AD400A87D02 /* Acclaim.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8DB1CA19AD400A87D02 /* Acclaim.swift */; };
 		79DFD8FF1CA19AD400A87D02 /* API.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8DC1CA19AD400A87D02 /* API.swift */; };
-		79DFD9001CA19AD400A87D02 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8DD1CA19AD400A87D02 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */; };
 		79DFD9011CA19AD400A87D02 /* APICaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8DE1CA19AD400A87D02 /* APICaller.swift */; };
 		79DFD9021CA19AD400A87D02 /* HTTPMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8DF1CA19AD400A87D02 /* HTTPMethod.swift */; };
-		79DFD9031CA19AD400A87D02 /* ModelDeserializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8E01CA19AD400A87D02 /* ModelDeserializer.swift */; };
-		79DFD9041CA19AD400A87D02 /* QueuePriority.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8E11CA19AD400A87D02 /* QueuePriority.swift */; };
 		79DFD9051CA19AD400A87D02 /* RequestParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8E21CA19AD400A87D02 /* RequestParameter.swift */; };
 		79DFD9071CA19B3A00A87D02 /* Acclaim.h in Headers */ = {isa = PBXBuildFile; fileRef = 79DFD9061CA19B3A00A87D02 /* Acclaim.h */; settings = {ATTRIBUTES = (Public, ); }; };
 /* End PBXBuildFile section */
@@ -69,6 +68,8 @@
 		7993CC961C9EFCFF002CD6BF /* DeserializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeserializerTests.swift; sourceTree = "<group>"; };
 		7993CC981C9EFE5F002CD6BF /* BaseDeserializerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseDeserializerTests.swift; sourceTree = "<group>"; };
 		7993CC9B1C9F9E94002CD6BF /* APITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APITests.swift; sourceTree = "<group>"; };
+		7994B0E41CA7B38100BD73B3 /* FailedAssistantTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailedAssistantTests.swift; sourceTree = "<group>"; };
+		799FBFC01CAC53BE0000DACF /* QueuePriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueuePriority.swift; sourceTree = "<group>"; };
 		79DFD8B51CA19AD400A87D02 /* APIBundle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIBundle.swift; sourceTree = "<group>"; };
 		79DFD8B61CA19AD400A87D02 /* Downloader.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Downloader.swift; sourceTree = "<group>"; };
 		79DFD8B71CA19AD400A87D02 /* RestfulAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RestfulAPI.swift; sourceTree = "<group>"; };
@@ -98,11 +99,8 @@
 		79DFD8DA1CA19AD400A87D02 /* Serializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Serializer.swift; sourceTree = "<group>"; };
 		79DFD8DB1CA19AD400A87D02 /* Acclaim.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Acclaim.swift; path = Classes/Acclaim.swift; sourceTree = "<group>"; };
 		79DFD8DC1CA19AD400A87D02 /* API.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = API.swift; path = Classes/API.swift; sourceTree = "<group>"; };
-		79DFD8DD1CA19AD400A87D02 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift"; path = "Classes/APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift"; sourceTree = "<group>"; };
 		79DFD8DE1CA19AD400A87D02 /* APICaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = APICaller.swift; path = Classes/APICaller.swift; sourceTree = "<group>"; };
 		79DFD8DF1CA19AD400A87D02 /* HTTPMethod.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = HTTPMethod.swift; path = Classes/HTTPMethod.swift; sourceTree = "<group>"; };
-		79DFD8E01CA19AD400A87D02 /* ModelDeserializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ModelDeserializer.swift; path = Classes/ModelDeserializer.swift; sourceTree = "<group>"; };
-		79DFD8E11CA19AD400A87D02 /* QueuePriority.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = QueuePriority.swift; path = Classes/QueuePriority.swift; sourceTree = "<group>"; };
 		79DFD8E21CA19AD400A87D02 /* RequestParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = RequestParameter.swift; path = Classes/RequestParameter.swift; sourceTree = "<group>"; };
 		79DFD9061CA19B3A00A87D02 /* Acclaim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Acclaim.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -154,11 +152,8 @@
 				79DFD8CA1CA19AD400A87D02 /* Utlitities */,
 				79DFD8DB1CA19AD400A87D02 /* Acclaim.swift */,
 				79DFD8DC1CA19AD400A87D02 /* API.swift */,
-				79DFD8DD1CA19AD400A87D02 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift */,
 				79DFD8DE1CA19AD400A87D02 /* APICaller.swift */,
 				79DFD8DF1CA19AD400A87D02 /* HTTPMethod.swift */,
-				79DFD8E01CA19AD400A87D02 /* ModelDeserializer.swift */,
-				79DFD8E11CA19AD400A87D02 /* QueuePriority.swift */,
 				79DFD8E21CA19AD400A87D02 /* RequestParameter.swift */,
 				79213F171B7B04C500A527DE /* Supporting Files */,
 			);
@@ -178,12 +173,12 @@
 			isa = PBXGroup;
 			children = (
 				79213F261B7B04C500A527DE /* AcclaimTests.swift */,
+				799FBFBF1CAC4B190000DACF /* AssistantTests */,
 				7993CC9A1C9F9E7F002CD6BF /* BaseTypeTests */,
 				7993CC951C9EFCD7002CD6BF /* Deserializers */,
 				79213F241B7B04C500A527DE /* Supporting Files */,
 			);
-			name = AcclaimTests;
-			path = Projects/AcclaimTests;
+			path = AcclaimTests;
 			sourceTree = "<group>";
 		};
 		79213F241B7B04C500A527DE /* Supporting Files */ = {
@@ -209,6 +204,14 @@
 				7993CC9B1C9F9E94002CD6BF /* APITests.swift */,
 			);
 			name = BaseTypeTests;
+			sourceTree = "<group>";
+		};
+		799FBFBF1CAC4B190000DACF /* AssistantTests */ = {
+			isa = PBXGroup;
+			children = (
+				7994B0E41CA7B38100BD73B3 /* FailedAssistantTests.swift */,
+			);
+			name = AssistantTests;
 			sourceTree = "<group>";
 		};
 		79DFD8B41CA19AD400A87D02 /* Callers */ = {
@@ -278,6 +281,7 @@
 		79DFD8CA1CA19AD400A87D02 /* Utlitities */ = {
 			isa = PBXGroup;
 			children = (
+				799FBFC01CAC53BE0000DACF /* QueuePriority.swift */,
 				79DFD8CB1CA19AD400A87D02 /* KeyPathParser.swift */,
 				79DFD8CC1CA19AD400A87D02 /* MIME.swift */,
 				79DFD8CD1CA19AD400A87D02 /* Serialization */,
@@ -445,7 +449,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				79DFD8E51CA19AD400A87D02 /* RestfulAPI.swift in Sources */,
-				79DFD9031CA19AD400A87D02 /* ModelDeserializer.swift in Sources */,
 				79DFD8FD1CA19AD400A87D02 /* Serializer.swift in Sources */,
 				79DFD8FC1CA19AD400A87D02 /* QueryStringParametersSerializer.swift in Sources */,
 				79DFD8F81CA19AD400A87D02 /* JSON.swift in Sources */,
@@ -459,7 +462,6 @@
 				79DFD8EF1CA19AD400A87D02 /* JSONResponseAssistant.swift in Sources */,
 				79DFD9021CA19AD400A87D02 /* HTTPMethod.swift in Sources */,
 				79DFD8EE1CA19AD400A87D02 /* ImageResponseAssistant.swift in Sources */,
-				79DFD9041CA19AD400A87D02 /* QueuePriority.swift in Sources */,
 				79DFD8EA1CA19AD400A87D02 /* URLSession.swift in Sources */,
 				79DFD8FF1CA19AD400A87D02 /* API.swift in Sources */,
 				79DFD8EC1CA19AD400A87D02 /* Assistant.swift in Sources */,
@@ -471,10 +473,10 @@
 				79DFD8E81CA19AD400A87D02 /* Connector.swift in Sources */,
 				79DFD8F41CA19AD400A87D02 /* MIME.swift in Sources */,
 				79DFD9051CA19AD400A87D02 /* RequestParameter.swift in Sources */,
-				79DFD9001CA19AD400A87D02 /* APICaller.CacheStoragePolicy+NSURLCacheStoragePolicy.swift in Sources */,
 				79DFD8FE1CA19AD400A87D02 /* Acclaim.swift in Sources */,
 				79DFD8FB1CA19AD400A87D02 /* MultipartFormSerializer.swift in Sources */,
 				79DFD9011CA19AD400A87D02 /* APICaller.swift in Sources */,
+				799FBFC11CAC53BE0000DACF /* QueuePriority.swift in Sources */,
 				79DFD8E91CA19AD400A87D02 /* NSURLSessionTask+ACSupport.swift in Sources */,
 				79DFD8E41CA19AD400A87D02 /* Downloader.swift in Sources */,
 				79DFD8F01CA19AD400A87D02 /* OriginalDataResponseAssistant.swift in Sources */,
@@ -487,6 +489,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7993CC991C9EFE5F002CD6BF /* BaseDeserializerTests.swift in Sources */,
+				7994B0E51CA7B38100BD73B3 /* FailedAssistantTests.swift in Sources */,
 				7993CC971C9EFCFF002CD6BF /* DeserializerTests.swift in Sources */,
 				7993CC9C1C9F9E94002CD6BF /* APITests.swift in Sources */,
 				79213F271B7B04C500A527DE /* AcclaimTests.swift in Sources */,

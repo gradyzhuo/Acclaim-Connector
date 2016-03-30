@@ -13,8 +13,14 @@ public protocol Assistant{
 }
 
 public protocol ResponseAssistant : Assistant {
+    associatedtype Handler
     associatedtype DeserializerType : Deserializer
+    
+    var handler : Handler? { set get }
     var deserializer: DeserializerType { set get }
+    
+    init(handler: Handler)
+    
 }
 
 public enum ResponseAssistantType:Int {
