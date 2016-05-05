@@ -32,31 +32,25 @@ public struct AcclaimConfiguration{
 
 public class Acclaim {
     
-//    public typealias Connection = (request: NSURLRequest, response: NSURLResponse?, cached: Bool)
-
     public static let version = AcclaimVersionNumber
     
     public static var allowsCellularAccess: Bool = true
     
     public static var configuration: AcclaimConfiguration = AcclaimConfiguration.defaultConfiguration
     
-    internal static var running:[String:APICaller] = [:]
+    internal static var running:[String:Caller] = [:]
     
-    internal static func addRunningCaller(caller: APICaller){
+    internal static func addRunningCaller(caller: Caller){
         self.running[caller.identifier] = caller
     }
     
-    internal static func removeRunningCaller(APICaller caller: APICaller?){
+    internal static func removeRunningCaller(caller: Caller?){
 
-        
         if let caller = caller  where self.running.keys.contains(caller.identifier){
             self.running.removeValueForKey(caller.identifier)
         }
         
-        caller?.blockInQueue = nil
-        caller?.running = false
-        
-        ACDebugLog("removeRunningCallerByAPI:\(caller?.api.apiURL)")
+        ACDebugLog("removeRunningCallerByIdentifier:\(caller?.identifier)")
         
         defer{
             ACDebugLog("caller:\(caller)")

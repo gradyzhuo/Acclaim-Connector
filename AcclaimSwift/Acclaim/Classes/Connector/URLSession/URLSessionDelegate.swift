@@ -37,7 +37,8 @@ extension URLSessionDelegate : NSURLSessionTaskDelegate {
     
     internal func URLSession(session: NSURLSession, task: NSURLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         
-        task.apiCaller?.sendingProcessHandler?(bytes: bytesSent, totalBytes: totalBytesSent, totalBytesExpected: totalBytesExpectedToSend)
+        let handler = task.apiCaller?.sendingProcessHandler
+        handler?(bytes: bytesSent, totalBytes: totalBytesSent, totalBytesExpected: totalBytesExpectedToSend)
     }
     
     internal func URLSession(session: NSURLSession, task: NSURLSessionTask, willPerformHTTPRedirection response: NSHTTPURLResponse, newRequest request: NSURLRequest, completionHandler: (NSURLRequest?) -> Void) {
@@ -61,18 +62,6 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
         completionHandler(.UseCredential, challenge.proposedCredential)
     }
     
-    
-    //    /* number of body bytes already received */
-    //    public var countOfBytesReceived: Int64 { get }
-    //
-    //    /* number of body bytes already sent */
-    //    public var countOfBytesSent: Int64 { get }
-    //
-    //    /* number of body bytes we expect to send, derived from the Content-Length of the HTTP request */
-    //    public var countOfBytesExpectedToSend: Int64 { get }
-    //
-    //    /* number of byte bytes we expect to receive, usually derived from the Content-Length header of an HTTP response. */
-    //    public var countOfBytesExpectedToReceive: Int64 { get }
     internal func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveData data: NSData) {
         
         dataTask.data.appendData(data)
@@ -80,7 +69,8 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
         let countOfBytesReceived = dataTask.countOfBytesReceived
         let countOfBytesExpectedToReceive = dataTask.countOfBytesExpectedToReceive > 0 ? dataTask.countOfBytesExpectedToReceive : countOfBytesReceived
         
-        dataTask.apiCaller?.receivingProcessHandler?(bytes: Int64(data.length), totalBytes: countOfBytesReceived, totalBytesExpected: countOfBytesExpectedToReceive)
+        let handler = dataTask.apiCaller?.recevingProcessHandler
+        handler?(bytes: Int64(data.length), totalBytes: countOfBytesReceived, totalBytesExpected: countOfBytesExpectedToReceive)
     }
     
     internal func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
@@ -114,8 +104,8 @@ extension URLSessionDelegate : NSURLSessionDownloadDelegate {
     }
     
     internal func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        
-        downloadTask.apiCaller?.receivingProcessHandler?(bytes: bytesWritten, totalBytes: totalBytesWritten, totalBytesExpected: totalBytesExpectedToWrite)
+        let handler = downloadTask.apiCaller?.recevingProcessHandler
+        handler?(bytes: bytesWritten, totalBytes: totalBytesWritten, totalBytesExpected: totalBytesExpectedToWrite)
     }
     
     internal func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didResumeAtOffset fileOffset: Int64, expectedTotalBytes: Int64) {

@@ -47,4 +47,42 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
         self.options = options
     }
     
+    public static func handle(command command: String, value: AnyObject?) -> AnyObject? {
+        
+        guard let value = value else{
+            return 0
+        }
+        
+        if command == "count" {
+            if let items = value as? [AnyObject]  {
+                return items.count
+            }else if let dict = value as? [String:AnyObject] {
+                return dict.count
+            }else if let strValue = value as? String{
+                return strValue.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+            }
+            return 1
+        }
+        
+        if command == "keys" {
+            if let dict = value as? [String:AnyObject] {
+                return dict.keys.map{ $0 }
+            }
+        }
+        
+        if command == "indices" || command == "ranges" {
+            if let items = value as? [AnyObject]  {
+                return items.indices.description
+            }else if let dict = value as? [String:AnyObject] {
+                return dict.keys.map{ $0 }.indices.description
+            }else if let strValue = value as? String{
+                return (strValue.startIndex..<strValue.endIndex).description
+            }else if let intValue = value as? Int {
+                return (0..<intValue).description
+            }
+        }
+        
+        return nil
+    }
+    
 }

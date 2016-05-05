@@ -8,6 +8,9 @@
 
 import Foundation
 
+/**
+ RequestTaskType to assign how API be sended through DataTask(Normal), DownloadTask or UploadTask.
+ */
 public struct RequestTaskType {
     public var method: HTTPMethod
     internal var resumeData: NSData?
@@ -19,14 +22,33 @@ public struct RequestTaskType {
         self.identifier = identifier
     }
     
+    /**
+     Return a Type of DataTask to handle normal API request.
+     - parameters:
+        - method: The method of HTTP connection should be used by DataTask. (default is `GET`)
+     - returns: DataTask's RequestTaskType.
+     */
     public static func DataTask(method method: HTTPMethod = .GET)->RequestTaskType{
         return RequestTaskType(identifier: "DataTask", method: method)
     }
     
+    /**
+     Return a Type of DownloadTask to handle normal API request.
+     - parameters:
+        - method: The method of HTTP connection should be used by DownloadTask. (default is `GET`)
+        - resumeData: It can be resume a downloadTask with previous result's data by pausing. (optional)
+     - returns: DownloadTask's RequestTaskType.
+     */
     public static func DownloadTask(method method: HTTPMethod = .GET, resumeData: NSData? = nil)->RequestTaskType{
         return RequestTaskType(identifier: "DownloadTask", method: method, resumeData: resumeData)
     }
     
+    /**
+     Return a Type of UploadTask to handle normal API request.
+     - parameters:
+        - method: The method of HTTP connection should be used by UploadTask. (default is `GET`)
+     - returns: UploadTask's RequestTaskType.
+     */
     public static func UploadTask(method method: HTTPMethod = .POSTWith(serializer: SerializerType.MultipartForm))->RequestTaskType {
         return RequestTaskType(identifier: "UploadTask", method: method)
     }
@@ -35,42 +57,14 @@ public struct RequestTaskType {
 
 
 extension RequestTaskType : Equatable {
-    
     internal static var DataTask: RequestTaskType = RequestTaskType.DataTask()
     internal static var DownloadTask: RequestTaskType = RequestTaskType.DownloadTask()
     internal static var UploadTask : RequestTaskType = RequestTaskType.UploadTask()
-    
 }
 
 public func ==(lhs: RequestTaskType, rhs: RequestTaskType)->Bool{
     return lhs.identifier == rhs.identifier
 }
-
-//public enum RequestTaskType {
-//    case DataTask(method: HTTPMethod)
-//    case DownloadTask(method:HTTPMethod, resumeData: NSData?)
-//    case UploadTask(method: HTTPMethod)
-//    
-//    internal var method:HTTPMethod  {
-//        switch self {
-//        case .DataTask(let method):
-//            return method
-//        case .DownloadTask(let method, _):
-//            return method
-//        case .UploadTask(let method):
-////            if method == .GET {
-////                ACDebugLog("The method of UploadTask can't be GET, it is be POST instead.")
-////                method = .POST
-////            }
-////            
-////            method = method.HTTPMethodByReplaceSerializer(SerializerType.MultipartForm)
-////            
-////            self = RequestTaskType.UploadTask(method: method)
-//    
-//            return method
-//        }
-//    }
-//}
 
 public class  API : StringLiteralConvertible {
     

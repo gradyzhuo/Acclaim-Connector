@@ -8,47 +8,93 @@
 
 import Foundation
 
-public protocol Caller{
+public protocol APISupport {
+    var api:API               { get }
+    
     init(API api: API, params: RequestParameters, connector: Connector)
 }
 
-public class APICaller : Caller {
+
+public protocol CancelSupport {
+    var cancelledAssistant: Assistant? { get }
+    var cancelledResumeData:NSData? { get }
     
-    internal var identifier: String = String(NSDate().timeIntervalSince1970)
+    func setCancelledResponseHandler(handler:ResumeDataResponseAssistant.Handler)->Self
+}
+
+public protocol ResponseSupport {
     
-    /// A enum describes should Response Cached to a storage forever.
-    public enum CacheStoragePolicy{
-        
-        /// A enum describes the renew rule by the response failed.
-        public enum RenewRule {
-            
-            case NotRenewed
-            /// Not implemented.
-            case RenewSinceDate(data: NSDate)
-            /// Not implemented.
-            case RenewByRetry(limitCount: Int)
-            
-            internal static let DefaultRetryCount = 4
+    var responseAssistants:[Assistant] { get }
+    var failedResponseAssistants:[Assistant] { get }
+    
+    func addResponseAssistant<T:ResponseAssistant>(forType type:ResponseAssistantType, responseAssistant assistant: T)->T
+}
+
+extension ResponseSupport {
+    
+    // convenience response handler function
+    public func addFailedResponseHandler(statusCode statusCode:Int? = nil, handler:FailedResponseAssistant.Handler)->Self{
+        var assistant = FailedResponseAssistant()
+        if let statusCode = statusCode {
+            assistant.addHandler(forStatusCode: statusCode, handler: handler)
+        }else{
+            assistant.handler = handler
         }
+        self.addResponseAssistant(forType: .Failed, responseAssistant: assistant)
         
-        /// Response will be cached into a storage.
-        case Allowed(renewRule: RenewRule)
-        /// Response will be cached into a memory only.
-        case AllowedInMemoryOnly(renewRule: RenewRule)
-        /// Response should not be cached.
-        case NotAllowed
-        
-        internal var renewRule: RenewRule {
-            switch self {
-            case .Allowed(let renewRule):
-                return renewRule
-            case .AllowedInMemoryOnly(let renewRule):
-                return renewRule
-            case .NotAllowed:
-                return .NotRenewed
-            }
-        }
+        return self
     }
+    
+    public func addOriginalDataResponseHandler(handler:OriginalDataResponseAssistant.Handler)->Self{
+        
+        self.addResponseAssistant(forType: .Normal, responseAssistant: OriginalDataResponseAssistant(handler: handler))
+        
+        return self
+    }
+    
+    public func addTextResponseHandler(encoding: NSStringEncoding = NSUTF8StringEncoding, handler:TextResponseAssistant.Handler)->Self{
+        
+        self.addResponseAssistant(forType: .Normal, responseAssistant: TextResponseAssistant(encoding: encoding, handler: handler))
+        
+        return self
+    }
+    
+}
+
+public protocol SendingProcessHandlable:class {
+    var sendingProcessHandler: ProcessHandler? { get }
+    
+    func setSendingProcessHandler(handler: ProcessHandler)->Self
+}
+
+public protocol RecevingProcessHandlable:class {
+    var recevingProcessHandler: ProcessHandler? { get }
+    
+    func setRecevingProcessHandler(handler: ProcessHandler)->Self
+}
+
+public typealias ProcessHandlable = protocol<SendingProcessHandlable, RecevingProcessHandlable>
+
+public protocol Caller : class{
+    var identifier: String     { get }
+    var priority:QueuePriority { get }
+    var running:Bool           { get }
+    var cancelled:Bool         { get }
+    
+    func run(cacheStoragePolicy: CacheStoragePolicy, priority: QueuePriority)->Self
+    func resume()
+    func cancel()
+}
+
+
+public enum ProcessHandlerType : String {
+    case Sending = "Sending"
+    case Receiving = "Receiving"
+}
+
+public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable {
+    
+    public internal(set) var identifier: String = String(NSDate().timeIntervalSince1970)
     
     /**
      The queue priority level configure of sending a request. (readonly)
@@ -62,11 +108,11 @@ public class APICaller : Caller {
      - Default = Medium
      */
     public internal(set) var priority:QueuePriority = .Default
-    public internal(set) var cacheStoragePolicy:CacheStoragePolicy = .AllowedInMemoryOnly(renewRule: .NotRenewed)
+    internal var cacheStoragePolicy:CacheStoragePolicy = .AllowedInMemoryOnly(renewRule: .NotRenewed)
     
     
     /** (readonly) */
-    public  var cancelled:Bool {
+    public var cancelled:Bool {
         if let queue = self.blockInQueue {
             let testResult = dispatch_block_testcancel(queue)
             return Bool(testResult)
@@ -75,7 +121,7 @@ public class APICaller : Caller {
     }
     
     /** (read only) */
-    public internal(set) var api:API!
+    public internal(set) var api:API
     /** (read only) */
     public internal(set) var running:Bool = false
     /** (read only) */
@@ -86,37 +132,40 @@ public class APICaller : Caller {
     
     internal var sessionTask:NSURLSessionTask?
     
-    internal var responseAssistants:[Assistant] = []
-    internal var failedResponseAssistants:[Assistant] = []
-    internal var cancelledAssistant: Assistant?
+    public internal(set) var responseAssistants:[Assistant] = []
+    public internal(set)  var failedResponseAssistants:[Assistant] = []
+    public internal(set)  var cancelledAssistant: Assistant?
     
-    internal var sendingProcessHandler: ProcessHandler?
-    internal var receivingProcessHandler: ProcessHandler?
     
-    internal var cancelledResumeData:NSData?
+    public internal(set) var sendingProcessHandler: ProcessHandler?
+    public internal(set) var recevingProcessHandler: ProcessHandler?
     
-    internal var connector: Connector!
+    public internal(set) var cancelledResumeData:NSData?
     
-    public convenience init(API api:API, params:[String: ParameterValueType], connector: Connector = Acclaim.configuration.connector) {
+    lazy var queue: dispatch_queue_t = dispatch_queue_create(self.identifier, DISPATCH_QUEUE_SERIAL)
+    
+    var connector: Connector!
+    
+    convenience init(API api:API, params:[String: ParameterValueType], connector: Connector = Acclaim.configuration.connector) {
         self.init(API: api, params: RequestParameters(dictionary: params), connector: connector)
     }
     
-    public convenience init(API api:API, params:[Parameter], connector: Connector = Acclaim.configuration.connector ) {
+    convenience init(API api:API, params:[Parameter], connector: Connector = Acclaim.configuration.connector ) {
         self.init(API: api, params: RequestParameters(params: params), connector: connector)
     }
     
-    public required init(API api:API, params:RequestParameters = [], connector: Connector = Acclaim.configuration.connector) {
+    required public init(API api:API, params:RequestParameters = [], connector: Connector = Acclaim.configuration.connector) {
         self.api = api
         self.params = params
         self.connector = connector
     }
     
-    public func run()->APICaller{
+    func run()->Self{
         self.resume()
         return self
     }
     
-    public func run(cacheStoragePolicy:APICaller.CacheStoragePolicy, priority: QueuePriority = .Default)->APICaller{
+    public func run(cacheStoragePolicy:CacheStoragePolicy, priority: QueuePriority = .Default)->Self{
         
         self.cacheStoragePolicy = cacheStoragePolicy
         self.priority = priority
@@ -124,21 +173,24 @@ public class APICaller : Caller {
         return self.run()
     }
     
-    internal func run(connector connector: Connector){
+    func run(connector connector: Connector){
         
         guard !self.running else {
             return
         }
         
         // set
-        self.sessionTask = connector.request(API: self.api, params: self.params) { (data, connection, error) in
+        self.sessionTask = connector.request(API: self.api, params: self.params) {[unowned self] (data, connection, error) in
             
             let request:NSURLRequest! = self.sessionTask?.currentRequest
             
             self.handleResponses(data: data, connection: connection, error: error)
             
             //remove
-            Acclaim.removeRunningCaller(APICaller: self)
+            Acclaim.removeRunningCaller(self)
+            
+            self.blockInQueue = nil
+            self.running = false
             
         }
         
@@ -150,7 +202,7 @@ public class APICaller : Caller {
         
     }
     
-    internal func retry(API api:API){
+    func retry(API api:API){
 
     }
     
@@ -161,7 +213,7 @@ public class APICaller : Caller {
         }
         
         self.blockInQueue = block
-        dispatch_barrier_async(priority.queue, block)
+        dispatch_barrier_async(self.queue, block)
         
         //add
         Acclaim.addRunningCaller(self)
@@ -170,19 +222,18 @@ public class APICaller : Caller {
     
     public func cancel(){
         
-        guard self.running else {
-            return
-        }
-        
-        //透過非同步，插入cancel指令到running之後
-        dispatch_async(dispatch_get_main_queue()) {
+        //插入cancel指令到running之後
+        dispatch_sync(self.queue) {
             
+            //Ignore if APICaller is not running.
             guard self.running else {
                 ACDebugLog("Caller is not running. Please perform `func call()` to run your api.")
                 return
             }
             
+            //Ignore if APICaller has been cannceled.
             guard !self.cancelled else {
+                ACDebugLog("Caller has been cannceled. Please perform `func call()` to run your api.")
                 return
             }
             
@@ -194,10 +245,8 @@ public class APICaller : Caller {
                 self.sessionTask?.cancel()
             }
             
-            
             dispatch_block_cancel(self.blockInQueue)
             
-            ACDebugLog("Caller is cancelled.")
         }
         
     }
@@ -209,16 +258,16 @@ public class APICaller : Caller {
 
 extension APICaller {
     
-    internal func handleCachedResponse(cachedResponse: NSCachedURLResponse, byRequest request: NSURLRequest){
+    func handleCachedResponse(cachedResponse: NSCachedURLResponse, byRequest request: NSURLRequest){
         let connection = Connection(originalRequest: request, currentRequest: request, response: cachedResponse.response, cached: true)
         self.handleResponses(fromCached: true)(data: cachedResponse.data, connection: connection, error: nil)
     }
 
-    internal func handleResponses(data data:NSData?, connection: Connection, error:ErrorType?){
+    func handleResponses(data data:NSData?, connection: Connection, error:ErrorType?){
         self.handleResponses()(data: data, connection: connection, error: error)
     }
     
-    internal func handleResponses(fromCached cached: Bool = false)->(data:NSData?, connection: Connection, error:ErrorType?)->Void{
+    func handleResponses(fromCached cached: Bool = false)->(data:NSData?, connection: Connection, error:ErrorType?)->Void{
         
         return {[unowned self] (data:NSData?, connection: Connection, error:ErrorType?)->Void in
             
@@ -256,46 +305,21 @@ extension APICaller {
         
     }
     
-    internal func handleFailedResponse(data data:NSData?, connection: Connection, error:ErrorType?) {
+    func handleFailedResponse(data data:NSData?, connection: Connection, error:ErrorType?) {
         self.failedResponseAssistants.forEach { $0.handle(data, connection: connection, error: error) }
     }
     
     
-    public func addResponseAssistant<T:ResponseAssistant>(forType type:ResponseAssistantType = .Normal, responseAssistant assistant: T)->Self{
+    public func addResponseAssistant<T:ResponseAssistant>(forType type:ResponseAssistantType = .Normal, responseAssistant assistant: T)->T{
         switch type {
         case .Normal:
             self.responseAssistants.append(assistant)
         case .Failed:
             self.failedResponseAssistants.append(assistant)
         }
-        
-        return self
+        return assistant
     }
     
-}
-
-// convenience response handler function
-extension APICaller {
-
-    public func addFailedResponseHandler(statusCode statusCode:Int? = nil, handler:FailedResponseAssistant.Handler)->Self{
-        var assistant = FailedResponseAssistant()
-        if let statusCode = statusCode {
-            assistant.addHandler(forStatusCode: statusCode, handler: handler)
-        }else{
-            assistant.handler = handler
-        }
-        self.failedResponseAssistants.append(assistant)
-        
-        return self
-    }
-    
-    
-    
-    public func addOriginalDataResponseHandler(handler:OriginalDataResponseAssistant.Handler)->Self{
-        self.addResponseAssistant(responseAssistant: OriginalDataResponseAssistant(handler: handler))
-        return self
-    }
-
 }
 
 //handle sending/receving processing
@@ -312,13 +336,48 @@ extension APICaller {
     }
     
     public func setRecevingProcessHandler(handler: ProcessHandler)->Self {
-        self.receivingProcessHandler = handler
+        self.recevingProcessHandler = handler
         return self
     }
 }
 
+
+/// A enum describes how `ResponseCached` should cache into a storage.
+public enum CacheStoragePolicy{
+    
+    /// A enum describes the renew rule by the response failed.
+    public enum RenewRule {
+        
+        case NotRenewed
+        /// Not implemented.
+        case RenewSinceDate(data: NSDate)
+        /// Not implemented.
+        case RenewByRetry(limitCount: Int)
+        
+        internal static let DefaultRetryCount = 4
+    }
+    
+    /// Response will be cached into a storage.
+    case Allowed(renewRule: RenewRule)
+    /// Response will be cached into a memory only.
+    case AllowedInMemoryOnly(renewRule: RenewRule)
+    /// Response should not be cached.
+    case NotAllowed
+    
+    internal var renewRule: RenewRule {
+        switch self {
+        case .Allowed(let renewRule):
+            return renewRule
+        case .AllowedInMemoryOnly(let renewRule):
+            return renewRule
+        case .NotAllowed:
+            return .NotRenewed
+        }
+    }
+}
+
 //MARK: - RenewRule internal methods
-extension APICaller.CacheStoragePolicy.RenewRule {
+extension CacheStoragePolicy.RenewRule {
     
     internal var _method:String{
         switch self {
@@ -335,7 +394,7 @@ extension APICaller.CacheStoragePolicy.RenewRule {
 
 
 extension NSURLCacheStoragePolicy {
-    public init(_ rawValue: APICaller.CacheStoragePolicy) {
+    public init(_ rawValue: CacheStoragePolicy) {
         switch rawValue{
         case .Allowed:
             self = .Allowed
@@ -347,7 +406,7 @@ extension NSURLCacheStoragePolicy {
     }
 }
 
-extension APICaller.CacheStoragePolicy {
+extension CacheStoragePolicy {
     
     public init(_ rawValue: NSURLCacheStoragePolicy){
         switch rawValue {

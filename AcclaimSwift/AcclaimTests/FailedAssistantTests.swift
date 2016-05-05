@@ -34,7 +34,7 @@ class FailedAssistantTests: AcclaimTests {
         
     }
     
-    func testStatusCodeFatchedFailed() {
+    func testStatusCodeFailed() {
 
         let request = NSURLRequest()
         let httpResponse = NSHTTPURLResponse(URL: NSURL(), statusCode: 405, HTTPVersion: "HTTPVersion", headerFields: nil)
@@ -54,13 +54,6 @@ class FailedAssistantTests: AcclaimTests {
         }
 
         XCTAssertNotEqual(test, passString)
-    }
-    
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        self.measureBlock {
-            // Put the code you want to measure the time of here.
-        }
     }
     
 }

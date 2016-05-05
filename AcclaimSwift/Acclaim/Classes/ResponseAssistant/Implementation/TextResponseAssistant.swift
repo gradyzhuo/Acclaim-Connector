@@ -16,7 +16,7 @@ public struct TextResponseAssistant : ResponseAssistant{
     
     public var handler : Handler?
     
-    public init(handler: Handler){
+    public init(handler: Handler? = nil){
         self.handler = handler
     }
     
@@ -29,11 +29,11 @@ public struct TextResponseAssistant : ResponseAssistant{
         
         let result = self.deserializer.deserialize(data)
         
-        guard let image = result.outcome where result.error == nil else {
+        guard let text = result.outcome where result.error == nil else {
             return result.error
         }
         
-        self.handler?(text : image, connection: connection)
+        self.handler?(text : text, connection: connection)
         return error
     }
     

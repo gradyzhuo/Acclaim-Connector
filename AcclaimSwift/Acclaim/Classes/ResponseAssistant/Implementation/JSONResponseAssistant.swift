@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct JSONResponseAssistant : ResponseAssistant, KeyPathParser{
+public struct JSONResponseAssistant : ResponseAssistant{
     public typealias DeserializerType = JSONDeserializer
     public typealias Handler = (JSONObject : JSONDeserializer.Outcome?, connection: Connection)->Void
     
@@ -24,7 +24,7 @@ public struct JSONResponseAssistant : ResponseAssistant, KeyPathParser{
         
     }
     
-    public init(handler: Handler){
+    public init(handler: Handler? = nil){
         self.handler = handler
     }
     

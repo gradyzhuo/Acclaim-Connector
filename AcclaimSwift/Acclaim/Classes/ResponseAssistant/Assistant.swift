@@ -19,7 +19,7 @@ public protocol ResponseAssistant : Assistant {
     var handler : Handler? { set get }
     var deserializer: DeserializerType { set get }
     
-    init(handler: Handler)
+    init(handler: Handler?)
     
 }
 

@@ -54,20 +54,55 @@ extension KeyPath : StringLiteralConvertible {
     
 }
 
+public protocol Command:class {
+    func handle(value: AnyObject?)->AnyObject?
+}
 
 public protocol KeyPathParser{
     static func parse<T>(value:AnyObject?, forKeyPath keyPath:KeyPath)->T?
+    static func handle(command command:String, value: AnyObject?)->AnyObject?
 }
 
 extension KeyPathParser{
     
     public static func parse<T>(value:AnyObject?, forKeyPath keyPath:KeyPath)->T?{
-
-        let keyPathes = keyPath.path.componentsSeparatedByString(keyPath.separater)
+        
+        let pString = "^(?:\\@(\\w+)\\()?([\\w\\d\\\(keyPath.separater)]+)(?:\\))?$"
+        let pattern = RE.Pattern(pString)
+        
+        guard let matchResult = pattern.firstMatch(inString: keyPath.path) else {
+            return nil
+        }
+        
+        let command = matchResult.substring(matchIndex: 1)?.lowercaseString
+        let path:String = matchResult.substring(matchIndex: 2) ?? ""
+        
+        let keyPathes = path.componentsSeparatedByString(keyPath.separater)
+        
         let result = keyPathes.reduce(value) { (parsedObject, key) -> AnyObject? in
-            return parsedObject?[key]
+            
+            if let result = parsedObject?[key] where result != nil{
+                return result
+            }else{
+                if key == "self" || key == "" {
+                    return parsedObject
+                }else if let items = parsedObject as? [AnyObject], let index = Int(key) where items.indices.contains(index) {
+                    return items[index]
+                }else if let commandResult = self.handle(command: key, value: parsedObject) {
+                    return commandResult
+                }else{
+                    return nil
+                }
+            }
+            
+        }
+        
+        if let command = command {
+            return self.handle(command: command, value: result) as? T
         }
         
         return result as? T
     }
+    
+    
 }

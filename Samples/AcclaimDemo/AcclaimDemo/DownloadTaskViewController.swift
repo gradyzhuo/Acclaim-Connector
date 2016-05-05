@@ -21,22 +21,21 @@ class DownloadTaskViewController: UIViewController {
         
 //        self.apiCaller = Acclaim.download(API: api)
         
+        Acclaim.download(API: api)
+        
         self.apiCaller = Acclaim.download(API: api)
-        .addImageResponseHandler { (result) in
-            print(result.image)
-        }.setRecevingProcessHandler { (bytes, totalBytes, totalBytesExpected) -> Void in
+        self.apiCaller?.addImageResponseHandler { (image, connection) in
+            print(image)
+        }
+            
+        self.apiCaller?.setRecevingProcessHandler { (bytes, totalBytes, totalBytesExpected) -> Void in
             let percent = Float(totalBytes) / Float(totalBytesExpected)
             print("Hello dataTask percent:\(percent * 100)%")
         }.addFailedResponseHandler(handler: { (result) in
             
-        }).setCancelledResponseHandler { (result) in
-            
-            api.requestTaskType = RequestTaskType.DownloadTask(resumeData: result.resumeData)
-            Acclaim.download(API: api).setRecevingProcessHandler({ (bytes, totalBytes, totalBytesExpected) in
-                let percent = Float(totalBytes) / Float(totalBytesExpected)
-                print("resume dataTask percent:\(percent * 100)%")
-            })
-        }
+        }).setCancelledResponseHandler({ (resumeData, connection) in
+            print("cancel")
+        })
     }
 
     override func viewDidDisappear(animated: Bool) {

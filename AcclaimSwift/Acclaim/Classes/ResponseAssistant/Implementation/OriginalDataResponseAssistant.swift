@@ -17,7 +17,7 @@ public struct OriginalDataResponseAssistant : ResponseAssistant {
     
     public var handler : Handler?
     
-    public init(handler: Handler){
+    public init(handler: Handler? = nil){
         self.handler = handler
     }
     

@@ -17,6 +17,7 @@
 		7990F8B81C93354A00590679 /* DownloadTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8B71C93354A00590679 /* DownloadTaskViewController.swift */; };
 		7990F8BA1C93355300590679 /* UploadTaskViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8B91C93355300590679 /* UploadTaskViewController.swift */; };
 		7990F8C01C93F38D00590679 /* ConnectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7990F8BF1C93F38D00590679 /* ConnectionViewController.swift */; };
+		79B1F5C01CBD6D5F00FD2933 /* DataTask.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 79B1F5BF1CBD6D5F00FD2933 /* DataTask.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,6 +47,7 @@
 		7990F8B71C93354A00590679 /* DownloadTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DownloadTaskViewController.swift; sourceTree = "<group>"; };
 		7990F8B91C93355300590679 /* UploadTaskViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UploadTaskViewController.swift; sourceTree = "<group>"; };
 		7990F8BF1C93F38D00590679 /* ConnectionViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConnectionViewController.swift; sourceTree = "<group>"; };
+		79B1F5BF1CBD6D5F00FD2933 /* DataTask.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = DataTask.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -116,6 +118,7 @@
 				7990F8B71C93354A00590679 /* DownloadTaskViewController.swift */,
 				7990F8B91C93355300590679 /* UploadTaskViewController.swift */,
 				7990F8BF1C93F38D00590679 /* ConnectionViewController.swift */,
+				79B1F5BF1CBD6D5F00FD2933 /* DataTask.storyboard */,
 			);
 			path = AcclaimDemo;
 			sourceTree = "<group>";
@@ -217,6 +220,7 @@
 				7914ADD81C3BCFF30089FEF0 /* LaunchScreen.storyboard in Resources */,
 				7914ADD51C3BCFF30089FEF0 /* Assets.xcassets in Resources */,
 				7914ADD31C3BCFF30089FEF0 /* Main.storyboard in Resources */,
+				79B1F5C01CBD6D5F00FD2933 /* DataTask.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

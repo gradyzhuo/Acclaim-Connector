@@ -20,31 +20,4 @@ class AcclaimTests: XCTestCase {
         Acclaim.configuration.bundleForHostURLInfo = bundle
     }
     
-//    func testMethodStringLiteralConverted() {
-//        // This is an example of a functional test case.
-//        typealias JSONResult = JSONResponseAssistant.DeserializerType.Outcome
-//        
-//        let expectation = self.expectationWithDescription("test")
-//        
-//        let api:API = "fling"
-//        
-//        
-//        let caller = Acclaim.call(API: api,  params: ["fling_hash":"dQAXWbcv"])
-//        .addFailedResponseHandler { (result) in
-//            print("failed:\(result.error)")
-//        }.addJSONResponseHandler { (result) in
-//            expectation.fulfill()
-//        }.addResponseAssistant(forType: .Failed, responseAssistant: TextResponseAssistant(handler: { (text, connection) in
-//            print("text: \(text)")
-//        }))
-//        
-//        XCTAssert(caller.responseAssistants.count == 1, "ResponseAssistants count is failed.")
-////        caller.failedResponseAssistants.count == 1
-//        
-//        self.waitForExpectationsWithTimeout(self.timeoutInterval) { (error) in
-//            XCTAssertNil(error)
-//        }
-//        
-//        
-//    }
 }

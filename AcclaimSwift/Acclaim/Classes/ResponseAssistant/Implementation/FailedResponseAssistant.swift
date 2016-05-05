@@ -17,11 +17,7 @@ public struct FailedResponseAssistant : ResponseAssistant{
     public var handler: Handler?
     public internal(set) var handlers:[Int : Handler] = [:]
     
-    public init(){
-        self.handler = nil
-    }
-    
-    public init(handler: Handler){
+    public init(handler: Handler? = nil){
         self.handler = handler
     }
     

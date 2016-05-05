@@ -3,4 +3,5 @@
 
 use_frameworks!
 
-pod 'Acclaim'
+#pod 'Acclaim'
+pod 'Acclaim', :path => '~/Library/Mobile Documents/com~apple~CloudDocs/iCloud Drive/Work/Offsky/Acclaim'

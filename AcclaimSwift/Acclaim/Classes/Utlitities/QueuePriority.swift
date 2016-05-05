@@ -8,6 +8,18 @@
 
 import Foundation
 
+
+/**
+ The queue priority level configure of sending a request. (readonly)
+ 
+ There are 3 levels as below:
+ - High
+ - Medium
+ - Low
+ 
+ Otherwise:
+ - Default = Medium
+ */
 public struct QueuePriority : Equatable {
     
     internal let queue:dispatch_queue_t

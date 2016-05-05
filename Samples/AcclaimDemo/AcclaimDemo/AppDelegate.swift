@@ -9,61 +9,6 @@
 import UIKit
 import Acclaim
 
-//protocol Model:class, NSObjectProtocol {
-//    var model:[String: Any] { set get }
-//    
-//    init(model: [String: Any])
-//    
-//    func set(key key: String, value:Any)
-//    func get(key key: String) -> Any?
-//}
-//
-//extension Model {
-//    func set(key key: String, value:Any){
-//        self.model[key] = value
-//    }
-//    
-//    func get(key key: String)->Any?{
-//        return self.model[key]
-//    }
-//}
-//
-//struct Mapping<ModelType:Model> {
-//    typealias MappingTable = [String:Any]
-//    
-//    var table:MappingTable = [:]
-//    
-//    func map(model: [String: Any])->ModelType{
-//        return ModelType(model: model)
-//    }
-//    
-//    init(table: MappingTable){
-//        self.table = table
-//    }
-//    
-//}
-//
-//
-//class Fling : NSObject, Model {
-//    var model:[String: Any] = [:]
-//    required init(object: AnyObject) {
-//        self.object = object
-//    }
-//}
-
-//struct MyDeserializer : ResponseDeserializer {
-//    typealias CallbackType = JSONResponseDeserializer.CallbackType
-//
-//    func deserialize(data:NSData?, connection: Acclaim.Connection, connectionError error: ErrorType?) -> (CallbackType?, ErrorType?){
-//        let deserializer = JSONResponseDeserializer(keyPath: "data", options: .AllowFragments)
-//        return deserializer.deserialize(data, connection: connection, connectionError: error)
-//    }
-//    
-//    init(){
-//        
-//    }
-//}
-
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 

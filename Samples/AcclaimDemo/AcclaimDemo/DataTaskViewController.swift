@@ -10,35 +10,31 @@
 import UIKit
 import Acclaim
 
+class Test : Mappable {
+    static var mappingTable: [String : String]{
+       return ["":""]
+    }
+    
+    required init(){
+        
+    }
+}
+
 class DataTaskViewController: UIViewController {
 
     var apiCaller: RestfulAPI?
     
+    @IBOutlet weak var urlTextField: UITextField?
+    @IBOutlet weak var resultTextView: UITextView?
+    @IBOutlet weak var processBar: UIProgressView?
+    @IBOutlet weak var keyPathTextField: UITextField?
+    
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        let api:API = "fling"
-//        self.apiCaller = Acclaim.call(API: api,  params: ["fling_hash":"dQAXWbcv"])
-//        .addFailedResponseHandler { (result) in
-//            print("failed:\(result.error)")
-//        }.addJSONResponseHandler { (result) in
-//            print("cached: \(result.connection.cached)")
-//            print("result.JSONObject:\(result.JSONObject)")
-//        }.addJSONResponseHandler(handler: { (JSONObject, connection) in
-//            
-//        })
-        
-        let api:API = "http://data.taipei/opendata/datalist/apiAccess?scope=datasetMetadataSearch"
-        let APICaller = RestfulAPI(API: api, params: ["scope":"datasetMetadataSearch", "q":"id:8ef1626a-892a-4218-8344-f7ac46e1aa48"])
-        APICaller.addJSONResponseHandler(keyPath: "result.count"){ (JSONObject, connection) in
-            print("JSONObject", JSONObject)
-        }.run()
-        
-        
-        
-        
-        //.cacheStoragePolicy = .NotAllowed//.Allowed(renewRule: .RenewSinceData(data: NSDate().dateByAddingTimeInterval(1)))
-        
+
+        self.urlTextField?.text = "http://data.taipei/opendata/datalist/apiAccess"
     }
     
     
@@ -46,24 +42,61 @@ class DataTaskViewController: UIViewController {
         super.viewDidDisappear(animated)
         
         self.apiCaller?.cancel()
-        self.apiCaller = nil
         
     }
 
+    
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        super.touchesEnded(touches, withEvent: event)
+        
+        self.view.endEditing(true)
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
     
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+    @IBAction func run(){
+        
+        self.view.endEditing(true)
+        
+        let api = API(URL: NSURL(string: self.urlTextField!.text!)!)
+        let APICaller = RestfulAPI(API: api, params: ["scope":"datasetMetadataSearch", "q":"id:8ef1626a-892a-4218-8344-f7ac46e1aa48"])
+        
+        if let keyPath = self.keyPathTextField?.text where keyPath != "" {
+            
+            APICaller.setResponseHandler(forKeyPath: KeyPath(path: keyPath), handler: {[unowned self] (JSONObject, connection) in
+                
+                guard let JSONObject = JSONObject else{
+                    self.resultTextView?.text = "nil"
+                    return
+                }
+                
+                self.resultTextView?.text = String(JSONObject)
+            })
+            
+        }else{
+            APICaller.setResponseHandler({ (JSONObject, connection) in
+                
+                guard let JSONObject = JSONObject else{
+                    self.resultTextView?.text = "nil"
+                    return
+                }
+                
+                self.resultTextView?.text = String(JSONObject)
+            })
+        }
+        
+        
+        APICaller.run(.NotAllowed)
+        
+        self.apiCaller = APICaller
     }
-    */
+    
+    @IBAction func keyPathDidInput(sender: UITextField){
+        sender.resignFirstResponder()
+    }
 
 }
