@@ -51,22 +51,21 @@ class DownloadTaskViewController: UIViewController {
         
         self.apiCaller = Acclaim.download(API: api)
         
-        self.apiCaller?.addImageResponseHandler(scale: 1.0, handler: { (image, connection) in
+        self.apiCaller?.handleImage(scale: 1.0, handler: { (image, connection) in
             self.resultImageView.image = image
             self.resultImageView.layer.addAnimation(CATransition(), forKey: "transition")
         })
         
-        self.apiCaller?.setRecevingProcessHandler {[unowned self] (bytes, totalBytes, totalBytesExpected) -> Void in
+        self.apiCaller?.observer(recevingProcess: { (bytes, totalBytes, totalBytesExpected) in
             let percent = Float(totalBytes) / Float(totalBytesExpected)
-
+            
             self.processBar.setProgress(percent, animated: true)
             self.processLabel?.text = "\(percent * 100)%"
-            
-            }.addFailedResponseHandler(handler: { (result) in
+        }).failed { (result) in
                 
-            }).setCancelledResponseHandler({ (resumeData, connection) in
-                print("cancel")
-        })
+        }.cancelled { (resumeData, connection) in
+            print("cancel")
+        }
     }
     
 }

@@ -8,9 +8,10 @@
 
 import Foundation
 
-public final class Downloader : Caller, APISupport, ResponseSupport, RecevingProcessHandlable, Configurable {
+private typealias SupportProtocols = protocol<Caller, APISupport, ResponseSupport, RecevingProcessHandlable, Configurable, CancelSupport>
+public final class Downloader : SupportProtocols {
 
-    internal var caller: APICaller
+    private var caller: SupportProtocols
     
     public var identifier: String{
         set{
@@ -34,7 +35,7 @@ public final class Downloader : Caller, APISupport, ResponseSupport, RecevingPro
         return self.caller.api
     }
     
-    public var params: RequestParameters{
+    public var params: Parameters{
         return self.caller.params
     }
     
@@ -42,8 +43,8 @@ public final class Downloader : Caller, APISupport, ResponseSupport, RecevingPro
         return self.caller.running
     }
     
-    public var cancelled:Bool {
-        return self.caller.cancelled
+    public var isCancelled: Bool{
+        return self.caller.isCancelled
     }
     
     public var recevingProcessHandler: ProcessHandler?{
@@ -66,7 +67,7 @@ public final class Downloader : Caller, APISupport, ResponseSupport, RecevingPro
         return self.caller.cancelledResumeData
     }
     
-    required public init(API api: API, params: RequestParameters, connector: Connector = Acclaim.configuration.connector) {
+    required public init(API api: API, params: Parameters = [], connector: Connector = Acclaim.configuration.connector) {
         self.caller = APICaller(API: api, params: params, connector: connector)
     }
     
@@ -83,22 +84,22 @@ public final class Downloader : Caller, APISupport, ResponseSupport, RecevingPro
         resumeDataHandler(cancelledResumeData: self.caller.cancelledResumeData)
     }
     
-    public func setRecevingProcessHandler(handler: ProcessHandler) -> Self {
-        self.caller.setRecevingProcessHandler(handler)
+    public func observer(recevingProcess handler: ProcessHandler) -> Self {
+        self.caller.observer(recevingProcess: handler)
         return self
     }
     
-    public func addResponseAssistant<T : ResponseAssistant>(forType type: ResponseAssistantType = .Normal, responseAssistant assistant: T) -> T {
-        return self.caller.addResponseAssistant(forType: type, responseAssistant: assistant)
+    public func handle<T : ResponseAssistant>(responseType type: ResponseAssistantType, assistant: T) -> T {
+        return self.caller.handle(responseType: type, assistant: assistant)
     }
     
-    public func setCancelledResponseHandler(handler: ResumeDataResponseAssistant.Handler) -> Self {
-        self.caller.setCancelledResponseHandler(handler)
+    public func cancelled(handler: ResumeDataResponseAssistant.Handler) -> Self {
+        self.caller.cancelled(handler)
         return self
     }
     
-    public func addImageResponseHandler(scale scale: CGFloat = 1.0, handler:ImageResponseAssistant.Handler)->ImageResponseAssistant{
-        return self.addResponseAssistant(responseAssistant: ImageResponseAssistant(scale: scale, handler: handler))
+    public func handleImage(scale scale: CGFloat = 1.0, handler:ImageResponseAssistant.Handler)->ImageResponseAssistant{
+        return self.handle(responseType: .Normal, assistant: ImageResponseAssistant(scale: scale, handler: handler))
     }
     
     public func waitting(callers: Caller...) {
@@ -109,7 +110,7 @@ public final class Downloader : Caller, APISupport, ResponseSupport, RecevingPro
 
 extension Acclaim {
     
-    public static func download(API api:API, params:RequestParameters = [:], priority: QueuePriority = .Default)->Downloader{
+    public static func download(API api:API, params:Parameters = [], priority: QueuePriority = .Default)->Downloader{
         
         let caller = Downloader(API: api, params: params)
         caller.configuration.priority = priority
@@ -118,16 +119,36 @@ extension Acclaim {
         return caller
     }
     
-    public static func download(API api:API, params:RequestParameters = [:], priority: QueuePriority = .Default, completionHandler: OriginalDataResponseAssistant.Handler, failedHandler: FailedResponseAssistant<DataDeserializer>.Handler)->Downloader{
+    public static func download(API api:API, params:Parameters = [], priority: QueuePriority = .Default, completionHandler: OriginalDataResponseAssistant.Handler, failedHandler: FailedResponseAssistant<DataDeserializer>.Handler)->Downloader{
         
         let caller = Downloader(API: api, params: params)
         caller.configuration.priority = priority
-        caller.addResponseAssistant(responseAssistant: OriginalDataResponseAssistant(handler: completionHandler))
-        caller.addFailedResponseHandler(deserializer: DataDeserializer(), handler: failedHandler)
+        caller.handle(responseType: .Normal, assistant: OriginalDataResponseAssistant(handler: completionHandler))
+        caller.failed(deserializer: DataDeserializer(), handler: failedHandler)
         caller.resume()
 
         
         return caller
+    }
+    
+}
+
+//Convenience
+extension Acclaim {
+    
+    public static func download<T:ParameterValue>(API api:API, paramsDict:[String: T], priority: QueuePriority = .Default)->Downloader{
+        let params = Parameters(dictionary: paramsDict)
+        return Acclaim.download(API: api, params: params, priority: priority)
+    }
+    
+    public static func download<T:ParameterValue>(API api:API, paramsDict:[String: [T]], priority: QueuePriority = .Default)->Downloader{
+        let params = Parameters(dictionary: paramsDict)
+        return Acclaim.download(API: api, params: params, priority: priority)
+    }
+    
+    public static func download<T:ParameterValue>(API api:API, paramsDict:[String: [String:T]], priority: QueuePriority = .Default)->Downloader{
+        let params = Parameters(dictionary: paramsDict)
+        return Acclaim.download(API: api, params: params, priority: priority)
     }
     
 }

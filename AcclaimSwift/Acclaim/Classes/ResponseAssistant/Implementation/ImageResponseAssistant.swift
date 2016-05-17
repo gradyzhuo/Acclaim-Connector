@@ -12,9 +12,7 @@ public struct ImageResponseAssistant : ResponseAssistant{
     
     public typealias DeserializerType = ImageDeserializer
     
-    public var allowedMIMEs: [MIMEType] {
-        return [.Image]
-    }
+    public var allowedMIMEs: [MIMEType] = [.Image]
     
     public typealias Handler = (image : ImageDeserializer.Outcome, connection: Connection)->Void
     

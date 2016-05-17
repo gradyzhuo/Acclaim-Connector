@@ -10,7 +10,7 @@ import Foundation
 
 public protocol APIBundle : class{
     var api: API { get }
-    var params: RequestParameters { get }
+    var params: Parameters { get }
     var priority: QueuePriority { get }
     
     var connector: Connector { set get }

@@ -12,9 +12,7 @@ public struct JSONResponseAssistant : ResponseAssistant{
     public typealias DeserializerType = JSONDeserializer
     public typealias Handler = (JSONObject : JSONDeserializer.Outcome?, connection: Connection)->Void
     
-    public var allowedMIMEs: [MIMEType] {
-        return [.Text]
-    }
+    public var allowedMIMEs: [MIMEType] = [.All(subtype: "json"), .All(subtype: "plain")]
     
     public var deserializer: DeserializerType = DeserializerType(options: .AllowFragments)
     

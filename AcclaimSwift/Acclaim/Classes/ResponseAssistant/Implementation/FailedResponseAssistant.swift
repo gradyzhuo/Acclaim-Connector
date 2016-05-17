@@ -11,9 +11,7 @@ import Foundation
 public struct FailedResponseAssistant<DeserializerType:Deserializer> : ResponseAssistant{
     public typealias Handler = (outcome : DeserializerType.Outcome?, connection: Connection, error: ErrorType?)->Void
     
-    public var allowedMIMEs: [MIMEType] {
-        return [.Text]
-    }
+    public var allowedMIMEs: [MIMEType] = [.All]
     
     public var deserializer : DeserializerType = DeserializerType()
     

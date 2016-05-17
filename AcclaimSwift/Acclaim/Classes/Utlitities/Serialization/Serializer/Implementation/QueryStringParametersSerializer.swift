@@ -10,12 +10,12 @@ import Foundation
 
 public struct QueryStringParametersSerializer : ParametersSerializer {
     
-    public func serialize(params: RequestParameters) -> NSData? {
+    public func serialize(params: Parameters) -> NSData? {
         
         let components = NSURLComponents()
         components.queryItems = [NSURLQueryItem]()
         
-        params.params.forEach {(parameter) -> Void in
+        params.forEach {(parameter) -> Void in
             
             if let parameter = parameter as? FormParameter {
                 switch parameter {

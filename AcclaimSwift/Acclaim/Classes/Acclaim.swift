@@ -59,7 +59,7 @@ public class Acclaim {
     public static let version = AcclaimVersionNumber
     
     
-    public static var sharedRequestParameters: RequestParameters?
+    public static var sharedRequestParameters: Parameters?
     public static var configuration: Acclaim.Configuration = Acclaim.Configuration.defaultConfiguration
     
     internal static var running:[String:Caller] = [:]
@@ -88,7 +88,7 @@ public class Acclaim {
         return NSURLCache.sharedURLCache()
     }
     
-    internal static func cachedResponse(API api: API, parameters: RequestParameters, configuration: Acclaim.Configuration) -> NSCachedURLResponse?{
+    internal static func cachedResponse(API api: API, parameters: Parameters, configuration: Acclaim.Configuration) -> NSCachedURLResponse?{
         return Acclaim.sharedURLCache.cachedResponseForRequest(api.generateRequest(configuration: configuration, params: parameters))
     }
     
@@ -113,7 +113,7 @@ public class Acclaim {
         return Acclaim.sharedURLCache.removeCachedResponseForRequest(request)
     }
     
-    internal static func removeCachedResponse(API api: API, parameters: RequestParameters, configuration: Acclaim.Configuration){
+    internal static func removeCachedResponse(API api: API, parameters: Parameters, configuration: Acclaim.Configuration){
         return Acclaim.removeCachedResponse(api.generateRequest(configuration: configuration, params: parameters))
     }
     

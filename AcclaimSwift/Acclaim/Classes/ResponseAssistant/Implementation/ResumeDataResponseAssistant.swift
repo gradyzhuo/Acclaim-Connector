@@ -13,9 +13,7 @@ public struct ResumeDataResponseAssistant:ResponseAssistant{
     
     public typealias Handler = (resumeData : DataDeserializer.Outcome?, connection: Connection)->Void
     
-    public var allowedMIMEs: [MIMEType] {
-        return [.All]
-    }
+    public var allowedMIMEs: [MIMEType] = [.All]
     
     public var deserializer: DeserializerType = DataDeserializer()
     

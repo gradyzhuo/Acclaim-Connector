@@ -12,9 +12,7 @@ public struct TextResponseAssistant : ResponseAssistant{
     public typealias DeserializerType = TextDeserializer
     public typealias Handler = (text : TextDeserializer.Outcome, connection: Connection)->Void
     
-    public var allowedMIMEs: [MIMEType]{
-        return [.Text]
-    }
+    public var allowedMIMEs: [MIMEType] = [.Text]
     
     public var deserializer: DeserializerType = DeserializerType()
     

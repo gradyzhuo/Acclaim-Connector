@@ -12,9 +12,9 @@ public struct FormDataParameter : Parameter {
     public internal(set) var key: String
     public internal(set) var data: NSData
     public internal(set) var fileName: String
-    public internal(set) var MIME: String
+    public internal(set) var MIME: MIMEType
     
-    public init(key: String, data: NSData, fileName: String = "", MIME: String = ""){
+    public init(key: String, data: NSData, fileName: String = "", MIME: MIMEType = .All){
         self.key = key
         self.data = data
         self.fileName = fileName

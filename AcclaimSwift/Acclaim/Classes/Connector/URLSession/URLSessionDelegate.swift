@@ -95,8 +95,10 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
         do{
             let type = try MIMEType(MIME: MIME)
             
-            if let MIMECaller = dataTask.apiCaller as? MIMESupport where MIMECaller.allowedMIMEs.contains(type) {
-                completionHandler(.Allow)
+            if let MIMECaller = dataTask.apiCaller as? MIMESupport where (MIMECaller.allowedMIMEs.contains(.All) || MIMECaller.allowedMIMEs.contains(type)) {
+                
+               completionHandler(.Allow)
+
             }else{
                 completionHandler(.Cancel)
             }

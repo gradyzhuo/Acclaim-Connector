@@ -190,7 +190,7 @@ extension API {
      - cookie: the instance of NSHTTPCookie.
      - returns: API.
      */
-    internal func generateRequest(configuration configuration: Acclaim.Configuration, params: RequestParameters = [])->NSURLRequest {
+    internal func generateRequest(configuration configuration: Acclaim.Configuration, params: Parameters = [])->NSURLRequest {
         
         let request:NSMutableURLRequest = NSMutableURLRequest(URL: self.apiURL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
         

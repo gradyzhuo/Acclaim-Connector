@@ -13,7 +13,7 @@ public enum ProcessHandlerType : String {
     case Receiving = "Receiving"
 }
 
-public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, Configurable, MIMESupport {
+public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, Configurable {
     
     public var identifier: String = String(NSDate().timeIntervalSince1970)
     public var configuration: Acclaim.Configuration = Acclaim.configuration
@@ -22,7 +22,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, 
     
     
     /** (readonly) */
-    public var cancelled:Bool {
+    public var isCancelled : Bool {
         if let queue = self.runningBlockInQueue {
             let testResult = dispatch_block_testcancel(queue)
             return Bool(testResult)
@@ -38,7 +38,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, 
     
     //MARK: internal variables
     internal var runningBlockInQueue:dispatch_block_t!
-    public internal(set) var params:RequestParameters = []
+    public internal(set) var params:Parameters = []
     
     internal var sessionTask:NSURLSessionTask?
     
@@ -65,15 +65,12 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, 
     
     lazy var queue: dispatch_queue_t = dispatch_queue_create(self.identifier, DISPATCH_QUEUE_SERIAL)
     
-    convenience init(API api:API, params:[String: ParameterValueType], connector: Connector = Acclaim.configuration.connector) {
-        self.init(API: api, params: RequestParameters(dictionary: params), connector: connector)
+    convenience init<T:ParameterValue>(API api:API, params:[String: T], connector: Connector = Acclaim.configuration.connector) {
+        let params = Parameters(dictionary: params)
+        self.init(API: api, params: params, connector: connector)
     }
     
-    convenience init(API api:API, params:[Parameter], connector: Connector = Acclaim.configuration.connector ) {
-        self.init(API: api, params: RequestParameters(params: params), connector: connector)
-    }
-    
-    required public init(API api:API, params:RequestParameters = [], connector: Connector = Acclaim.configuration.connector) {
+    required public init(API api:API, params:Parameters = [], connector: Connector = Acclaim.configuration.connector) {
         self.api = api
         self.params = params
         self.configuration.connector = connector
@@ -139,7 +136,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, 
             }
             
             //Ignore if APICaller has been cannceled.
-            guard !self.cancelled else {
+            guard !self.isCancelled else {
                 ACDebugLog("Caller has been cannceled. Please perform `func resume()` to run your api.")
                 return
             }
@@ -165,20 +162,20 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, 
 
 extension APICaller {
     
-    func handleCachedResponse(cachedResponse: NSCachedURLResponse, byRequest request: NSURLRequest){
+    internal func handleCachedResponse(cachedResponse: NSCachedURLResponse, byRequest request: NSURLRequest){
         let connection = Connection(originalRequest: request, currentRequest: request, response: cachedResponse.response, cached: true)
         self.handleResponses(fromCached: true)(data: cachedResponse.data, connection: connection, error: nil)
     }
 
-    func handleResponses(data data:NSData?, connection: Connection, error:ErrorType?){
+    internal func handleResponses(data data:NSData?, connection: Connection, error:ErrorType?){
         self.handleResponses()(data: data, connection: connection, error: error)
     }
     
-    func handleResponses(fromCached cached: Bool = false)->(data:NSData?, connection: Connection, error:ErrorType?)->Void{
+    internal func handleResponses(fromCached cached: Bool = false)->(data:NSData?, connection: Connection, error:ErrorType?)->Void{
         
         return {[unowned self] (data:NSData?, connection: Connection, error:ErrorType?)->Void in
             
-            guard !self.cancelled else {
+            guard !self.isCancelled else {
                 //檢查cancel的訊息，並在這裡回傳resumedData
                 self.cancelledAssistant?.handle(self.cancelledResumeData, connection: connection, error: nil)
                 return
@@ -212,12 +209,12 @@ extension APICaller {
         
     }
     
-    func handleFailedResponse(data data:NSData?, connection: Connection, error:ErrorType?) {
+    internal func handleFailedResponse(data data:NSData?, connection: Connection, error:ErrorType?) {
         self.failedResponseAssistants.forEach { $0.handle(data, connection: connection, error: error) }
     }
     
     
-    public func addResponseAssistant<T:ResponseAssistant>(forType type:ResponseAssistantType = .Normal, responseAssistant assistant: T)->T{
+    public func handle<T : ResponseAssistant>(responseType type: ResponseAssistantType, assistant: T) -> T {
         switch type {
         case .Normal:
             self.responseAssistants.append(assistant)
@@ -231,22 +228,23 @@ extension APICaller {
 }
 
 //handle sending/receving processing
-extension APICaller {
+extension APICaller : CancelSupport {
     
-    public func setCancelledResponseHandler(handler:ResumeDataResponseAssistant.Handler)->Self{
+    public func cancelled(handler: ResumeDataResponseAssistant.Handler) -> Self {
         self.cancelledAssistant = ResumeDataResponseAssistant(handler: handler)
         return self
     }
     
-    public func setSendingProcessHandler(handler: ProcessHandler)->Self {
+    public func observer(sendingProcess handler: ProcessHandler) -> Self {
         self.sendingProcessHandler = handler
         return self
     }
     
-    public func setRecevingProcessHandler(handler: ProcessHandler)->Self {
+    public func observer(recevingProcess handler: ProcessHandler) -> Self {
         self.recevingProcessHandler = handler
         return self
     }
+    
 }
 
 

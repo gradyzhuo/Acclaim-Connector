@@ -24,7 +24,6 @@
 		799FBFD31CB184460000DACF /* Parameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799FBFD21CB184460000DACF /* Parameter.swift */; };
 		799FBFD61CB184810000DACF /* FormDataParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799FBFD51CB184810000DACF /* FormDataParameter.swift */; };
 		799FBFD81CB184D60000DACF /* FormParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799FBFD71CB184D60000DACF /* FormParameter.swift */; };
-		799FBFDA1CB184FF0000DACF /* RequestParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799FBFD91CB184FF0000DACF /* RequestParameters.swift */; };
 		79A0B5161CDB9D4600F23262 /* QueueCaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A0B5151CDB9D4600F23262 /* QueueCaller.swift */; };
 		79A0B5181CDBA50A00F23262 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A0B5171CDBA50A00F23262 /* Protocols.swift */; };
 		79BBBA6A1CC00B9500ABCC81 /* MappingResponseAssistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BBBA691CC00B9500ABCC81 /* MappingResponseAssistant.swift */; };
@@ -88,7 +87,6 @@
 		799FBFD21CB184460000DACF /* Parameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Parameter.swift; sourceTree = "<group>"; };
 		799FBFD51CB184810000DACF /* FormDataParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormDataParameter.swift; sourceTree = "<group>"; };
 		799FBFD71CB184D60000DACF /* FormParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormParameter.swift; sourceTree = "<group>"; };
-		799FBFD91CB184FF0000DACF /* RequestParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestParameters.swift; sourceTree = "<group>"; };
 		79A0B5151CDB9D4600F23262 /* QueueCaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueueCaller.swift; sourceTree = "<group>"; };
 		79A0B5171CDBA50A00F23262 /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 		79BBBA691CC00B9500ABCC81 /* MappingResponseAssistant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MappingResponseAssistant.swift; sourceTree = "<group>"; };
@@ -254,7 +252,6 @@
 			isa = PBXGroup;
 			children = (
 				799FBFD21CB184460000DACF /* Parameter.swift */,
-				799FBFD91CB184FF0000DACF /* RequestParameters.swift */,
 				799FBFD41CB184790000DACF /* Implementation */,
 			);
 			name = Parameter;
@@ -519,7 +516,6 @@
 				79DFD8F21CA19AD400A87D02 /* TextResponseAssistant.swift in Sources */,
 				79DFD8F51CA19AD400A87D02 /* Deserializer.swift in Sources */,
 				79DFD8F31CA19AD400A87D02 /* KeyPathParser.swift in Sources */,
-				799FBFDA1CB184FF0000DACF /* RequestParameters.swift in Sources */,
 				79DFD8F71CA19AD400A87D02 /* Image.swift in Sources */,
 				79DFD8EF1CA19AD400A87D02 /* JSONResponseAssistant.swift in Sources */,
 				79DFD9021CA19AD400A87D02 /* HTTPMethod.swift in Sources */,

@@ -8,7 +8,8 @@
 
 import Foundation
 
-public final class RestfulAPI : Caller, APISupport, Configurable {
+private typealias SupportProtocols = protocol<Caller, APISupport, Configurable, ResponseSupport, CancelSupport>
+public final class RestfulAPI : SupportProtocols {
     public typealias AssistantType = JSONResponseAssistant
     
     public var identifier: String{
@@ -33,7 +34,7 @@ public final class RestfulAPI : Caller, APISupport, Configurable {
         return self.caller.api
     }
     
-    public var params: RequestParameters{
+    public var params: Parameters{
         return self.caller.params
     }
     
@@ -41,13 +42,14 @@ public final class RestfulAPI : Caller, APISupport, Configurable {
         return self.caller.running
     }
     
-    public var cancelled:Bool {
-        return self.caller.cancelled
-    }
-
-    internal var caller: APICaller
     
-    required public init(API api: API, params: RequestParameters = [], connector: Connector = Acclaim.configuration.connector) {
+    public var isCancelled: Bool{
+        return self.caller.isCancelled
+    }
+    
+    private var caller: SupportProtocols
+    
+    required public init(API api: API, params: Parameters = [], connector: Connector = Acclaim.configuration.connector) {
         self.caller = APICaller(API: api, params: params, connector: connector)
     }
     
@@ -74,22 +76,22 @@ public final class RestfulAPI : Caller, APISupport, Configurable {
 //        
 //    }
     
-    public func setResponseHandler(handler: AssistantType.Handler)->AssistantType{
-        return self.caller.addResponseAssistant(responseAssistant: AssistantType(handler: handler))
+    public func handleObject(response handler: AssistantType.Handler)->AssistantType{
+        return self.caller.handle(responseType: .Normal, assistant: AssistantType(handler: handler))
     }
     
-    public func setResponseHandler(forKeyPath keyPath:KeyPath, handler: AssistantType.Handler)->AssistantType{
-        return self.caller.addResponseAssistant(responseAssistant: AssistantType(forKeyPath: keyPath, handler: handler))
+    public func handleObject(keyPath keyPath:KeyPath, handler: AssistantType.Handler)->AssistantType{
+        return self.caller.handle(responseType: .Normal, assistant: AssistantType(forKeyPath: keyPath, handler: handler))
     }
     
-    public func addMappingObjectResponseHandler<T:Mappable>(mappingClass: T.Type, option:NSJSONReadingOptions = .AllowFragments, handler:MappingResponseAssistant<T>.Handler)->MappingResponseAssistant<T>{
-        return self.addResponseAssistant(responseAssistant: MappingResponseAssistant<T>(options: option, handler: handler))
+    public func handleMappingObject<T:Mappable>(mappingClass mappingClass: T.Type, option:NSJSONReadingOptions = .AllowFragments, handler:MappingResponseAssistant<T>.Handler)->MappingResponseAssistant<T>{
+        return self.handle(responseType: .Normal, assistant: MappingResponseAssistant<T>(options: option, handler: handler))
     }
     
 }
 
 
-extension RestfulAPI : CancelSupport {
+extension RestfulAPI {
     
     public var cancelledResumeData: NSData?{
         return self.caller.cancelledResumeData
@@ -99,13 +101,13 @@ extension RestfulAPI : CancelSupport {
         return self.caller.cancelledAssistant
     }
     
-    public func setCancelledResponseHandler(handler: ResumeDataResponseAssistant.Handler) -> Self {
-        self.caller.setCancelledResponseHandler(handler)
+    public func cancelled(handler: ResumeDataResponseAssistant.Handler) -> Self {
+        self.caller.cancelled(handler)
         return self
     }
 }
 
-extension RestfulAPI : ResponseSupport {
+extension RestfulAPI  {
     
     public var responseAssistants:[Assistant] {
         return self.caller.responseAssistants
@@ -115,17 +117,15 @@ extension RestfulAPI : ResponseSupport {
         return self.caller.failedResponseAssistants
     }
     
-    public func addResponseAssistant<T : ResponseAssistant>(forType type: ResponseAssistantType = .Normal, responseAssistant assistant: T) -> T {
-        return self.caller.addResponseAssistant(forType: type, responseAssistant: assistant)
+    public func handle<T : ResponseAssistant>(responseType type: ResponseAssistantType, assistant: T) -> T {
+        return self.caller.handle(responseType: type, assistant: assistant)
     }
-    
-    
     
 }
 
 extension Acclaim {
     ///
-    public static func call(API api:API, params:RequestParameters = [:], priority: QueuePriority = .Default)->RestfulAPI{
+    public static func call(API api:API, params:Parameters = [], priority: QueuePriority = .Default)->RestfulAPI{
         
         let caller = RestfulAPI(API: api, params: params)
         caller.configuration.priority = priority
@@ -134,15 +134,34 @@ extension Acclaim {
         return caller
     }
     
-    public static func call(API api:API, params:RequestParameters = [:], priority: QueuePriority = .Default, completionHandler: OriginalDataResponseAssistant.Handler, failedHandler: FailedResponseAssistant<DataDeserializer>.Handler)->RestfulAPI{
+    public static func call(API api:API, params:Parameters = [], priority: QueuePriority = .Default, completionHandler: OriginalDataResponseAssistant.Handler, failedHandler: FailedResponseAssistant<DataDeserializer>.Handler)->RestfulAPI{
         
         let caller = RestfulAPI(API: api, params: params)
         caller.configuration.priority = priority
-        caller.addResponseAssistant(responseAssistant: OriginalDataResponseAssistant(handler: completionHandler))
-        caller.addFailedResponseHandler(deserializer: DataDeserializer(), handler: failedHandler)
+        caller.handle(responseType: .Normal, assistant: OriginalDataResponseAssistant(handler: completionHandler))
+        caller.failed(deserializer: DataDeserializer(), handler: failedHandler)
         caller.resume()
-        
         
         return caller
     }
+}
+
+//Convenience
+extension Acclaim {
+    
+    public static func call<T:ParameterValue>(API api:API, paramsDict:[String: T], priority: QueuePriority = .Default)->RestfulAPI{
+        let params = Parameters(dictionary: paramsDict)
+        return Acclaim.call(API: api, params: params, priority: priority)
+    }
+    
+    public static func call<T:ParameterValue>(API api:API, paramsDict:[String: [T]], priority: QueuePriority = .Default)->RestfulAPI{
+        let params = Parameters(dictionary: paramsDict)
+        return Acclaim.call(API: api, params: params, priority: priority)
+    }
+    
+    public static func call<T:ParameterValue>(API api:API, paramsDict:[String: [String:T]], priority: QueuePriority = .Default)->RestfulAPI{
+        let params = Parameters(dictionary: paramsDict)
+        return Acclaim.call(API: api, params: params, priority: priority)
+    }
+    
 }

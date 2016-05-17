@@ -12,7 +12,7 @@ public struct MultipartFormSerializer: ParametersSerializer {
     
     let boundary = "-----\(NSDate().timeIntervalSince1970)"
     
-    public func serialize(requestParams: RequestParameters) -> NSData? {
+    public func serialize(params: Parameters) -> NSData? {
         
         let data = NSMutableData()
         
@@ -21,7 +21,7 @@ public struct MultipartFormSerializer: ParametersSerializer {
         chars.addCharactersInString("+")
         chars.invert()
         
-        requestParams.params.forEach { (parameter) in
+        params.forEach { (parameter) in
             
             data.appendData("--\(self.boundary)\r\n".dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
             
