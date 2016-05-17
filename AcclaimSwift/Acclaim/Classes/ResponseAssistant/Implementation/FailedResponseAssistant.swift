@@ -8,9 +8,12 @@
 
 import Foundation
 
-public struct FailedResponseAssistant : ResponseAssistant{
-    public typealias DeserializerType = DataDeserializer
-    public typealias Handler = (originalData : DeserializerType.Outcome?, connection: Connection, error: ErrorType?)->Void
+public struct FailedResponseAssistant<DeserializerType:Deserializer> : ResponseAssistant{
+    public typealias Handler = (outcome : DeserializerType.Outcome?, connection: Connection, error: ErrorType?)->Void
+    
+    public var allowedMIMEs: [MIMEType] {
+        return [.Text]
+    }
     
     public var deserializer : DeserializerType = DeserializerType()
     
@@ -26,12 +29,12 @@ public struct FailedResponseAssistant : ResponseAssistant{
         let result = self.deserializer.deserialize(data)
         
         if let handler = self.handler {
-            handler(originalData: result.outcome, connection: connection, error: error)
+            handler(outcome: result.outcome, connection: connection, error: error)
         }
         
         if let httpResponse = connection.response as? NSHTTPURLResponse,
             let handler = self.handlers[httpResponse.statusCode]{
-            handler(originalData: result.outcome, connection: connection, error: error)
+            handler(outcome: result.outcome, connection: connection, error: error)
         }
         
         return error

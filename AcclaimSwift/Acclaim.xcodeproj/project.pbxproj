@@ -26,6 +26,7 @@
 		799FBFD81CB184D60000DACF /* FormParameter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799FBFD71CB184D60000DACF /* FormParameter.swift */; };
 		799FBFDA1CB184FF0000DACF /* RequestParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 799FBFD91CB184FF0000DACF /* RequestParameters.swift */; };
 		79A0B5161CDB9D4600F23262 /* QueueCaller.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A0B5151CDB9D4600F23262 /* QueueCaller.swift */; };
+		79A0B5181CDBA50A00F23262 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A0B5171CDBA50A00F23262 /* Protocols.swift */; };
 		79BBBA6A1CC00B9500ABCC81 /* MappingResponseAssistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BBBA691CC00B9500ABCC81 /* MappingResponseAssistant.swift */; };
 		79BBBA6C1CC00BFD00ABCC81 /* MappingObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79BBBA6B1CC00BFD00ABCC81 /* MappingObject.swift */; };
 		79DFD8E71CA19AD400A87D02 /* Connection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8BA1CA19AD400A87D02 /* Connection.swift */; };
@@ -41,7 +42,7 @@
 		79DFD8F11CA19AD400A87D02 /* ResumeDataResponseAssistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8C81CA19AD400A87D02 /* ResumeDataResponseAssistant.swift */; };
 		79DFD8F21CA19AD400A87D02 /* TextResponseAssistant.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8C91CA19AD400A87D02 /* TextResponseAssistant.swift */; };
 		79DFD8F31CA19AD400A87D02 /* KeyPathParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8CB1CA19AD400A87D02 /* KeyPathParser.swift */; };
-		79DFD8F41CA19AD400A87D02 /* MIME.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8CC1CA19AD400A87D02 /* MIME.swift */; };
+		79DFD8F41CA19AD400A87D02 /* MIMEType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8CC1CA19AD400A87D02 /* MIMEType.swift */; };
 		79DFD8F51CA19AD400A87D02 /* Deserializer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8CF1CA19AD400A87D02 /* Deserializer.swift */; };
 		79DFD8F61CA19AD400A87D02 /* Data.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8D11CA19AD400A87D02 /* Data.swift */; };
 		79DFD8F71CA19AD400A87D02 /* Image.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79DFD8D21CA19AD400A87D02 /* Image.swift */; };
@@ -89,6 +90,7 @@
 		799FBFD71CB184D60000DACF /* FormParameter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormParameter.swift; sourceTree = "<group>"; };
 		799FBFD91CB184FF0000DACF /* RequestParameters.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequestParameters.swift; sourceTree = "<group>"; };
 		79A0B5151CDB9D4600F23262 /* QueueCaller.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueueCaller.swift; sourceTree = "<group>"; };
+		79A0B5171CDBA50A00F23262 /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 		79BBBA691CC00B9500ABCC81 /* MappingResponseAssistant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MappingResponseAssistant.swift; sourceTree = "<group>"; };
 		79BBBA6B1CC00BFD00ABCC81 /* MappingObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MappingObject.swift; sourceTree = "<group>"; };
 		79DFD8BA1CA19AD400A87D02 /* Connection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Connection.swift; sourceTree = "<group>"; };
@@ -104,7 +106,7 @@
 		79DFD8C81CA19AD400A87D02 /* ResumeDataResponseAssistant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ResumeDataResponseAssistant.swift; sourceTree = "<group>"; };
 		79DFD8C91CA19AD400A87D02 /* TextResponseAssistant.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TextResponseAssistant.swift; sourceTree = "<group>"; };
 		79DFD8CB1CA19AD400A87D02 /* KeyPathParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyPathParser.swift; sourceTree = "<group>"; };
-		79DFD8CC1CA19AD400A87D02 /* MIME.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MIME.swift; sourceTree = "<group>"; };
+		79DFD8CC1CA19AD400A87D02 /* MIMEType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MIMEType.swift; sourceTree = "<group>"; };
 		79DFD8CF1CA19AD400A87D02 /* Deserializer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Deserializer.swift; sourceTree = "<group>"; };
 		79DFD8D11CA19AD400A87D02 /* Data.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Data.swift; sourceTree = "<group>"; };
 		79DFD8D21CA19AD400A87D02 /* Image.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Image.swift; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 		79DFD8B41CA19AD400A87D02 /* Callers */ = {
 			isa = PBXGroup;
 			children = (
+				79A0B5171CDBA50A00F23262 /* Protocols.swift */,
 				799FBFCF1CB184000000DACF /* APICaller.swift */,
 				799FBFC81CB183E50000DACF /* Implementation */,
 			);
@@ -337,7 +340,7 @@
 				7936883C1CD130ED0037E9FD /* RE.swift */,
 				799FBFC01CAC53BE0000DACF /* QueuePriority.swift */,
 				79DFD8CB1CA19AD400A87D02 /* KeyPathParser.swift */,
-				79DFD8CC1CA19AD400A87D02 /* MIME.swift */,
+				79DFD8CC1CA19AD400A87D02 /* MIMEType.swift */,
 				79DFD8CD1CA19AD400A87D02 /* Serialization */,
 			);
 			name = Utlitities;
@@ -531,10 +534,11 @@
 				79DFD8FA1CA19AD400A87D02 /* JSONParametersSerializer.swift in Sources */,
 				7936883D1CD130ED0037E9FD /* RE.swift in Sources */,
 				799FBFC61CB183750000DACF /* API.swift in Sources */,
+				79A0B5181CDBA50A00F23262 /* Protocols.swift in Sources */,
 				79A0B5161CDB9D4600F23262 /* QueueCaller.swift in Sources */,
 				799FBFCC1CB183FB0000DACF /* Downloader.swift in Sources */,
 				79DFD8E81CA19AD400A87D02 /* Connector.swift in Sources */,
-				79DFD8F41CA19AD400A87D02 /* MIME.swift in Sources */,
+				79DFD8F41CA19AD400A87D02 /* MIMEType.swift in Sources */,
 				79DFD8FE1CA19AD400A87D02 /* Acclaim.swift in Sources */,
 				79DFD8FB1CA19AD400A87D02 /* MultipartFormSerializer.swift in Sources */,
 				799FBFD61CB184810000DACF /* FormDataParameter.swift in Sources */,

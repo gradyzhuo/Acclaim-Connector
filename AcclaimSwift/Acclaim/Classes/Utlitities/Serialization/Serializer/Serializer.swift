@@ -12,6 +12,7 @@ public protocol Serializer {}
 
 public protocol ParametersSerializer:Serializer {
     func serialize(params:RequestParameters) -> NSData?
+    func serialize(params:[Parameter]) -> NSData?
 }
 
 public enum SerializerType {

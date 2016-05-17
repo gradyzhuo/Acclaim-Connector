@@ -41,9 +41,20 @@ public struct RE {
         return matches.map{ Sult(content: string, result: $0) }
     }
     
+    public func isMatch(inString string: String,  options: NSMatchingOptions = .WithTransparentBounds)->Bool{
+        
+        let range = NSRange(location: 0, length: string.lengthOfBytesUsingEncoding(NSUTF8StringEncoding))
+        let matchedRange = self.regularExpression.rangeOfFirstMatchInString(string, options: options, range: range)
+        return (range.location == matchedRange.location) && (range.length == matchedRange.length)
+    }
+    
 }
 
 extension RE.Pattern {
+    
+    public func isMatch(inString string: String, options: NSMatchingOptions = .WithTransparentBounds)->Bool{
+        return RE(pattern: self).isMatch(inString: string, options: options)
+    }
     
     public func match(inString string: String, options: NSMatchingOptions = .WithTransparentBounds)->[RE.Sult]{
         return RE(pattern: self).match(inString: string, options: options)

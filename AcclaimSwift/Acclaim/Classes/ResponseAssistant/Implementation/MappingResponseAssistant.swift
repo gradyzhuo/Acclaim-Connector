@@ -12,6 +12,10 @@ public struct MappingResponseAssistant<MappingObject:Mappable> : ResponseAssista
     public typealias DeserializerType = JSONMappingDeserializer<MappingObject>
     public typealias Handler = (object : JSONMappingDeserializer<MappingObject>.Outcome, connection: Connection)->Void
     
+    public var allowedMIMEs: [MIMEType]{
+        return [.Text]
+    }
+    
     public var deserializer: DeserializerType = DeserializerType()
     
     public var handler : Handler?

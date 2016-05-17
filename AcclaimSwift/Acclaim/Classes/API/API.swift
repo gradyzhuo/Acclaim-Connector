@@ -190,7 +190,7 @@ extension API {
      - cookie: the instance of NSHTTPCookie.
      - returns: API.
      */
-    internal func generateRequest(params: RequestParameters = [])->NSURLRequest {
+    internal func generateRequest(configuration configuration: Acclaim.Configuration, params: RequestParameters = [])->NSURLRequest {
         
         let request:NSMutableURLRequest = NSMutableURLRequest(URL: self.apiURL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
         
@@ -205,7 +205,7 @@ extension API {
         }
         
         request.HTTPMethod = self.method.rawValue
-        request.allowsCellularAccess = Acclaim.allowsCellularAccess
+        request.allowsCellularAccess = configuration.allowsCellularAccess
         
         for field in NSHTTPCookie.requestHeaderFieldsWithCookies(self.cookies){
             request.addValue(field.1, forHTTPHeaderField: field.0)

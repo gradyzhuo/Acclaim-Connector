@@ -10,39 +10,25 @@ import UIKit
 import Acclaim
 
 class DownloadTaskViewController: UIViewController {
-
+    
+    @IBOutlet weak var urlTextField: UITextField!
+    @IBOutlet weak var processBar: UIProgressView!
+    @IBOutlet weak var processLabel: UILabel!
+    @IBOutlet weak var resultImageView: UIImageView!
+    
     var apiCaller: Downloader?
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        let api:API = "https://upload.wikimedia.org/wikipedia/commons/2/28/Frangipani_rust_(caused_by_Coleosporium_plumeriae)_on_Plumeria_rubra.jpg"
-        api.requestTaskType = .DownloadTask()
+        self.urlTextField?.text = "https://upload.wikimedia.org/wikipedia/commons/2/28/Frangipani_rust_(caused_by_Coleosporium_plumeriae)_on_Plumeria_rubra.jpg"
         
-//        self.apiCaller = Acclaim.download(API: api)
-        
-        Acclaim.download(API: api)
-        
-        self.apiCaller = Acclaim.download(API: api)
-        self.apiCaller?.addImageResponseHandler { (image, connection) in
-            print(image)
-        }
-            
-        self.apiCaller?.setRecevingProcessHandler { (bytes, totalBytes, totalBytesExpected) -> Void in
-            let percent = Float(totalBytes) / Float(totalBytesExpected)
-            print("Hello dataTask percent:\(percent * 100)%")
-        }.addFailedResponseHandler(handler: { (result) in
-            
-        }).setCancelledResponseHandler({ (resumeData, connection) in
-            print("cancel")
-        })
     }
 
     override func viewDidDisappear(animated: Bool) {
         super.viewDidDisappear(animated)
         
         self.apiCaller?.cancel()
-        
         
     }
     
@@ -51,15 +37,36 @@ class DownloadTaskViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    @IBAction func run(sender: AnyObject){
+        
+        guard let urlString = self.urlTextField?.text, let url = NSURL(string: urlString) else{
+            return
+        }
+        
+        guard let api:API = API(URL: url) else{
+            return
+        }
+        
+        api.requestTaskType = .DownloadTask()
+        
+        self.apiCaller = Acclaim.download(API: api)
+        
+        self.apiCaller?.addImageResponseHandler(scale: 1.0, handler: { (image, connection) in
+            self.resultImageView.image = image
+            self.resultImageView.layer.addAnimation(CATransition(), forKey: "transition")
+        })
+        
+        self.apiCaller?.setRecevingProcessHandler {[unowned self] (bytes, totalBytes, totalBytesExpected) -> Void in
+            let percent = Float(totalBytes) / Float(totalBytesExpected)
 
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
+            self.processBar.setProgress(percent, animated: true)
+            self.processLabel?.text = "\(percent * 100)%"
+            
+            }.addFailedResponseHandler(handler: { (result) in
+                
+            }).setCancelledResponseHandler({ (resumeData, connection) in
+                print("cancel")
+        })
     }
-    */
-
+    
 }

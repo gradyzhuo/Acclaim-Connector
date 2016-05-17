@@ -8,35 +8,59 @@
 
 import Foundation
 
-//FIXME: 需要加入 ParameterTable，就以指定什麼Key是必填，什麼Key是選填
-//FIXME: 可能還可以加入 ResponseTable 去驗證回傳的JSON是否正確
-
+/// Default key setting for API Host URL in the Info.plist.
 public let ACAPIHostURLInfoKey:String = "ACAPIHostURLInfoKey"
-
-public struct AcclaimConfiguration{
-    public internal(set) var connector: Connector
-    public internal(set) var hostURLInfoKey: String
-    public internal(set) var bundleForHostURLInfo: NSBundle
-    
-    public init(connector: Connector, hostURLInfoKey key: String, bundleForHostURLInfo bundle: NSBundle){
-        self.connector = connector
-        self.hostURLInfoKey = key
-        self.bundleForHostURLInfo = bundle
-    }
-    
-    public static var defaultConfiguration: AcclaimConfiguration = {
-        return AcclaimConfiguration(connector: URLSession(), hostURLInfoKey: ACAPIHostURLInfoKey, bundleForHostURLInfo: NSBundle.mainBundle())
-    }()
-    
-}
 
 public class Acclaim {
     
+    /**
+     The Configuration for setting prefered connector, hostURLInfoKey, bundleForHostURLInfo, and allowsCellularAccess.
+     */
+    public struct Configuration{
+        /**
+         The connector what performs network connection. (readonly) <br />
+         - seealso:
+         - [URLSession](URLSession)
+         */
+        public internal(set) var connector: Connector
+        public internal(set) var hostURLInfoKey: String
+        public internal(set) var bundleForHostURLInfo: NSBundle
+        public internal(set) var allowsCellularAccess: Bool
+        
+        /**
+         The queue priority level configure of sending a request. (readonly)
+         
+         There are 3 levels as below:
+         - High
+         - Medium
+         - Low
+         
+         Otherwise:
+         - Default = Medium
+         */
+        public internal(set) var priority:QueuePriority = .Default
+        
+        internal var cacheStoragePolicy:CacheStoragePolicy = .AllowedInMemoryOnly(renewRule: .NotRenewed)
+        
+        public init(connector: Connector, hostURLInfoKey key: String, bundleForHostURLInfo bundle: NSBundle, allowsCellularAccess cellularAccess: Bool = true){
+            self.connector = connector
+            self.hostURLInfoKey = key
+            self.bundleForHostURLInfo = bundle
+            self.allowsCellularAccess = cellularAccess
+        }
+        
+        public static var defaultConfiguration: Acclaim.Configuration = {
+            return Acclaim.Configuration(connector: URLSession(), hostURLInfoKey: ACAPIHostURLInfoKey, bundleForHostURLInfo: NSBundle.mainBundle())
+        }()
+        
+    }
+    
+    /// Shows current Acclaim version number. (readonly)
     public static let version = AcclaimVersionNumber
     
-    public static var allowsCellularAccess: Bool = true
     
-    public static var configuration: AcclaimConfiguration = AcclaimConfiguration.defaultConfiguration
+    public static var sharedRequestParameters: RequestParameters?
+    public static var configuration: Acclaim.Configuration = Acclaim.Configuration.defaultConfiguration
     
     internal static var running:[String:Caller] = [:]
     
@@ -64,8 +88,8 @@ public class Acclaim {
         return NSURLCache.sharedURLCache()
     }
     
-    internal static func cachedResponse(API api: API, parameters: RequestParameters) -> NSCachedURLResponse?{
-        return Acclaim.sharedURLCache.cachedResponseForRequest(api.generateRequest(parameters))
+    internal static func cachedResponse(API api: API, parameters: RequestParameters, configuration: Acclaim.Configuration) -> NSCachedURLResponse?{
+        return Acclaim.sharedURLCache.cachedResponseForRequest(api.generateRequest(configuration: configuration, params: parameters))
     }
     
     internal static func cachedResponse(request request: NSURLRequest) -> NSCachedURLResponse?{
@@ -89,9 +113,8 @@ public class Acclaim {
         return Acclaim.sharedURLCache.removeCachedResponseForRequest(request)
     }
     
-    internal static func removeCachedResponse(API api: API, parameters: RequestParameters){
-        
-        return Acclaim.removeCachedResponse(api.generateRequest(parameters))
+    internal static func removeCachedResponse(API api: API, parameters: RequestParameters, configuration: Acclaim.Configuration){
+        return Acclaim.removeCachedResponse(api.generateRequest(configuration: configuration, params: parameters))
     }
     
 }

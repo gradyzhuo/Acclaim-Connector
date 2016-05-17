@@ -8,112 +8,22 @@
 
 import Foundation
 
-public protocol APISupport {
-    var api:API               { get }
-    
-    init(API api: API, params: RequestParameters, connector: Connector)
-}
-
-
-public protocol CancelSupport {
-    var cancelledAssistant: Assistant? { get }
-    var cancelledResumeData:NSData? { get }
-    
-    func setCancelledResponseHandler(handler:ResumeDataResponseAssistant.Handler)->Self
-}
-
-public protocol ResponseSupport {
-    
-    var responseAssistants:[Assistant] { get }
-    var failedResponseAssistants:[Assistant] { get }
-    
-    func addResponseAssistant<T:ResponseAssistant>(forType type:ResponseAssistantType, responseAssistant assistant: T)->T
-}
-
-extension ResponseSupport {
-    
-    // convenience response handler function
-    public func addFailedResponseHandler(statusCode statusCode:Int? = nil, handler:FailedResponseAssistant.Handler)->Self{
-        var assistant = FailedResponseAssistant()
-        if let statusCode = statusCode {
-            assistant.addHandler(forStatusCode: statusCode, handler: handler)
-        }else{
-            assistant.handler = handler
-        }
-        self.addResponseAssistant(forType: .Failed, responseAssistant: assistant)
-        
-        return self
-    }
-    
-    public func addOriginalDataResponseHandler(handler:OriginalDataResponseAssistant.Handler)->Self{
-        
-        self.addResponseAssistant(forType: .Normal, responseAssistant: OriginalDataResponseAssistant(handler: handler))
-        
-        return self
-    }
-    
-    public func addTextResponseHandler(encoding: NSStringEncoding = NSUTF8StringEncoding, handler:TextResponseAssistant.Handler)->Self{
-        
-        self.addResponseAssistant(forType: .Normal, responseAssistant: TextResponseAssistant(encoding: encoding, handler: handler))
-        
-        return self
-    }
-    
-}
-
-public protocol SendingProcessHandlable:class {
-    var sendingProcessHandler: ProcessHandler? { get }
-    
-    func setSendingProcessHandler(handler: ProcessHandler)->Self
-}
-
-public protocol RecevingProcessHandlable:class {
-    var recevingProcessHandler: ProcessHandler? { get }
-    
-    func setRecevingProcessHandler(handler: ProcessHandler)->Self
-}
-
-public typealias ProcessHandlable = protocol<SendingProcessHandlable, RecevingProcessHandlable>
-
-public protocol Caller : class{
-    var identifier: String     { get }
-    var priority:QueuePriority { get }
-    var running:Bool           { get }
-    var cancelled:Bool         { get }
-    
-    func run(cacheStoragePolicy: CacheStoragePolicy, priority: QueuePriority)->Self
-    func resume()
-    func cancel()
-}
-
-
 public enum ProcessHandlerType : String {
     case Sending = "Sending"
     case Receiving = "Receiving"
 }
 
-public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable {
+public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, Configurable, MIMESupport {
     
-    public internal(set) var identifier: String = String(NSDate().timeIntervalSince1970)
-    
-    /**
-     The queue priority level configure of sending a request. (readonly)
-     
-     There are 3 levels as below:
-     - High
-     - Medium
-     - Low
-     
-     Otherwise:
-     - Default = Medium
-     */
-    public internal(set) var priority:QueuePriority = .Default
+    public var identifier: String = String(NSDate().timeIntervalSince1970)
+    public var configuration: Acclaim.Configuration = Acclaim.configuration
+
     internal var cacheStoragePolicy:CacheStoragePolicy = .AllowedInMemoryOnly(renewRule: .NotRenewed)
     
     
     /** (readonly) */
     public var cancelled:Bool {
-        if let queue = self.blockInQueue {
+        if let queue = self.runningBlockInQueue {
             let testResult = dispatch_block_testcancel(queue)
             return Bool(testResult)
         }
@@ -127,8 +37,8 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable {
     /** (read only) */
     
     //MARK: internal variables
-    internal var blockInQueue:dispatch_block_t!
-    internal var params:RequestParameters = []
+    internal var runningBlockInQueue:dispatch_block_t!
+    public internal(set) var params:RequestParameters = []
     
     internal var sessionTask:NSURLSessionTask?
     
@@ -136,15 +46,24 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable {
     public internal(set)  var failedResponseAssistants:[Assistant] = []
     public internal(set)  var cancelledAssistant: Assistant?
     
-    
     public internal(set) var sendingProcessHandler: ProcessHandler?
     public internal(set) var recevingProcessHandler: ProcessHandler?
     
     public internal(set) var cancelledResumeData:NSData?
     
-    lazy var queue: dispatch_queue_t = dispatch_queue_create(self.identifier, DISPATCH_QUEUE_SERIAL)
+    public var allowedMIMEs: [MIMEType]{
+        
+        return self.responseAssistants.reduce([MIMEType]()) { (MIMEs, responseAssistant) -> [MIMEType] in
+            
+            if let MIMEAssistant = responseAssistant as? MIMESupport {
+                return MIMEs + MIMEAssistant.allowedMIMEs
+            }
+
+            return MIMEs
+        }
+    }
     
-    var connector: Connector!
+    lazy var queue: dispatch_queue_t = dispatch_queue_create(self.identifier, DISPATCH_QUEUE_SERIAL)
     
     convenience init(API api:API, params:[String: ParameterValueType], connector: Connector = Acclaim.configuration.connector) {
         self.init(API: api, params: RequestParameters(dictionary: params), connector: connector)
@@ -157,39 +76,31 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable {
     required public init(API api:API, params:RequestParameters = [], connector: Connector = Acclaim.configuration.connector) {
         self.api = api
         self.params = params
-        self.connector = connector
-    }
-    
-    func run()->Self{
-        self.resume()
-        return self
-    }
-    
-    public func run(cacheStoragePolicy:CacheStoragePolicy, priority: QueuePriority = .Default)->Self{
+        self.configuration.connector = connector
         
-        self.cacheStoragePolicy = cacheStoragePolicy
-        self.priority = priority
+        if let sharedRequestParameters = Acclaim.sharedRequestParameters {
+            self.params.addParams(sharedRequestParameters)
+        }
         
-        return self.run()
     }
     
-    func run(connector connector: Connector){
+    internal func run(connector connector: Connector, completion: ((data: NSData?, connection: Connection, error: NSError?) -> Void)?){
         
         guard !self.running else {
             return
         }
         
         // set
-        self.sessionTask = connector.request(API: self.api, params: self.params) {[unowned self] (data, connection, error) in
+        self.sessionTask = connector.request(API: self.api, params: self.params, configuration: self.configuration) {[unowned self] (data, connection, error) in
             
-            let request:NSURLRequest! = self.sessionTask?.currentRequest
+            completion?(data: data, connection: connection, error: error)
             
             self.handleResponses(data: data, connection: connection, error: error)
             
             //remove
             Acclaim.removeRunningCaller(self)
             
-            self.blockInQueue = nil
+            self.runningBlockInQueue = nil
             self.running = false
             
         }
@@ -201,18 +112,14 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable {
         }
         
     }
-    
-    func retry(API api:API){
 
-    }
-    
-    public func resume(){
+    public func resume(completion completion: ((data: NSData?, connection: Connection, error: NSError?) -> Void)?) {
         
-        let block = dispatch_block_create_with_qos_class(DISPATCH_BLOCK_DETACHED, priority.qos_class, priority.relative_priority) {[unowned self] () -> Void in
-            self.run(connector: self.connector)
+        let block = dispatch_block_create_with_qos_class(DISPATCH_BLOCK_DETACHED, self.configuration.priority.qos_class, self.configuration.priority.relative_priority) {[unowned self] () -> Void in
+            self.run(connector: self.configuration.connector, completion: completion)
         }
         
-        self.blockInQueue = block
+        self.runningBlockInQueue = block
         dispatch_barrier_async(self.queue, block)
         
         //add
@@ -227,13 +134,13 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable {
             
             //Ignore if APICaller is not running.
             guard self.running else {
-                ACDebugLog("Caller is not running. Please perform `func call()` to run your api.")
+                ACDebugLog("Caller is not running. Please perform `func resume()` to run your api.")
                 return
             }
             
             //Ignore if APICaller has been cannceled.
             guard !self.cancelled else {
-                ACDebugLog("Caller has been cannceled. Please perform `func call()` to run your api.")
+                ACDebugLog("Caller has been cannceled. Please perform `func resume()` to run your api.")
                 return
             }
             
@@ -245,7 +152,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable {
                 self.sessionTask?.cancel()
             }
             
-            dispatch_block_cancel(self.blockInQueue)
+            dispatch_block_cancel(self.runningBlockInQueue)
             
         }
         
@@ -317,6 +224,7 @@ extension APICaller {
         case .Failed:
             self.failedResponseAssistants.append(assistant)
         }
+        
         return assistant
     }
     

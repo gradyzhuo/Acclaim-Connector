@@ -29,7 +29,7 @@ public class URLSession : NSObject, _Connector {
         self.session = NSURLSession(configuration: configuration, delegate: delegate, delegateQueue: self.delegateQueue)
     }
     
-    public func generateTask(api: API, params: RequestParameters = [], completionHandler handler: ResponseHandler) -> NSURLSessionTask {
+    public func generateTask(api: API, params: RequestParameters = [], configuration: Acclaim.Configuration, completionHandler handler: ResponseHandler) -> NSURLSessionTask {
         
         let taskType = api.requestTaskType
         
@@ -37,7 +37,7 @@ public class URLSession : NSObject, _Connector {
         
         if taskType == .DownloadTask {
             
-            let request = api.generateRequest(params)
+            let request = api.generateRequest(configuration: configuration, params: params)
             
             if let resumeData = taskType.resumeData {
                 task = self.session.downloadTaskWithResumeData(resumeData)
@@ -46,7 +46,7 @@ public class URLSession : NSObject, _Connector {
             }
         }else if taskType == .UploadTask {
             
-            let mutableRequest:NSMutableURLRequest! = api.generateRequest().mutableCopy() as! NSMutableURLRequest
+            let mutableRequest:NSMutableURLRequest! = api.generateRequest(configuration: configuration).mutableCopy() as! NSMutableURLRequest
             let uploadData = params.serialize(taskType.method.serializer) ?? NSData()
             
             if let multipartSerializer = taskType.method.serializer as? MultipartFormSerializer {
@@ -63,12 +63,11 @@ public class URLSession : NSObject, _Connector {
         }
         else{
             
-            let request = api.generateRequest(params)
+            let request = api.generateRequest(configuration: configuration, params: params)
             //FIXME: 如果要使用Delegate，就一定要使用沒有CompletionHandler的版本
             task = self.session.dataTaskWithRequest(request)
         }
         
-        task.completionHandler = handler
         return task
     }
     

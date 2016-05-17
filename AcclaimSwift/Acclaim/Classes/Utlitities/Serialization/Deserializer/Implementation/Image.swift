@@ -11,6 +11,8 @@ import Foundation
 public struct ImageDeserializer : Deserializer{
     public typealias Outcome = UIImage
     
+    public var scale: CGFloat = 1.0
+    
     public func deserialize(data: NSData?) -> (outcome: Outcome?, error: ErrorType?) {
         guard let data = data else {
             return (nil, error: NSError(domain: "ACImageResponseDeserializer", code: 9, userInfo: [NSLocalizedFailureReasonErrorKey:"Original Data is nil."]))
@@ -27,6 +29,10 @@ public struct ImageDeserializer : Deserializer{
     
     public init(){
         
+    }
+    
+    public init(scale: CGFloat){
+        self.scale = scale
     }
     
 }

@@ -12,14 +12,24 @@ public struct ImageResponseAssistant : ResponseAssistant{
     
     public typealias DeserializerType = ImageDeserializer
     
+    public var allowedMIMEs: [MIMEType] {
+        return [.Image]
+    }
+    
     public typealias Handler = (image : ImageDeserializer.Outcome, connection: Connection)->Void
     
-    public var deserializer: DeserializerType = DeserializerType()
+    public var deserializer: DeserializerType
     
     public var handler : Handler?
     
     public init(handler: Handler? = nil){
         self.handler = handler
+        self.deserializer = DeserializerType()
+    }
+    
+    public init(scale: CGFloat, handler: Handler? = nil){
+        self.handler = handler
+        self.deserializer = DeserializerType(scale: scale)
     }
     
     public func handle(data: NSData?, connection: Connection, error: ErrorType?) -> (ErrorType?) {

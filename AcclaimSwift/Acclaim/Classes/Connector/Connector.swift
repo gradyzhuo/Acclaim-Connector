@@ -22,7 +22,7 @@ public class Handler<Type> {
 
 public protocol Connector : class {
 
-    func generateTask(api: API, params: RequestParameters, completionHandler handler: ResponseHandler) -> NSURLSessionTask
+    func generateTask(api: API, params: RequestParameters, configuration: Acclaim.Configuration,completionHandler handler: ResponseHandler) -> NSURLSessionTask
 }
 
 internal protocol _Connector : Connector {
@@ -35,9 +35,10 @@ extension Connector {
         task.resume()
     }
     
-    public func request(API api: API, params: RequestParameters = [], completionHandler handler: ResponseHandler) -> NSURLSessionTask? {
+    public func request(API api: API, params: RequestParameters = [], configuration: Acclaim.Configuration,completionHandler handler: ResponseHandler) -> NSURLSessionTask? {
         
-        let task:NSURLSessionTask = self.generateTask(api, params: params, completionHandler: handler)
+        let task:NSURLSessionTask = self.generateTask(api, params: params, configuration: configuration,completionHandler: handler)
+        task.completionHandler = handler
         
         defer{
             self.handle(task)

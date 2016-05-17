@@ -63,7 +63,9 @@ class DataTaskViewController: UIViewController {
         self.view.endEditing(true)
         
         let api = API(URL: NSURL(string: self.urlTextField!.text!)!)
-        let APICaller = RestfulAPI(API: api, params: ["scope":"datasetMetadataSearch", "q":"id:8ef1626a-892a-4218-8344-f7ac46e1aa48"])
+//        let APICaller = RestfulAPI(API: api, params: ["scope":"datasetMetadataSearch", "q":"id:8ef1626a-892a-4218-8344-f7ac46e1aa48"])
+        
+        let APICaller = RestfulAPI(API: "http://images.apple.com/tw/hotnews/promos/images/promo_event_2x.jpg")
         
         if let keyPath = self.keyPathTextField?.text where keyPath != "" {
             
@@ -87,10 +89,13 @@ class DataTaskViewController: UIViewController {
                 
                 self.resultTextView?.text = String(JSONObject)
             })
+            
+            APICaller.addFailedResponseHandler(deserializer: TextDeserializer(), handler: { (outcome, connection, error) in
+                print("outcome: \(outcome), error:\(error)")
+            })
         }
         
-        
-        APICaller.run(.NotAllowed)
+        APICaller.resume()
         
         self.apiCaller = APICaller
     }

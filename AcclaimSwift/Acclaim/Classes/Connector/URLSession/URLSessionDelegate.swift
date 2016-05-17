@@ -30,6 +30,8 @@ extension URLSessionDelegate : NSURLSessionDelegate {
         let data = task.data.copy() as? NSData
         let connection = Connection(originalRequest: task.originalRequest, currentRequest: task.currentRequest, response: task.response, cached: false)
         task.completionHandler?(data: data, connection: connection, error: error)
+        
+        task.removeAllAssociatedObjects()
     }
 }
 
@@ -37,8 +39,12 @@ extension URLSessionDelegate : NSURLSessionTaskDelegate {
     
     internal func URLSession(session: NSURLSession, task: NSURLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         
-        let handler = task.apiCaller?.sendingProcessHandler
-        handler?(bytes: bytesSent, totalBytes: totalBytesSent, totalBytesExpected: totalBytesExpectedToSend)
+        if let processableCaller = task.apiCaller as? ProcessHandlable {
+            let handler = processableCaller.sendingProcessHandler
+            handler?(bytes: bytesSent, totalBytes: totalBytesSent, totalBytesExpected: totalBytesExpectedToSend)
+        }
+        
+        
     }
     
     internal func URLSession(session: NSURLSession, task: NSURLSessionTask, willPerformHTTPRedirection response: NSHTTPURLResponse, newRequest request: NSURLRequest, completionHandler: (NSURLRequest?) -> Void) {
@@ -69,14 +75,36 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
         let countOfBytesReceived = dataTask.countOfBytesReceived
         let countOfBytesExpectedToReceive = dataTask.countOfBytesExpectedToReceive > 0 ? dataTask.countOfBytesExpectedToReceive : countOfBytesReceived
         
-        let handler = dataTask.apiCaller?.recevingProcessHandler
-        handler?(bytes: Int64(data.length), totalBytes: countOfBytesReceived, totalBytesExpected: countOfBytesExpectedToReceive)
+        if let processableCaller = dataTask.apiCaller as? ProcessHandlable {
+            let handler = processableCaller.recevingProcessHandler
+            handler?(bytes: Int64(data.length), totalBytes: countOfBytesReceived, totalBytesExpected: countOfBytesExpectedToReceive)
+        }
+        
+        
     }
     
     internal func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
         
         print("\(response.MIMEType)")
-        completionHandler(.Allow)
+        
+        guard let MIME = response.MIMEType else{
+            completionHandler(.Cancel)
+            return
+        }
+        
+        do{
+            let type = try MIMEType(MIME: MIME)
+            
+            if let MIMECaller = dataTask.apiCaller as? MIMESupport where MIMECaller.allowedMIMEs.contains(type) {
+                completionHandler(.Allow)
+            }else{
+                completionHandler(.Cancel)
+            }
+        }catch{
+            
+        }
+        
+        
         
     }
     
@@ -98,14 +126,19 @@ extension URLSessionDelegate : NSURLSessionDownloadDelegate {
     
     internal func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didFinishDownloadingToURL location: NSURL) {
         
-        let data = NSData(contentsOfURL: location)
-        let connection = Connection(originalRequest: downloadTask.originalRequest, currentRequest: downloadTask.currentRequest, response: downloadTask.response, cached: false)
-        downloadTask.completionHandler?(data: data, connection: connection, error: downloadTask.error)
+        let data = NSMutableData(contentsOfURL: location)
+        downloadTask.data = data ?? NSMutableData()
+        
     }
     
     internal func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        let handler = downloadTask.apiCaller?.recevingProcessHandler
-        handler?(bytes: bytesWritten, totalBytes: totalBytesWritten, totalBytesExpected: totalBytesExpectedToWrite)
+        
+        if let processableCaller = downloadTask.apiCaller as? ProcessHandlable {
+            let handler = processableCaller.recevingProcessHandler
+            handler?(bytes: bytesWritten, totalBytes: totalBytesWritten, totalBytesExpected: totalBytesExpectedToWrite)
+        }
+        
+        
     }
     
     internal func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didResumeAtOffset fileOffset: Int64, expectedTotalBytes: Int64) {

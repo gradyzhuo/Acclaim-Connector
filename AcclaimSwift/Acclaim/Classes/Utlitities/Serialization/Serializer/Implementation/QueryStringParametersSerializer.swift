@@ -15,7 +15,7 @@ public struct QueryStringParametersSerializer : ParametersSerializer {
         let components = NSURLComponents()
         components.queryItems = [NSURLQueryItem]()
         
-        params.params.forEach {(_, parameter) -> Void in
+        params.params.forEach {(parameter) -> Void in
             
             if let parameter = parameter as? FormParameter {
                 switch parameter {

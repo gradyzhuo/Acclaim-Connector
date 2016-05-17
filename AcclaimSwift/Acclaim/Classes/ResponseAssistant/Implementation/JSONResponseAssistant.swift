@@ -12,6 +12,10 @@ public struct JSONResponseAssistant : ResponseAssistant{
     public typealias DeserializerType = JSONDeserializer
     public typealias Handler = (JSONObject : JSONDeserializer.Outcome?, connection: Connection)->Void
     
+    public var allowedMIMEs: [MIMEType] {
+        return [.Text]
+    }
+    
     public var deserializer: DeserializerType = DeserializerType(options: .AllowFragments)
     
     public internal(set) var handlers:[KeyPath : Handler] = [:]
@@ -28,7 +32,7 @@ public struct JSONResponseAssistant : ResponseAssistant{
         self.handler = handler
     }
     
-    public init(options: NSJSONReadingOptions, handler: Handler){
+    public init(options: NSJSONReadingOptions, handler: Handler? = nil){
         self.deserializer = JSONDeserializer(options: options)
         self.handler = handler
     }

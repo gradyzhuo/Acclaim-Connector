@@ -15,10 +15,10 @@ public struct JSONParametersSerializer : ParametersSerializer {
         self.option = option
     }
     
-    public func serialize(params: RequestParameters) -> NSData? {
+    public func serialize(requestParams: RequestParameters) -> NSData? {
         
         var JSONObject = [String:AnyObject]()
-        params.params.forEach {(_, parameter) -> Void in
+        requestParams.params.forEach {(parameter) -> Void in
             
             if let parameter = parameter as? FormParameter {
                 switch parameter {

@@ -17,12 +17,12 @@ private let kData = unsafeAddressOf("kData")
 extension NSURLSessionTask {
     typealias ResponseHandlerType = Handler<ResponseHandler>
     
-    internal var apiCaller: ProcessHandlable? {
+    internal var apiCaller: Caller? {
         set{
             objc_setAssociatedObject(self, kAPICaller, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get{
-            let apiCaller = objc_getAssociatedObject(self, kAPICaller) as? ProcessHandlable
+            let apiCaller = objc_getAssociatedObject(self, kAPICaller) as? Caller
             return apiCaller
         }
     }
@@ -53,6 +53,16 @@ extension NSURLSessionTask {
             return data
         }
         
+    }
+    
+    
+    internal func removeData(){
+        objc_setAssociatedObject(self, kData, nil, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+    }
+
+    
+    internal func removeAllAssociatedObjects(){
+        objc_removeAssociatedObjects(self)
     }
     
 }

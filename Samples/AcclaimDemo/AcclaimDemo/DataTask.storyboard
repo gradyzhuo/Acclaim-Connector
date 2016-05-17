@@ -1,22 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15F24b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dwr-6d-Fgo">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="10116" systemVersion="15F31a" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="Dwr-6d-Fgo">
     <dependencies>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
     </dependencies>
     <scenes>
-        <!--Navigation Controller-->
-        <scene sceneID="2GV-iw-ZjE">
-            <objects>
-                <navigationController id="lkN-VN-RXQ" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="8e1-WD-LIy">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="cCF-h3-34t" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1516" y="-1019"/>
-        </scene>
         <!--DataTask-->
         <scene sceneID="P3q-ka-x7D">
             <objects>
@@ -132,43 +119,11 @@
                         <outlet property="processBar" destination="L4n-oz-cUc" id="fBw-Pd-cy6"/>
                         <outlet property="resultTextView" destination="KOj-3l-LLf" id="td4-JC-OGK"/>
                         <outlet property="urlTextField" destination="VHn-IU-qSY" id="6El-D9-yTq"/>
-                        <segue destination="YOg-Jv-Swe" kind="show" id="zAI-nf-O33"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="FBU-jf-3ud" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2079" y="-1035"/>
-        </scene>
-        <!--KeyPath-->
-        <scene sceneID="8Q0-22-k6W">
-            <objects>
-                <tableViewController id="YOg-Jv-Swe" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="7gV-eO-hCC">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="2iO-3E-l8U">
-                                <rect key="frame" x="0.0" y="92" width="320" height="44"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2iO-3E-l8U" id="JVh-B1-oY1">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43.5"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="YOg-Jv-Swe" id="vdc-B6-7Ti"/>
-                            <outlet property="delegate" destination="YOg-Jv-Swe" id="edb-oA-Jbx"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="KeyPath" id="6Bq-Hv-S34">
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="mwo-o4-I37"/>
-                    </navigationItem>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="GgA-WZ-TPF" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="2490" y="-1035"/>
         </scene>
     </scenes>
 </document>

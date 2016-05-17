@@ -21,13 +21,12 @@ class ConnectionViewController: UIViewController {
         api.requestTaskType = .DownloadTask(method: .GET, resumeData: nil)
         
         let session = URLSession()
-        session.request(API: api) { (data, response, error) in
+        
+        
+        session.request(API: api, configuration: Acclaim.Configuration.defaultConfiguration) { (data, connection, error) in
             print(UIImage(data: data!))
         }
-//        .setRecevingProcessHandler({ (bytes, totalBytes, totalBytesExpected) in
-//            let percent = Float(totalBytes) / Float(totalBytesExpected)
-//            print("Hello dataTask percent:\(percent * 100)%")
-//        })
+
     }
 
     override func didReceiveMemoryWarning() {

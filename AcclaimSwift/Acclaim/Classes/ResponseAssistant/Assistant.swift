@@ -8,11 +8,15 @@
 
 import Foundation
 
+public protocol MIMESupport {
+    var allowedMIMEs: [MIMEType] { get }
+}
+
 public protocol Assistant{
     func handle(data:NSData?, connection: Connection, error:ErrorType?)->(ErrorType?)
 }
 
-public protocol ResponseAssistant : Assistant {
+public protocol ResponseAssistant : Assistant, MIMESupport {
     associatedtype Handler
     associatedtype DeserializerType : Deserializer
     
