@@ -14,7 +14,7 @@ public class QueueCaller : Caller {
     public var identifier: String = String(NSDate().timeIntervalSince1970)
     public internal(set) var priority:QueuePriority = QueuePriority.Default
     public internal(set) var running:Bool  = false
-    public internal(set) var cancelled:Bool = false
+    public internal(set) var isCancelled:Bool = false
     
     internal var _waittingCallers: [String : Caller] = [:]{
         didSet{

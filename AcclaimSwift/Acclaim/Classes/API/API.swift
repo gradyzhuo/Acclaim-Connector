@@ -106,7 +106,7 @@ public class  API : StringLiteralConvertible {
         self.init(URL: apiURL, taskType: taskType)
         
     }
-
+    
     public init(URL:NSURL, taskType:RequestTaskType = .DataTask(method: .GET)){
         self.apiURL = URL
         self.requestTaskType = taskType
@@ -115,6 +115,14 @@ public class  API : StringLiteralConvertible {
             self.addHTTPCookie(cookie)
         }
         
+    }
+    
+    public convenience init(URLString string: String, taskType:RequestTaskType = .DataTask(method: .GET)) throws {
+        guard let URL = NSURL(string: string) else {
+            throw NSError(domain: "API.From.URLString", code: 0, userInfo: [NSLocalizedFailureReasonErrorKey:"The API can't be construct by URLString(\(string))"])
+        }
+        
+        self.init(URL: URL, taskType: taskType)
     }
     
     public required convenience init(stringLiteral value: StringLiteralType) {

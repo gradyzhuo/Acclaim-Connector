@@ -16,6 +16,15 @@ public protocol Assistant{
     func handle(data:NSData?, connection: Connection, error:ErrorType?)->(ErrorType?)
 }
 
+extension Assistant {
+    internal func _handle(data:NSData?, connection: Connection, error:ErrorType?)->(ErrorType?){
+        if let MIME = connection.responseMIME where connection.requestMIMEs.contains(MIME) {
+            return self.handle(data, connection: connection, error: error)
+        }
+        return nil//NSError(domain: "Assistant.handle", code: 0, userInfo: [NSLocalizedFailureReasonErrorKey:"responseMIME is not supported for requestMIMEs."])
+    }
+}
+
 public protocol ResponseAssistant : Assistant, MIMESupport {
     associatedtype Handler
     associatedtype DeserializerType : Deserializer
@@ -28,6 +37,6 @@ public protocol ResponseAssistant : Assistant, MIMESupport {
 }
 
 public enum ResponseAssistantType:Int {
-    case Normal
+    case Success
     case Failed
 }

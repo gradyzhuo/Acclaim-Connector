@@ -23,7 +23,6 @@ public struct JSONResponseAssistant : ResponseAssistant{
         
         self.deserializer = JSONDeserializer(options: options)
         self.addHandler(forKeyPath: keyPath, handler: handler)
-        
     }
     
     public init(handler: Handler? = nil){

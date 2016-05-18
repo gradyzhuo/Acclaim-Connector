@@ -15,7 +15,7 @@ private let kCompletionHandler = unsafeAddressOf("kCompletionHandler")
 private let kData = unsafeAddressOf("kData")
 
 extension NSURLSessionTask {
-    typealias ResponseHandlerType = Handler<ResponseHandler>
+    typealias ResponseHandlerType = Handler<TaskResponseHandler>
     
     internal var apiCaller: Caller? {
         set{
@@ -29,7 +29,7 @@ extension NSURLSessionTask {
     
     internal var completionHandler:ResponseHandlerType.HandlerType? {
         set{
-            let handler = Handler<ResponseHandler>(newValue)
+            let handler = Handler<TaskResponseHandler>(newValue)
             objc_setAssociatedObject(self, kCompletionHandler, handler, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get{
@@ -62,6 +62,7 @@ extension NSURLSessionTask {
 
     
     internal func removeAllAssociatedObjects(){
+        self.removeData()
         objc_removeAssociatedObjects(self)
     }
     

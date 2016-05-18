@@ -27,10 +27,7 @@ internal class URLSessionDelegate : NSObject {
 extension URLSessionDelegate : NSURLSessionDelegate {
     internal func URLSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
         
-        let data = task.data.copy() as? NSData
-        let connection = Connection(originalRequest: task.originalRequest, currentRequest: task.currentRequest, response: task.response, cached: false)
-        task.completionHandler?(data: data, connection: connection, error: error)
-        
+        task.completionHandler?(task: task, response: task.response, error: error)
         task.removeAllAssociatedObjects()
     }
 }
@@ -85,8 +82,6 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
     
     internal func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didReceiveResponse response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
         
-        print("\(response.MIMEType)")
-        
         guard let MIME = response.MIMEType else{
             completionHandler(.Cancel)
             return
@@ -95,15 +90,21 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
         do{
             let type = try MIMEType(MIME: MIME)
             
-            if let MIMECaller = dataTask.apiCaller as? MIMESupport where (MIMECaller.allowedMIMEs.contains(.All) || MIMECaller.allowedMIMEs.contains(type)) {
+            if let MIMECaller = dataTask.apiCaller as? MIMESupport where MIMECaller.allowedMIMEs.contains(type) {
                 
-               completionHandler(.Allow)
-
+                if type.isKindOf(otherMIME: .Image, .Audio, .Video) {
+                    debugPrint("[MIMEType(\(MIME))]: BecomeDownloadTask")
+                    completionHandler(.BecomeDownload)
+                }else{
+                    completionHandler(.Allow)
+                }
+                
             }else{
                 completionHandler(.Cancel)
             }
         }catch{
-            
+            debugPrint("[didReceiveResponse] MIMEType(\(MIME)) is not correct, error: \(error)")
+            completionHandler(.Cancel)
         }
         
         
@@ -111,6 +112,13 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
     }
     
     internal func URLSession(session: NSURLSession, dataTask: NSURLSessionDataTask, didBecomeDownloadTask downloadTask: NSURLSessionDownloadTask) {
+        
+        downloadTask.apiCaller = dataTask.apiCaller
+        downloadTask.completionHandler = dataTask.completionHandler
+        
+        dataTask.apiCaller = nil
+        dataTask.completionHandler = nil
+        
         print("here didBecomeDownloadTask", self.session)
     }
     

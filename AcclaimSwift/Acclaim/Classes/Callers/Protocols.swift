@@ -21,10 +21,8 @@ public protocol APISupport {
 
 
 public protocol CancelSupport {
-    var isCancelled: Bool { get }
-    
     var cancelledAssistant: Assistant? { get }
-    var cancelledResumeData:NSData? { get }
+    var cancelledResumeData: NSData? { get }
     
     func cancelled(handler:ResumeDataResponseAssistant.Handler)->Self
 }
@@ -93,6 +91,7 @@ public typealias ProcessHandlable = protocol<SendingProcessHandlable, RecevingPr
 public protocol Caller : class {
     var identifier: String     { set get }
     var running:Bool           { get }
+    var isCancelled: Bool      { get }
     
     func resume(completion completion: ((data: NSData?, connection: Connection, error: NSError?)->Void)?)
     func cancel()

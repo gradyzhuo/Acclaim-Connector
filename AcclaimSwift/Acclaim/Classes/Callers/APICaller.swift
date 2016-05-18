@@ -17,8 +17,6 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, 
     
     public var identifier: String = String(NSDate().timeIntervalSince1970)
     public var configuration: Acclaim.Configuration = Acclaim.configuration
-
-    internal var cacheStoragePolicy:CacheStoragePolicy = .AllowedInMemoryOnly(renewRule: .NotRenewed)
     
     
     /** (readonly) */

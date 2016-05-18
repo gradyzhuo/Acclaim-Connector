@@ -29,7 +29,7 @@ public class URLSession : NSObject, _Connector {
         self.session = NSURLSession(configuration: configuration, delegate: delegate, delegateQueue: self.delegateQueue)
     }
     
-    public func generateTask(api: API, params: Parameters = [], configuration: Acclaim.Configuration, completionHandler handler: ResponseHandler) -> NSURLSessionTask {
+    public func generateTask(api: API, params: Parameters = [], configuration: Acclaim.Configuration, completionHandler handler: TaskResponseHandler) -> NSURLSessionTask {
         
         let taskType = api.requestTaskType
         

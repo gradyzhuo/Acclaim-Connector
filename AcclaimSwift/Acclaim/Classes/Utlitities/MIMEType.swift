@@ -76,14 +76,18 @@ extension MIMEType {
     public static let Audio: MIMEType = .Audio(subtype: "*")
     public static let Video: MIMEType = .Video(subtype: "*")
     
-    public func isKindOf(otherMIME other: MIMEType)->Bool{
-        let otherType = other.type == "*" ? ".+" : other.type
-        return RE.Pattern(otherType).isMatch(inString: self.type)
+    public func isKindOf(otherMIME others: MIMEType...)->Bool{
+        
+        return others.reduce(false) { (result, other) -> Bool in
+            let otherType = other.type == "*" ? ".+" : other.type
+            return result || RE.Pattern(otherType).isMatch(inString: self.type)
+        }
+
     }
     
     public func isSubtypeKindOf(otherMIME other: MIMEType)->Bool{
         let otherType = other.subtype == "*" ? ".+" : other.subtype
-        return RE.Pattern(otherType).isMatch(inString: self.type)
+        return RE.Pattern(otherType).isMatch(inString: self.subtype)
     }
     
 }

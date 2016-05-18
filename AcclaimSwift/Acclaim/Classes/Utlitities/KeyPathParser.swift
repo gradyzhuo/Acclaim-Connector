@@ -14,6 +14,10 @@ public struct KeyPath {
     public internal(set) var path: String
     public internal(set) var separater:String
     
+    public init(_ path: String){
+        self = KeyPath(path: path)
+    }
+    
     public init(path: String, separater:String = "."){
         self.path = path
         self.separater = separater
@@ -66,6 +70,10 @@ public protocol KeyPathParser{
 extension KeyPathParser{
     
     public static func parse<T>(value:AnyObject?, forKeyPath keyPath:KeyPath)->T?{
+        
+        guard keyPath != "" else{
+            return value as? T
+        }
         
         let pString = "^(?:\\@(\\w+)\\()?([\\w\\d\\\(keyPath.separater)]+)(?:\\))?$"
         let pattern = RE.Pattern(pString)
