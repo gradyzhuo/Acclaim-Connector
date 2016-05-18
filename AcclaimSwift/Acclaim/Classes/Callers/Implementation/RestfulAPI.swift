@@ -77,15 +77,15 @@ public final class RestfulAPI : SupportProtocols {
 //    }
     
     public func handleObject(response handler: AssistantType.Handler)->AssistantType{
-        return self.caller.handle(responseType: .Normal, assistant: AssistantType(handler: handler))
+        return self.caller.handle(responseType: .Success, assistant: AssistantType(handler: handler))
     }
     
     public func handleObject(keyPath keyPath:KeyPath, handler: AssistantType.Handler)->AssistantType{
-        return self.caller.handle(responseType: .Normal, assistant: AssistantType(forKeyPath: keyPath, handler: handler))
+        return self.caller.handle(responseType: .Success, assistant: AssistantType(forKeyPath: keyPath, handler: handler))
     }
     
     public func handleMappingObject<T:Mappable>(mappingClass mappingClass: T.Type, option:NSJSONReadingOptions = .AllowFragments, handler:MappingResponseAssistant<T>.Handler)->MappingResponseAssistant<T>{
-        return self.handle(responseType: .Normal, assistant: MappingResponseAssistant<T>(options: option, handler: handler))
+        return self.handle(responseType: .Success, assistant: MappingResponseAssistant<T>(options: option, handler: handler))
     }
     
 }
@@ -138,7 +138,7 @@ extension Acclaim {
         
         let caller = RestfulAPI(API: api, params: params)
         caller.configuration.priority = priority
-        caller.handle(responseType: .Normal, assistant: OriginalDataResponseAssistant(handler: completionHandler))
+        caller.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: completionHandler))
         caller.failed(deserializer: DataDeserializer(), handler: failedHandler)
         caller.resume()
         

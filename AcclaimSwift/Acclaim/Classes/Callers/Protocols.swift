@@ -63,12 +63,12 @@ extension ResponseSupport {
     }
     
     public func handleOriginalData(handler:OriginalDataResponseAssistant.Handler)->Self{
-        self.handle(responseType: .Normal, assistant: OriginalDataResponseAssistant(handler: handler))
+        self.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: handler))
         return self
     }
     
     public func handleText(encoding: NSStringEncoding = NSUTF8StringEncoding, handler:TextResponseAssistant.Handler)->Self{
-        self.handle(responseType: .Normal, assistant: TextResponseAssistant(encoding: encoding, handler: handler))
+        self.handle(responseType: .Success, assistant: TextResponseAssistant(encoding: encoding, handler: handler))
         return self
     }
     

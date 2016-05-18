@@ -112,15 +112,15 @@ extension Uploader {
     }
 
     public func handleMappingObject<T:Mappable>(mappingClass: T.Type, option:NSJSONReadingOptions = .AllowFragments, handler:MappingResponseAssistant<T>.Handler)->MappingResponseAssistant<T>{
-        return self.caller.handle(responseType: .Normal, assistant: MappingResponseAssistant<T>(options: option, handler: handler))
+        return self.caller.handle(responseType: .Success, assistant: MappingResponseAssistant<T>(options: option, handler: handler))
     }
     
     public func handleObject(keyPath keyPath:KeyPath, option:NSJSONReadingOptions = .AllowFragments, handler:JSONResponseAssistant.Handler)->JSONResponseAssistant{
-        return self.caller.handle(responseType: .Normal, assistant: JSONResponseAssistant(forKeyPath: keyPath, options: option, handler: handler))
+        return self.caller.handle(responseType: .Success, assistant: JSONResponseAssistant(forKeyPath: keyPath, options: option, handler: handler))
     }
 
     public func handleObject(option:NSJSONReadingOptions = .AllowFragments, handler:JSONResponseAssistant.Handler)->JSONResponseAssistant{
-        return self.caller.handle(responseType: .Normal, assistant: JSONResponseAssistant(options: option, handler: handler))
+        return self.caller.handle(responseType: .Success, assistant: JSONResponseAssistant(options: option, handler: handler))
     }
     
     
@@ -147,7 +147,7 @@ extension Acclaim {
         
         let caller = Uploader(API: api, params: params)
         caller.configuration.priority = priority
-        caller.handle(responseType: .Normal, assistant: OriginalDataResponseAssistant(handler: completionHandler))
+        caller.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: completionHandler))
         caller.failed(deserializer: DataDeserializer(), handler: failedHandler)
         caller.resume()
         

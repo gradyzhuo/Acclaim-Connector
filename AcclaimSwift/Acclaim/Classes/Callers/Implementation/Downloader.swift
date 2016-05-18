@@ -99,7 +99,7 @@ public final class Downloader : SupportProtocols {
     }
     
     public func handleImage(scale scale: CGFloat = 1.0, handler:ImageResponseAssistant.Handler)->ImageResponseAssistant{
-        return self.handle(responseType: .Normal, assistant: ImageResponseAssistant(scale: scale, handler: handler))
+        return self.handle(responseType: .Success, assistant: ImageResponseAssistant(scale: scale, handler: handler))
     }
     
     public func waitting(callers: Caller...) {
@@ -123,7 +123,7 @@ extension Acclaim {
         
         let caller = Downloader(API: api, params: params)
         caller.configuration.priority = priority
-        caller.handle(responseType: .Normal, assistant: OriginalDataResponseAssistant(handler: completionHandler))
+        caller.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: completionHandler))
         caller.failed(deserializer: DataDeserializer(), handler: failedHandler)
         caller.resume()
 

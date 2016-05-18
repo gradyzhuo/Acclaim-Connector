@@ -86,8 +86,10 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, 
         }
         
         // set
-        self.sessionTask = connector.request(API: self.api, params: self.params, configuration: self.configuration) {[unowned self] (data, connection, error) in
+        self.sessionTask = connector._request(API: self.api, params: self.params, configuration: self.configuration) {[unowned self] (task, response, error) in
             
+            let connection = Connection(originalRequest: task.originalRequest, currentRequest: task.currentRequest, response: response, requestMIMEs: self.allowedMIMEs, cached: false)
+            let data = task.data.copy() as! NSData
             completion?(data: data, connection: connection, error: error)
             
             self.handleResponses(data: data, connection: connection, error: error)
@@ -161,7 +163,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, 
 extension APICaller {
     
     internal func handleCachedResponse(cachedResponse: NSCachedURLResponse, byRequest request: NSURLRequest){
-        let connection = Connection(originalRequest: request, currentRequest: request, response: cachedResponse.response, cached: true)
+        let connection = Connection(originalRequest: request, currentRequest: request, response: cachedResponse.response, requestMIMEs: self.allowedMIMEs, cached: true)
         self.handleResponses(fromCached: true)(data: cachedResponse.data, connection: connection, error: nil)
     }
 
@@ -192,7 +194,7 @@ extension APICaller {
             }
             
             if let response = connection.response, let data = data where cached == false{
-                let cacheStoragePolicy = NSURLCacheStoragePolicy(self.cacheStoragePolicy)
+                let cacheStoragePolicy = NSURLCacheStoragePolicy(self.configuration.cacheStoragePolicy)
                 let cachedResponse = NSCachedURLResponse(response: response, data: data, userInfo: nil, storagePolicy: cacheStoragePolicy)
                 Acclaim.storeCachedResponse(cachedResponse, forRequest: connection.currentRequest)
             }
@@ -214,7 +216,7 @@ extension APICaller {
     
     public func handle<T : ResponseAssistant>(responseType type: ResponseAssistantType, assistant: T) -> T {
         switch type {
-        case .Normal:
+        case .Success:
             self.responseAssistants.append(assistant)
         case .Failed:
             self.failedResponseAssistants.append(assistant)
