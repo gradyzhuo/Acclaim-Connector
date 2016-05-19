@@ -152,7 +152,7 @@ extension URLSessionDelegate : NSURLSessionDownloadDelegate {
     }
     
     internal func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didResumeAtOffset fileOffset: Int64, expectedTotalBytes: Int64) {
-        print("didResumeAtOffset here")
+        print("didResumeAtOffset:\(fileOffset) here")
     }
     
 }

@@ -9,7 +9,7 @@
 import Foundation
 
 public protocol MIMESupport {
-    var allowedMIMEs: [MIMEType] { set get }
+    var allowedMIMEs: [MIMEType] { get }
 }
 
 public protocol Assistant{

@@ -13,7 +13,7 @@ public enum ProcessHandlerType : String {
     case Receiving = "Receiving"
 }
 
-public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, Configurable {
+public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, Configurable, MIMESupport {
     
     public var identifier: String = String(NSDate().timeIntervalSince1970)
     public var configuration: Acclaim.Configuration = Acclaim.configuration
