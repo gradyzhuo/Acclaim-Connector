@@ -13,7 +13,7 @@ public struct TextDeserializer : Deserializer{
     
     public var encoding:NSStringEncoding
     
-    public func deserialize(data: NSData?) -> (outcome: Outcome?, error: ErrorType?) {
+    public func deserialize(data: NSData?) -> (outcome: Outcome?, error: NSError?) {
         guard let data = data else {
             return (nil, error: NSError(domain: "ACTextResponseDeserializer", code: 9, userInfo: [NSLocalizedFailureReasonErrorKey:"Original Data is nil."]))
         }

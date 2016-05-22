@@ -1,31 +1,10 @@
 //
-//  Protocols.swift
-//  Acclaim
+//  ResponseSupport.swift
+//  Pods
 //
-//  Created by Grady Zhuo on 5/5/16.
-//  Copyright © 2016 Grady Zhuo. All rights reserved.
+//  Created by Grady Zhuo on 5/20/16.
 //
-
-import Foundation
-
-public protocol Configurable {
-    var configuration: Acclaim.Configuration { set get }
-}
-
-public protocol APISupport {
-    var api:API               { get }
-    var params:Parameters { get }
-    
-    init(API api: API, params: Parameters, connector: Connector)
-}
-
-
-public protocol CancelSupport {
-    var cancelledAssistant: Assistant? { get }
-    var cancelledResumeData: NSData? { get }
-    
-    func cancelled(handler:ResumeDataResponseAssistant.Handler)->Self
-}
+//
 
 public protocol ResponseSupport {
     
@@ -72,33 +51,4 @@ extension ResponseSupport {
         return self
     }
     
-}
-
-public protocol SendingProcessHandlable:class {
-    var sendingProcessHandler: ProcessHandler? { get }
-    
-    func observer(sendingProcess handler: ProcessHandler) -> Self
-}
-
-public protocol RecevingProcessHandlable:class {
-    var recevingProcessHandler: ProcessHandler? { get }
-    
-    func observer(recevingProcess handler: ProcessHandler) -> Self
-}
-
-public typealias ProcessHandlable = protocol<SendingProcessHandlable, RecevingProcessHandlable>
-
-public protocol Caller : class {
-    var identifier: String     { set get }
-    var running:Bool           { get }
-    var isCancelled: Bool      { get }
-    
-    func resume(completion completion: ((data: NSData?, connection: Connection, error: NSError?)->Void)?)
-    func cancel()
-}
-
-extension Caller {
-    public func resume(){
-        self.resume(completion: nil)
-    }
 }

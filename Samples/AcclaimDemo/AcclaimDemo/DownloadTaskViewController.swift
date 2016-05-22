@@ -9,7 +9,10 @@
 import UIKit
 import Acclaim
 
+
 class DownloadTaskViewController: UIViewController {
+    
+    static var previousCancelledResumeData: NSData?
     
     @IBOutlet weak var urlTextField: UITextField!
     @IBOutlet weak var processBar: UIProgressView!
@@ -28,8 +31,9 @@ class DownloadTaskViewController: UIViewController {
     override func viewDidDisappear(animated: Bool) {
         super.viewDidDisappear(animated)
         
-        self.apiCaller?.cancel()
-        
+        self.apiCaller?.cancel{ (resumeData) in
+            DownloadTaskViewController.previousCancelledResumeData = resumeData
+        }
     }
     
     override func didReceiveMemoryWarning() {
@@ -47,9 +51,8 @@ class DownloadTaskViewController: UIViewController {
             return
         }
         
-        api.requestTaskType = .DownloadTask()
-        
         self.apiCaller = Acclaim.download(API: api)
+        self.apiCaller?.suspend()
         
         self.apiCaller?.handleImage(scale: 1.0, handler: { (image, connection) in
             self.resultImageView.image = image
@@ -62,10 +65,37 @@ class DownloadTaskViewController: UIViewController {
             self.processBar.setProgress(percent, animated: true)
             self.processLabel?.text = "\(percent * 100)%"
         }).failed { (result) in
-                
-        }.cancelled { (resumeData, connection) in
-            print("cancel")
+            
+            }.cancelled { (resumeData, connection) in
+                print("cancel, resumeData:\(resumeData)")
         }
+        
+        let continueClosure = {(action: AnyObject?)->Void in
+            api.requestTaskType = .DownloadTask()
+            self.apiCaller?.resume()
+        }
+        
+        if DownloadTaskViewController.previousCancelledResumeData != nil {
+            
+            let alert = UIAlertController(title: "Continue Donwolding?", message: "It's found a privous cancelled resume data, should continue?", preferredStyle: .Alert)
+            alert.addAction(UIAlertAction(title: "Should", style: .Default, handler: { (_) in
+                api.requestTaskType = RequestTaskType.DownloadTask(method: .GET, resumeData: DownloadTaskViewController.previousCancelledResumeData)
+                self.apiCaller?.resume()
+            }))
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .Cancel, handler: continueClosure))
+            self.presentViewController(alert, animated: true, completion: nil)
+
+        }else{
+            
+            continueClosure(nil)
+        }
+        
+        
+        
+        
+        
+        
     }
     
 }

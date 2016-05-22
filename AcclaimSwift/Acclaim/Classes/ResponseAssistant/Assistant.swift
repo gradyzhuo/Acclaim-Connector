@@ -13,11 +13,11 @@ public protocol MIMESupport {
 }
 
 public protocol Assistant{
-    func handle(data:NSData?, connection: Connection, error:ErrorType?)->(ErrorType?)
+    func handle(data:NSData?, connection: Connection, error:NSError?)->(NSError?)
 }
 
 extension Assistant {
-    internal func _handle(data:NSData?, connection: Connection, error:ErrorType?)->(ErrorType?){
+    internal func _handle(data:NSData?, connection: Connection, error:NSError?)->(NSError?){
         if let MIME = connection.responseMIME where connection.requestMIMEs.contains(MIME) {
             return self.handle(data, connection: connection, error: error)
         }

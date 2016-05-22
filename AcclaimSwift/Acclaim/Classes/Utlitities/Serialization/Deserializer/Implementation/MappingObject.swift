@@ -18,7 +18,7 @@ public protocol Mappable:class {
 public struct JSONMappingDeserializer<Outcome:Mappable> : Deserializer {
     internal var options: NSJSONReadingOptions
     
-    public func deserialize(data: NSData?) -> (outcome: Outcome?, error: ErrorType?) {
+    public func deserialize(data: NSData?) -> (outcome: Outcome?, error: NSError?) {
         
         func mappingObjectMake<T: Mappable>(dataObject: AnyObject!)->T {
             

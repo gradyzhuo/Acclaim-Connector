@@ -23,7 +23,7 @@ public struct OriginalDataResponseAssistant : ResponseAssistant {
         self.handler = handler
     }
     
-    public func handle(data: NSData?, connection: Connection, error: ErrorType?) -> (ErrorType?) {
+    public func handle(data: NSData?, connection: Connection, error: NSError?) -> (NSError?) {
         
         let result = self.deserializer.deserialize(data)
         

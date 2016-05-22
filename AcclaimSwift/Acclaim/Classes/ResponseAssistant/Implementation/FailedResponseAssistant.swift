@@ -9,7 +9,7 @@
 import Foundation
 
 public struct FailedResponseAssistant<DeserializerType:Deserializer> : ResponseAssistant{
-    public typealias Handler = (outcome : DeserializerType.Outcome?, connection: Connection, error: ErrorType?)->Void
+    public typealias Handler = (outcome : DeserializerType.Outcome?, connection: Connection, error: NSError?)->Void
     
     public var allowedMIMEs: [MIMEType] = [.All]
     
@@ -22,7 +22,7 @@ public struct FailedResponseAssistant<DeserializerType:Deserializer> : ResponseA
         self.handler = handler
     }
     
-    public func handle(data: NSData?, connection: Connection, error: ErrorType?) -> (ErrorType?) {
+    public func handle(data: NSData?, connection: Connection, error: NSError?) -> (NSError?) {
         
         let result = self.deserializer.deserialize(data)
         

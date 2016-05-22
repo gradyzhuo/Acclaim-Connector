@@ -11,7 +11,7 @@ import Foundation
 public struct DataDeserializer : Deserializer {
     public typealias Outcome = NSData
     
-    public func deserialize(data: NSData?) -> (outcome: Outcome?, error: ErrorType?) {
+    public func deserialize(data: NSData?) -> (outcome: Outcome?, error: NSError?) {
         return (data, nil)
     }
     

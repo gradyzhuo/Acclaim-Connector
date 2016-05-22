@@ -61,6 +61,9 @@ public class QueueCaller : Caller {
             self.targetCaller.resume(completion: completion)
         }
         
+    }
+    
+    public func suspend() {
         
     }
 

@@ -13,7 +13,7 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
     internal var options: NSJSONReadingOptions
     public typealias Outcome = AnyObject
 
-    public func deserialize(data: NSData?) -> (outcome: Outcome?, error: ErrorType?) {
+    public func deserialize(data: NSData?) -> (outcome: Outcome?, error: NSError?) {
         
         do {
             let json = try NSJSONSerialization.JSONObjectWithData(data ?? NSData(), options: self.options)
@@ -25,7 +25,7 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
     }
     
     //TIP: Only that simply deserializing with keypath. This function will not be used by 'ResponseAssistant'.
-    public func deserialize(data: NSData?, keyPath:KeyPath) -> (outcome: Outcome?, error: ErrorType?) {
+    public func deserialize(data: NSData?, keyPath:KeyPath) -> (outcome: Outcome?, error: NSError?) {
         
         do {
             let json = try NSJSONSerialization.JSONObjectWithData(data ?? NSData(), options: self.options)

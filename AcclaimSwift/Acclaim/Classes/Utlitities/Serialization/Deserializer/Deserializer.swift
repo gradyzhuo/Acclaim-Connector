@@ -11,7 +11,7 @@ import Foundation
 //FIXME: 未來可以加入錯誤的Key，要如何自已處理的方式。
 public protocol Deserializer {
     associatedtype Outcome
-    func deserialize(data:NSData?) -> (outcome: Outcome?, error: ErrorType?)
+    func deserialize(data:NSData?) -> (outcome: Outcome?, error: NSError?)
     
     init()
 }

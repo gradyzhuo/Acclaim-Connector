@@ -63,6 +63,7 @@ public class Acclaim {
     public static var configuration: Acclaim.Configuration = Acclaim.Configuration.defaultConfiguration
     
     internal static var running:[String:Caller] = [:]
+//    internal static var sessionTask: [Caller:NSURLSessionTask] = [:]
     
     internal static func addRunningCaller(caller: Caller){
         self.running[caller.identifier] = caller

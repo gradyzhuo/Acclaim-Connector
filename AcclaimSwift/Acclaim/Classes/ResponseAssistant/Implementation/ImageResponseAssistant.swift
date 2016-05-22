@@ -30,7 +30,7 @@ public struct ImageResponseAssistant : ResponseAssistant{
         self.deserializer = DeserializerType(scale: scale)
     }
     
-    public func handle(data: NSData?, connection: Connection, error: ErrorType?) -> (ErrorType?) {
+    public func handle(data: NSData?, connection: Connection, error: NSError?) -> (NSError?) {
         
         let result = self.deserializer.deserialize(data)
         

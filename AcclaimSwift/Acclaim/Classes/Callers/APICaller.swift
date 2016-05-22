@@ -13,7 +13,7 @@ public enum ProcessHandlerType : String {
     case Receiving = "Receiving"
 }
 
-public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, Configurable, MIMESupport {
+public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIMESupport, CancelSupport {
     
     public var identifier: String = String(NSDate().timeIntervalSince1970)
     public var configuration: Acclaim.Configuration = Acclaim.configuration
@@ -43,11 +43,6 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, 
     public internal(set) var responseAssistants:[Assistant] = []
     public internal(set)  var failedResponseAssistants:[Assistant] = []
     public internal(set)  var cancelledAssistant: Assistant?
-    
-    public internal(set) var sendingProcessHandler: ProcessHandler?
-    public internal(set) var recevingProcessHandler: ProcessHandler?
-    
-    public internal(set) var cancelledResumeData:NSData?
     
     public var allowedMIMEs: [MIMEType]{
         
@@ -124,6 +119,10 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, 
         
     }
     
+    public func suspend() {
+        self.sessionTask?.suspend()
+    }
+    
     public func cancel(){
         
         //插入cancel指令到running之後
@@ -141,13 +140,8 @@ public class APICaller : Caller, APISupport, ResponseSupport, ProcessHandlable, 
                 return
             }
             
-            if let downloadTask = self.sessionTask as? NSURLSessionDownloadTask {
-                downloadTask.cancelByProducingResumeData{[unowned self] data in
-                    self.cancelledResumeData = data
-                }
-            }else{
-                self.sessionTask?.cancel()
-            }
+            self.running = false
+            self.sessionTask?.cancel()
             
             dispatch_block_cancel(self.runningBlockInQueue)
             
@@ -167,17 +161,17 @@ extension APICaller {
         self.handleResponses(fromCached: true)(data: cachedResponse.data, connection: connection, error: nil)
     }
 
-    internal func handleResponses(data data:NSData?, connection: Connection, error:ErrorType?){
+    internal func handleResponses(data data:NSData?, connection: Connection, error:NSError?){
         self.handleResponses()(data: data, connection: connection, error: error)
     }
     
-    internal func handleResponses(fromCached cached: Bool = false)->(data:NSData?, connection: Connection, error:ErrorType?)->Void{
+    internal func handleResponses(fromCached cached: Bool = false)->(data:NSData?, connection: Connection, error:NSError?)->Void{
         
-        return {[unowned self] (data:NSData?, connection: Connection, error:ErrorType?)->Void in
+        return {[unowned self] (data:NSData?, connection: Connection, error:NSError?)->Void in
             
             guard !self.isCancelled else {
                 //檢查cancel的訊息，並在這裡回傳resumedData
-                self.cancelledAssistant?.handle(self.cancelledResumeData, connection: connection, error: nil)
+                self.cancelledAssistant?.handle(data, connection: connection, error: nil)
                 return
             }
             
@@ -189,7 +183,13 @@ extension APICaller {
                     self.handleCachedResponse(cachedResponse, byRequest: connection.currentRequest)
                 }
                 
-                self.handleFailedResponse(data: data, connection: connection, error: error)
+                
+                if error?.code == -999 && error?.localizedDescription == "cancelled" {
+                    self.cancelledAssistant?.handle(data, connection: connection, error: error)
+                }else{
+                    self.handleFailedResponse(data: data, connection: connection, error: error)
+                }
+                
                 return
             }
             
@@ -201,7 +201,7 @@ extension APICaller {
             
             self.responseAssistants.forEach { reciver in
                 
-                if let error = reciver.handle(data, connection: connection, error: error) as? NSError {
+                if let error = reciver.handle(data, connection: connection, error: error) {
                     self.handleFailedResponse(data: data, connection: connection, error: error)
                 }
             }
@@ -209,7 +209,8 @@ extension APICaller {
         
     }
     
-    internal func handleFailedResponse(data data:NSData?, connection: Connection, error:ErrorType?) {
+    internal func handleFailedResponse(data data:NSData?, connection: Connection, error:NSError?) {
+        
         self.failedResponseAssistants.forEach { $0.handle(data, connection: connection, error: error) }
     }
     
@@ -228,20 +229,10 @@ extension APICaller {
 }
 
 //handle sending/receving processing
-extension APICaller : CancelSupport {
+extension APICaller {
     
     public func cancelled(handler: ResumeDataResponseAssistant.Handler) -> Self {
         self.cancelledAssistant = ResumeDataResponseAssistant(handler: handler)
-        return self
-    }
-    
-    public func observer(sendingProcess handler: ProcessHandler) -> Self {
-        self.sendingProcessHandler = handler
-        return self
-    }
-    
-    public func observer(recevingProcess handler: ProcessHandler) -> Self {
-        self.recevingProcessHandler = handler
         return self
     }
     

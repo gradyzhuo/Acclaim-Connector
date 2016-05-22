@@ -36,7 +36,7 @@ extension URLSessionDelegate : NSURLSessionTaskDelegate {
     
     internal func URLSession(session: NSURLSession, task: NSURLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         
-        if let processableCaller = task.apiCaller as? ProcessHandlable {
+        if let processableCaller = task.apiCaller as? SendingProcessHandlable {
             let handler = processableCaller.sendingProcessHandler
             handler?(bytes: bytesSent, totalBytes: totalBytesSent, totalBytesExpected: totalBytesExpectedToSend)
         }
@@ -72,7 +72,7 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
         let countOfBytesReceived = dataTask.countOfBytesReceived
         let countOfBytesExpectedToReceive = dataTask.countOfBytesExpectedToReceive > 0 ? dataTask.countOfBytesExpectedToReceive : countOfBytesReceived
         
-        if let processableCaller = dataTask.apiCaller as? ProcessHandlable {
+        if let processableCaller = dataTask.apiCaller as? RecevingProcessHandlable {
             let handler = processableCaller.recevingProcessHandler
             handler?(bytes: Int64(data.length), totalBytes: countOfBytesReceived, totalBytesExpected: countOfBytesExpectedToReceive)
         }
@@ -90,21 +90,23 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
         do{
             let type = try MIMEType(MIME: MIME)
             
-            if let MIMECaller = dataTask.apiCaller as? MIMESupport where MIMECaller.allowedMIMEs.contains(type) {
+            if let MIMECaller = dataTask.apiCaller as? MIMESupport {
                 
-                if type.isKindOf(otherMIME: .Image, .Audio, .Video) {
+                if MIMECaller.allowedMIMEs.contains(type) && type.isKindOf(otherMIME: .Image, .Audio, .Video) {
                     debugPrint("[MIMEType(\(MIME))]: BecomeDownloadTask")
                     completionHandler(.BecomeDownload)
-                }else{
+                }else if MIMECaller.allowedMIMEs.contains(type){
                     completionHandler(.Allow)
+                }else{
+                    completionHandler(.Cancel)
                 }
                 
             }else{
-                completionHandler(.Cancel)
+                completionHandler(.Allow)
             }
         }catch{
             debugPrint("[didReceiveResponse] MIMEType(\(MIME)) is not correct, error: \(error)")
-            completionHandler(.Cancel)
+            completionHandler(.Allow)
         }
         
         
@@ -143,7 +145,7 @@ extension URLSessionDelegate : NSURLSessionDownloadDelegate {
     
     internal func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         
-        if let processableCaller = downloadTask.apiCaller as? ProcessHandlable {
+        if let processableCaller = downloadTask.apiCaller as? RecevingProcessHandlable {
             let handler = processableCaller.recevingProcessHandler
             handler?(bytes: bytesWritten, totalBytes: totalBytesWritten, totalBytesExpected: totalBytesExpectedToWrite)
         }
