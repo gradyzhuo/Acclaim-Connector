@@ -31,9 +31,11 @@ class DownloadTaskViewController: UIViewController {
     override func viewDidDisappear(animated: Bool) {
         super.viewDidDisappear(animated)
         
-        self.apiCaller?.cancel{ (resumeData) in
+        self.apiCaller?.cancel(handler: { (resumeData) in
             DownloadTaskViewController.previousCancelledResumeData = resumeData
-        }
+        })
+        
+        self.apiCaller = nil
     }
     
     override func didReceiveMemoryWarning() {
@@ -47,39 +49,44 @@ class DownloadTaskViewController: UIViewController {
             return
         }
         
-        guard let api:API = API(URL: url) else{
+        guard let api:API = API(URL: url, method: .GET) else{
+            return
+        }
+        
+        guard self.apiCaller == nil else{
             return
         }
         
         self.apiCaller = Acclaim.download(API: api)
-        self.apiCaller?.suspend()
+        self.apiCaller?.cancel()
         
-        self.apiCaller?.handleImage(scale: 1.0, handler: { (image, connection) in
+        self.apiCaller?.handleImage(scale: 1.0, handler: {[unowned self] (image, connection) in
             self.resultImageView.image = image
             self.resultImageView.layer.addAnimation(CATransition(), forKey: "transition")
         })
         
-        self.apiCaller?.observer(recevingProcess: { (bytes, totalBytes, totalBytesExpected) in
+        self.apiCaller?.observer(recevingProcess: {[weak self] (bytes, totalBytes, totalBytesExpected) in
             let percent = Float(totalBytes) / Float(totalBytesExpected)
-            
-            self.processBar.setProgress(percent, animated: true)
-            self.processLabel?.text = "\(percent * 100)%"
+
+            self?.processBar.setProgress(percent, animated: true)
+            self?.processLabel?.text = "\(percent * 100)%"
         }).failed { (result) in
             
             }.cancelled { (resumeData, connection) in
-                print("cancel, resumeData:\(resumeData)")
+//                DownloadTaskViewController.previousCancelledResumeData = resumeData
+                print("cancel, resumeData:\(resumeData?.length)")
         }
         
-        let continueClosure = {(action: AnyObject?)->Void in
-            api.requestTaskType = .DownloadTask()
+        let continueClosure = {[unowned self] (action: AnyObject?)->Void in
             self.apiCaller?.resume()
         }
         
         if DownloadTaskViewController.previousCancelledResumeData != nil {
             
             let alert = UIAlertController(title: "Continue Donwolding?", message: "It's found a privous cancelled resume data, should continue?", preferredStyle: .Alert)
-            alert.addAction(UIAlertAction(title: "Should", style: .Default, handler: { (_) in
-                api.requestTaskType = RequestTaskType.DownloadTask(method: .GET, resumeData: DownloadTaskViewController.previousCancelledResumeData)
+            alert.addAction(UIAlertAction(title: "Should", style: .Default, handler: {[unowned self]  (_) in
+                
+                self.apiCaller?.requestTaskType = .DownloadTask(resumeData: DownloadTaskViewController.previousCancelledResumeData)
                 self.apiCaller?.resume()
             }))
             
@@ -92,10 +99,10 @@ class DownloadTaskViewController: UIViewController {
         }
         
         
-        
-        
-        
-        
+    }
+    
+    deinit{
+        print("deinit")
     }
     
 }

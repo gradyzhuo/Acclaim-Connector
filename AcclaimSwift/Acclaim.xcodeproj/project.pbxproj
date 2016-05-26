@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		79119BE01CF78706003895CB /* FailedHandleable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79119BDF1CF78706003895CB /* FailedHandleable.swift */; };
 		79213F201B7B04C500A527DE /* Acclaim.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 79213F141B7B04C500A527DE /* Acclaim.framework */; };
 		79213F271B7B04C500A527DE /* AcclaimTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79213F261B7B04C500A527DE /* AcclaimTests.swift */; };
 		7936883D1CD130ED0037E9FD /* RE.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7936883C1CD130ED0037E9FD /* RE.swift */; };
@@ -73,6 +74,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		79119BDF1CF78706003895CB /* FailedHandleable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FailedHandleable.swift; sourceTree = "<group>"; };
 		79213F141B7B04C500A527DE /* Acclaim.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Acclaim.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		79213F181B7B04C500A527DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		79213F1F1B7B04C500A527DE /* AcclaimTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AcclaimTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -337,6 +339,7 @@
 			isa = PBXGroup;
 			children = (
 				79DFD8C21CA19AD400A87D02 /* Assistant.swift */,
+				79119BDF1CF78706003895CB /* FailedHandleable.swift */,
 				79DFD8C31CA19AD400A87D02 /* Implementation */,
 			);
 			name = ResponseAssistant;
@@ -557,6 +560,7 @@
 				79DFD8F91CA19AD400A87D02 /* Text.swift in Sources */,
 				79D6F9A81CEE1F6400E78A57 /* SendingProcessHandlable.swift in Sources */,
 				79DFD8F61CA19AD400A87D02 /* Data.swift in Sources */,
+				79119BE01CF78706003895CB /* FailedHandleable.swift in Sources */,
 				79D6F9A51CEE1F6400E78A57 /* Configurable.swift in Sources */,
 				79DFD8ED1CA19AD400A87D02 /* FailedResponseAssistant.swift in Sources */,
 				799FBFD01CB184000000DACF /* APICaller.swift in Sources */,

@@ -12,11 +12,6 @@ public protocol Caller : class {
     var isCancelled: Bool      { get }
     
     func suspend()
-    func resume(completion completion: ((data: NSData?, connection: Connection, error: NSError?)->Void)?)
+    func resume()
     func cancel()
-}
-extension Caller {
-    public func resume(){
-        self.resume(completion: nil)
-    }
 }

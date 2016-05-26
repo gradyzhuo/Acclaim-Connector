@@ -41,25 +41,25 @@ public class QueueCaller : Caller {
     }
     
     
-    public func resume(completion completion: ((data: NSData?, connection: Connection, error: NSError?) -> Void)?) {
+    public func resume() {
         
-        for caller in self.waittingCallers {
-            
-            dispatch_group_enter(self.group)
-            caller.resume {[unowned self] (data, connection, error) in
-                
-                if let handler = self.carryingHandlers[caller.identifier]{
-                    handler(data: data, connection: connection, error: error)
-                }
-                
-                dispatch_group_leave(self.group)
-            }
-            
-        }
-        
-        dispatch_group_notify(self.group, self.queue) {[unowned self] in
-            self.targetCaller.resume(completion: completion)
-        }
+//        for caller in self.waittingCallers {
+//            
+//            dispatch_group_enter(self.group)
+//            caller.resume {[unowned self] (data, connection, error) in
+//                
+//                if let handler = self.carryingHandlers[caller.identifier]{
+//                    handler(data: data, connection: connection, error: error)
+//                }
+//                
+//                dispatch_group_leave(self.group)
+//            }
+//            
+//        }
+//        
+//        dispatch_group_notify(self.group, self.queue) {[unowned self] in
+//            self.targetCaller.resume(completion: completion)
+//        }
         
     }
     

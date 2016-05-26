@@ -20,7 +20,6 @@ class UploadTaskViewController: UIViewController {
         params.add(string: "LpJTZz8sePiBRWgdNz084JJHD7Bfys1hQnLM2U66", forKey: "access_token")
         
         let api: API = "image"
-        api.requestTaskType = .UploadTask(method: .POST)
         
         self.apiCaller = Acclaim.upload(API: api, params: params)
         self.apiCaller?.handleObject{ (JSONObject, connection) in

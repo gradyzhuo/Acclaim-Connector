@@ -19,6 +19,9 @@ extension NSURLSessionTask {
     
     internal var apiCaller: Caller? {
         set{
+            if let apiCaller = newValue as? APICaller {
+                apiCaller.sessionTask = self
+            }
             objc_setAssociatedObject(self, kAPICaller, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         get{

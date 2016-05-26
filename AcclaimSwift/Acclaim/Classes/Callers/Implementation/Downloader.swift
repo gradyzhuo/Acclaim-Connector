@@ -18,8 +18,10 @@ public final class Downloader : APICaller, RecevingProcessHandlable {
     
     public func cancel(handler handler: ((resumeData: NSData?)->Void)?) {
         if let sessionTask = self.sessionTask as? NSURLSessionDownloadTask, let handler = handler {
-            sessionTask.cancelByProducingResumeData {[unowned self] resumeData in
-                self.cancelledResumeData = resumeData
+            sessionTask.cancelByProducingResumeData {[weak self] resumeData in
+            
+                self?.cancelledResumeData = resumeData
+                sessionTask.data = (resumeData?.mutableCopy() as? NSMutableData) ?? NSMutableData()
                 handler(resumeData: resumeData)
             }
         }else{
@@ -40,21 +42,11 @@ public final class Downloader : APICaller, RecevingProcessHandlable {
 
 extension Acclaim {
     
-    public static func download(API api:API, params:Parameters = [], priority: QueuePriority = .Default)->Downloader{
+    public static func download(API api:API, params:Parameters = [], method: HTTPMethod = .GET, resumeData: NSData? = nil, priority: QueuePriority = .Default)->Downloader{
         
         let caller = Downloader(API: api, params: params)
         caller.configuration.priority = priority
-        caller.resume()
-        
-        return caller
-    }
-    
-    public static func download(API api:API, params:Parameters = [], priority: QueuePriority = .Default, completionHandler: OriginalDataResponseAssistant.Handler, failedHandler: FailedResponseAssistant<DataDeserializer>.Handler)->Downloader{
-        
-        let caller = Downloader(API: api, params: params)
-        caller.configuration.priority = priority
-        caller.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: completionHandler))
-        caller.failed(deserializer: DataDeserializer(), handler: failedHandler)
+        caller.requestTaskType = RequestTaskType.DownloadTask(resumeData: resumeData)
         caller.resume()
 
         

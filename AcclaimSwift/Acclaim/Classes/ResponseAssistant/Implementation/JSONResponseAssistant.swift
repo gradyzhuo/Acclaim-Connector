@@ -8,7 +8,7 @@
 
 import Foundation
 
-public struct JSONResponseAssistant : ResponseAssistant{
+public class JSONResponseAssistant : ResponseAssistant{
     public typealias DeserializerType = JSONDeserializer
     public typealias Handler = (JSONObject : JSONDeserializer.Outcome?, connection: Connection)->Void
     
@@ -18,6 +18,7 @@ public struct JSONResponseAssistant : ResponseAssistant{
     
     public internal(set) var handlers:[KeyPath : Handler] = [:]
     public var handler : Handler?
+    public var failedHandler : FailedHandler?
     
     public init(forKeyPath keyPath:KeyPath, options: NSJSONReadingOptions = NSJSONReadingOptions.AllowFragments, handler: Handler) {
         
@@ -25,7 +26,7 @@ public struct JSONResponseAssistant : ResponseAssistant{
         self.addHandler(forKeyPath: keyPath, handler: handler)
     }
     
-    public init(handler: Handler? = nil){
+    public required init(handler: Handler? = nil){
         self.handler = handler
     }
     
@@ -34,12 +35,13 @@ public struct JSONResponseAssistant : ResponseAssistant{
         self.handler = handler
     }
     
-    public func handle(data: NSData?, connection: Connection, error: NSError?) -> (NSError?) {
+    public func handle(data: NSData?, connection: Connection, error: NSError?) {
         
         let result = self.deserializer.deserialize(data)
         
         guard let JSON = result.outcome where result.error == nil else {
-            return result.error
+            self.failedHandler?(data: data, error: result.error)
+            return
         }
         
         self.handler?(JSONObject : JSON, connection: connection)
@@ -48,12 +50,19 @@ public struct JSONResponseAssistant : ResponseAssistant{
             handler(JSONObject: JSONDeserializer.parse(JSON, forKeyPath: keyPath), connection: connection)
         }
         
-        return error
     }
     
-    public mutating func addHandler(forKeyPath keyPath: KeyPath, handler: Handler)->JSONResponseAssistant{
+    public func addHandler(forKeyPath keyPath: KeyPath, handler: Handler)->JSONResponseAssistant{
         self.handlers[keyPath] = handler
         return self
     }
     
+}
+
+extension JSONResponseAssistant : FailedHandleable {
+    public typealias FailedHandler = (data: NSData?, error: ErrorType?)->Void
+    
+    public func failed(handle handler: FailedHandler) {
+        self.failedHandler = handler
+    }
 }

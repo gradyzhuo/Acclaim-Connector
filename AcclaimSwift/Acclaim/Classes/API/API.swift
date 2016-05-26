@@ -12,54 +12,92 @@ import Foundation
  RequestTaskType to assign how API be sended through DataTask(Normal), DownloadTask or UploadTask.
  */
 public struct RequestTaskType {
-    public var method: HTTPMethod
+//    public var method: HTTPMethod
     internal var resumeData: NSData?
     internal var identifier: String
     
-    internal init(identifier: String, method: HTTPMethod, resumeData: NSData? = nil){
-        self.method = method
+    internal init(identifier: String, resumeData: NSData? = nil){
+//        self.method = method
         self.resumeData = resumeData
         self.identifier = identifier
     }
     
     /**
-     Return a Type of DataTask to handle normal API request.
-     - parameters:
-        - method: The method of HTTP connection should be used by DataTask. (default is `GET`)
-     - returns: DataTask's RequestTaskType.
+     Type of DataTask to handle normal API request.
      */
-    public static func DataTask(method method: HTTPMethod = .GET)->RequestTaskType{
-        return RequestTaskType(identifier: "DataTask", method: method)
+    public static var DataTask:RequestTaskType{
+        return RequestTaskType(identifier: "DataTask")
+    }
+    
+    
+    /**
+     Type of DownloadTask to handle normal API request.
+     */
+    public static var DownloadTask:RequestTaskType{
+        return RequestTaskType(identifier: "DownloadTask", resumeData: nil)
     }
     
     /**
      Return a Type of DownloadTask to handle normal API request.
      - parameters:
-        - method: The method of HTTP connection should be used by DownloadTask. (default is `GET`)
-        - resumeData: It can be resume a downloadTask with previous result's data by pausing. (optional)
+        - resumeData: It can be resume a downloadTask with previous result's data by pausing. (required)
      - returns: DownloadTask's RequestTaskType.
      */
-    public static func DownloadTask(method method: HTTPMethod = .GET, resumeData: NSData? = nil)->RequestTaskType{
-        return RequestTaskType(identifier: "DownloadTask", method: method, resumeData: resumeData)
+    public static func DownloadTask(resumeData resumeData: NSData?)->RequestTaskType{
+        return RequestTaskType(identifier: "DownloadTask", resumeData: resumeData)
     }
     
     /**
-     Return a Type of UploadTask to handle normal API request.
-     - parameters:
-        - method: The method of HTTP connection should be used by UploadTask. (default is `GET`)
-     - returns: UploadTask's RequestTaskType.
+     Type of UploadTask to handle normal API request.
      */
-    public static func UploadTask(method method: HTTPMethod = .POSTWith(serializer: SerializerType.MultipartForm))->RequestTaskType {
-        return RequestTaskType(identifier: "UploadTask", method: method)
+    public static var UploadTask:RequestTaskType {
+        return RequestTaskType(identifier: "UploadTask")
     }
     
 }
 
-
-extension RequestTaskType : Equatable {
-    internal static var DataTask: RequestTaskType = RequestTaskType.DataTask()
-    internal static var DownloadTask: RequestTaskType = RequestTaskType.DownloadTask()
-    internal static var UploadTask : RequestTaskType = RequestTaskType.UploadTask()
+extension RequestTaskType {
+    /**
+     .
+     - parameters:
+     - cookie: the instance of NSHTTPCookie.
+     - returns: API.
+     */
+    internal func generateRequest(api: API, configuration configuration: Acclaim.Configuration, params: Parameters = [])->NSURLRequest {
+        
+        let request:NSMutableURLRequest = NSMutableURLRequest(URL: api.apiURL, cachePolicy: api.cachePolicy, timeoutInterval: api.timeoutInterval)
+        
+        let body = api.method.serializer.serialize(params)
+        
+        if let body = body where api.method == HTTPMethod.GET {
+            let components = NSURLComponents(URL: api.apiURL, resolvingAgainstBaseURL: false)
+            components?.query = String(data: body, encoding: NSUTF8StringEncoding)
+            request.URL = (components?.URL)!
+        }else{
+            request.HTTPBody = body
+        }
+        
+        request.HTTPMethod = api.method.rawValue
+        request.allowsCellularAccess = configuration.allowsCellularAccess
+        
+        for field in NSHTTPCookie.requestHeaderFieldsWithCookies(api.cookies){
+            request.addValue(field.1, forHTTPHeaderField: field.0)
+        }
+        
+        API.HTTPHeaderFieldsForAllRequest.forEach { (key:String, value: String) -> () in
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+        
+        api.HTTPHeaderFields.forEach { (key:String, value: String) -> () in
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+        
+        api.requestConfigurationHandler(request: request)
+        
+        api.request = request.copy() as! NSURLRequest
+        return api.request!
+        
+    }
 }
 
 public func ==(lhs: RequestTaskType, rhs: RequestTaskType)->Bool{
@@ -75,11 +113,9 @@ public class  API : StringLiteralConvertible {
     public internal(set) var apiURL:NSURL
     
     /**  Convenience property from RequestTaskType. (readonly) */
-    public var method: HTTPMethod {
-        return self.requestTaskType.method
-    }
+    public var method: HTTPMethod = .GET
     
-    public var requestTaskType: RequestTaskType = .DataTask(method: .GET)
+//    public var requestTaskType: RequestTaskType = .DataTask(method: .GET)
     public var timeoutInterval:NSTimeInterval = 30
     
     public var cachePolicy:NSURLRequestCachePolicy = .UseProtocolCachePolicy
@@ -91,7 +127,7 @@ public class  API : StringLiteralConvertible {
     public internal(set) var request: NSURLRequest?
     internal var requestConfigurationHandler: (request: NSMutableURLRequest)->Void = { _ in }
     
-    public convenience init(api:String, host:NSURL! = Acclaim.hostURLFromInfoDictionary(), taskType:RequestTaskType = .DataTask(method: .GET)) throws {
+    public convenience init(api:String, host:NSURL! = Acclaim.hostURLFromInfoDictionary(), method: HTTPMethod = .GET) throws {
         
         guard let validHostURL = host else {
             
@@ -103,13 +139,13 @@ public class  API : StringLiteralConvertible {
         
         let apiURL = validHostURL.URLByAppendingPathComponent(api)
         
-        self.init(URL: apiURL, taskType: taskType)
+        self.init(URL: apiURL, method: method)
         
     }
     
-    public init(URL:NSURL, taskType:RequestTaskType = .DataTask(method: .GET)){
+    public init(URL:NSURL, method: HTTPMethod){
         self.apiURL = URL
-        self.requestTaskType = taskType
+        self.method = method
         
         for cookie in NSHTTPCookieStorage.sharedHTTPCookieStorage().cookies ?? [] where cookie.domain == URL.host!{
             self.addHTTPCookie(cookie)
@@ -117,18 +153,18 @@ public class  API : StringLiteralConvertible {
         
     }
     
-    public convenience init(URLString string: String, taskType:RequestTaskType = .DataTask(method: .GET)) throws {
+    public convenience init(URLString string: String, method:HTTPMethod = .GET) throws {
         guard let URL = NSURL(string: string) else {
             throw NSError(domain: "API.From.URLString", code: 0, userInfo: [NSLocalizedFailureReasonErrorKey:"The API can't be construct by URLString(\(string))"])
         }
         
-        self.init(URL: URL, taskType: taskType)
+        self.init(URL: URL, method: method)
     }
     
     public required convenience init(stringLiteral value: StringLiteralType) {
         
         if let components = NSURLComponents(string: value) where components.scheme != nil, let url = components.URL  {
-            self.init(URL: url)
+            self.init(URL: url, method: .GET)
         }else{
             try! self.init(api: value)
         }
@@ -188,52 +224,6 @@ extension API {
         self.cookies.append(cookie)
         return self
     }
-}
-
-extension API {
-    
-    /**
-     .
-     - parameters:
-     - cookie: the instance of NSHTTPCookie.
-     - returns: API.
-     */
-    internal func generateRequest(configuration configuration: Acclaim.Configuration, params: Parameters = [])->NSURLRequest {
-        
-        let request:NSMutableURLRequest = NSMutableURLRequest(URL: self.apiURL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
-        
-        let body = self.method.serializer.serialize(params)
-        
-        if let body = body where self.method == HTTPMethod.GET {
-            let components = NSURLComponents(URL: self.apiURL, resolvingAgainstBaseURL: false)
-            components?.query = String(data: body, encoding: NSUTF8StringEncoding)
-            request.URL = (components?.URL)!
-        }else{
-            request.HTTPBody = body
-        }
-        
-        request.HTTPMethod = self.method.rawValue
-        request.allowsCellularAccess = configuration.allowsCellularAccess
-        
-        for field in NSHTTPCookie.requestHeaderFieldsWithCookies(self.cookies){
-            request.addValue(field.1, forHTTPHeaderField: field.0)
-        }
-        
-        API.HTTPHeaderFieldsForAllRequest.forEach { (key:String, value: String) -> () in
-            request.addValue(value, forHTTPHeaderField: key)
-        }
-        
-        self.HTTPHeaderFields.forEach { (key:String, value: String) -> () in
-            request.addValue(value, forHTTPHeaderField: key)
-        }
-        
-        self.requestConfigurationHandler(request: request)
-        
-        self.request = request.copy() as? NSURLRequest
-        return self.request!
-        
-    }
-    
 }
 
 //

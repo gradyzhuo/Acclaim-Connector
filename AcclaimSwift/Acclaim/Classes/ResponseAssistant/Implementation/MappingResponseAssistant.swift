@@ -8,7 +8,8 @@
 
 import Foundation
 
-public struct MappingResponseAssistant<MappingObject:Mappable> : ResponseAssistant{
+public class
+MappingResponseAssistant<MappingObject:Mappable> : ResponseAssistant{
     public typealias DeserializerType = JSONMappingDeserializer<MappingObject>
     public typealias Handler = (object : JSONMappingDeserializer<MappingObject>.Outcome, connection: Connection)->Void
     
@@ -17,8 +18,9 @@ public struct MappingResponseAssistant<MappingObject:Mappable> : ResponseAssista
     public var deserializer: DeserializerType = DeserializerType()
     
     public var handler : Handler?
+    public var failedHandler: FailedHandler?
     
-    public init(handler: Handler? = nil){
+    public required init(handler: Handler? = nil){
         self.handler = handler
     }
     
@@ -27,16 +29,24 @@ public struct MappingResponseAssistant<MappingObject:Mappable> : ResponseAssista
         self.handler = handler
     }
     
-    public func handle(data: NSData?, connection: Connection, error: NSError?) -> (NSError?) {
+    public func handle(data: NSData?, connection: Connection, error: NSError?) {
         
         let result = self.deserializer.deserialize(data)
         
         guard let mappingObject = result.outcome where result.error == nil else {
-            return result.error
+            self.failedHandler?(data: data, error: result.error)
+            return
         }
         
         self.handler?(object : mappingObject, connection: connection)
-        return error
     }
     
+}
+
+extension MappingResponseAssistant : FailedHandleable {
+    public typealias FailedHandler = (data: NSData?, error: ErrorType?)->Void
+    
+    public func failed(handle handler: FailedHandler) {
+        self.failedHandler = handler
+    }
 }

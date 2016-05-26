@@ -5,3 +5,17 @@ use_frameworks!
 
 #pod 'Acclaim'
 pod 'Acclaim', :path => '~/Library/Mobile Documents/com~apple~CloudDocs/iCloud Drive/Work/Offsky/Acclaim'
+
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        if target.name == 'Acclaim'
+            target.build_configurations.each do |config|
+                if config.name == 'Debug'
+                    config.build_settings['OTHER_SWIFT_FLAGS'] = '$(inherited) -DDEBUG'
+                    else
+                    config.build_settings['OTHER_SWIFT_FLAGS'] = ''
+                end
+            end
+        end
+    end
+end

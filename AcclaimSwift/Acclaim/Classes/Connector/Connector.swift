@@ -23,7 +23,7 @@ public class Handler<Type> {
 
 public protocol Connector : class {
 
-    func generateTask(api: API, params: Parameters, configuration: Acclaim.Configuration,completionHandler handler: TaskResponseHandler) -> NSURLSessionTask
+    func generateTask(api: API, params: Parameters, requestTaskType: RequestTaskType, configuration: Acclaim.Configuration,completionHandler handler: TaskResponseHandler) -> NSURLSessionTask
 }
 
 internal protocol _Connector : Connector {
@@ -36,9 +36,9 @@ extension Connector {
         task.resume()
     }
     
-    internal func _request(API api: API, params: Parameters = [], configuration: Acclaim.Configuration,completionHandler handler: TaskResponseHandler) -> NSURLSessionTask? {
+    internal func _request(API api: API, params: Parameters = [], requestTaskType: RequestTaskType, configuration: Acclaim.Configuration,completionHandler handler: TaskResponseHandler) -> NSURLSessionTask? {
         
-        let task:NSURLSessionTask = self.generateTask(api, params: params, configuration: configuration,completionHandler: handler)
+        let task:NSURLSessionTask = self.generateTask(api, params: params, requestTaskType: requestTaskType, configuration: configuration,completionHandler: handler)
         task.completionHandler = handler
         
         defer{
@@ -48,9 +48,9 @@ extension Connector {
         return task
     }
     
-    public func request(API api: API, params: Parameters = [], configuration: Acclaim.Configuration,completionHandler handler: DataResponseHandler) -> NSURLSessionTask? {
+    public func request(API api: API, params: Parameters = [], requestTaskType: RequestTaskType = .DataTask, configuration: Acclaim.Configuration = Acclaim.Configuration.defaultConfiguration,completionHandler handler: DataResponseHandler) -> NSURLSessionTask? {
         
-        return self._request(API: api, params: params, configuration: configuration) { (task, response, error) in
+        return self._request(API: api, params: params, requestTaskType: requestTaskType, configuration: configuration) { (task, response, error) in
             handler(data: task.data, response: response, error: error)
         }
         

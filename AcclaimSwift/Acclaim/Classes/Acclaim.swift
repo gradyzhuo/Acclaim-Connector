@@ -89,10 +89,6 @@ public class Acclaim {
         return NSURLCache.sharedURLCache()
     }
     
-    internal static func cachedResponse(API api: API, parameters: Parameters, configuration: Acclaim.Configuration) -> NSCachedURLResponse?{
-        return Acclaim.sharedURLCache.cachedResponseForRequest(api.generateRequest(configuration: configuration, params: parameters))
-    }
-    
     internal static func cachedResponse(request request: NSURLRequest) -> NSCachedURLResponse?{
         return Acclaim.sharedURLCache.cachedResponseForRequest(request)
     }
@@ -112,10 +108,6 @@ public class Acclaim {
     
     internal static func removeCachedResponse(request: NSURLRequest){
         return Acclaim.sharedURLCache.removeCachedResponseForRequest(request)
-    }
-    
-    internal static func removeCachedResponse(API api: API, parameters: Parameters, configuration: Acclaim.Configuration){
-        return Acclaim.removeCachedResponse(api.generateRequest(configuration: configuration, params: parameters))
     }
     
 }

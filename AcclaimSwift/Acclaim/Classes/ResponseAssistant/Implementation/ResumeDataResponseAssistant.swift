@@ -23,16 +23,15 @@ public struct ResumeDataResponseAssistant:ResponseAssistant{
         self.handler = handler
     }
     
-    public func handle(data: NSData?, connection: Connection, error: NSError?) -> (NSError?) {
+    public func handle(data: NSData?, connection: Connection, error: NSError?) {
         
         let result = self.deserializer.deserialize(data)
         
         guard let data = result.outcome where result.error == nil else {
-            return result.error
+            return
         }
         
         self.handler?(resumeData : data, connection: connection)
-        return error
     }
     
 }

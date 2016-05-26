@@ -8,8 +8,7 @@
 
 import Foundation
 
-public struct ImageResponseAssistant : ResponseAssistant{
-    
+public class ImageResponseAssistant : ResponseAssistant{
     public typealias DeserializerType = ImageDeserializer
     
     public var allowedMIMEs: [MIMEType] = [.Image]
@@ -18,9 +17,10 @@ public struct ImageResponseAssistant : ResponseAssistant{
     
     public var deserializer: DeserializerType
     
+    public var failedHandler: FailedHandler?
     public var handler : Handler?
     
-    public init(handler: Handler? = nil){
+    public required init(handler: Handler? = nil){
         self.handler = handler
         self.deserializer = DeserializerType()
     }
@@ -30,16 +30,24 @@ public struct ImageResponseAssistant : ResponseAssistant{
         self.deserializer = DeserializerType(scale: scale)
     }
     
-    public func handle(data: NSData?, connection: Connection, error: NSError?) -> (NSError?) {
+    public func handle(data: NSData?, connection: Connection, error: NSError?) {
         
         let result = self.deserializer.deserialize(data)
         
         guard let image = result.outcome where result.error == nil else {
-            return result.error
+            self.failedHandler?(data: data, error: result.error)
+            return
         }
         
         self.handler?(image : image, connection: connection)
-        return error
     }
     
+}
+
+extension ImageResponseAssistant : FailedHandleable{
+    public typealias FailedHandler = (data: NSData?, error: ErrorType?)->Void
+    
+    public func failed(handle failedHandler: FailedHandler) {
+        self.failedHandler = failedHandler
+    }
 }

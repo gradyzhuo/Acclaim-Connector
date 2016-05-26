@@ -18,31 +18,48 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
     public var identifier: String = String(NSDate().timeIntervalSince1970)
     public var configuration: Acclaim.Configuration = Acclaim.configuration
     
+    //看起來還是不能挷定method，要拆掉
+    public var requestTaskType: RequestTaskType
     
     /** (readonly) */
     public var isCancelled : Bool {
-        if let queue = self.runningBlockInQueue {
-            let testResult = dispatch_block_testcancel(queue)
-            return Bool(testResult)
-        }
-        return false
+        return self.isBlockCanncelled && (self.sessionTask?.state == NSURLSessionTaskState.Canceling)
+    }
+    
+    internal var isBlockCanncelled : Bool {
+        let testResult = dispatch_block_testcancel(self.runningBlockInQueue)
+        return Bool(testResult)
     }
     
     /** (read only) */
     public internal(set) var api:API
     /** (read only) */
-    public internal(set) var running:Bool = false
+    public var running:Bool{
+        return self.sessionTask?.state == NSURLSessionTaskState.Running
+    }
     /** (read only) */
     
     //MARK: internal variables
-    internal var runningBlockInQueue:dispatch_block_t!
+    internal var runningBlockInQueue:dispatch_block_t!{
+        didSet{
+            guard let block = self.runningBlockInQueue else{
+                return
+            }
+            dispatch_block_notify(block, self.queue) { [unowned self] in
+                self.sessionTask?.apiCaller = self
+                Acclaim.addRunningCaller(self)
+            }
+        }
+    }
+    
+    
     public internal(set) var params:Parameters = []
     
     internal var sessionTask:NSURLSessionTask?
     
     public internal(set) var responseAssistants:[Assistant] = []
-    public internal(set)  var failedResponseAssistants:[Assistant] = []
-    public internal(set)  var cancelledAssistant: Assistant?
+    public internal(set) var failedResponseAssistants:[Assistant] = []
+    public internal(set) var cancelledAssistant: Assistant?
     
     public var allowedMIMEs: [MIMEType]{
         
@@ -67,6 +84,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
         self.api = api
         self.params = params
         self.configuration.connector = connector
+        self.requestTaskType = .DataTask
         
         if let sharedRequestParameters = Acclaim.sharedRequestParameters {
             self.params.addParams(sharedRequestParameters)
@@ -74,59 +92,56 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
         
     }
     
-    internal func run(connector connector: Connector, completion: ((data: NSData?, connection: Connection, error: NSError?) -> Void)?){
+    internal func run(connector connector: Connector){
         
         guard !self.running else {
             return
         }
         
         // set
-        self.sessionTask = connector._request(API: self.api, params: self.params, configuration: self.configuration) {[unowned self] (task, response, error) in
+        self.sessionTask = connector._request(API: self.api, params: self.params, requestTaskType: self.requestTaskType, configuration: self.configuration) {[unowned self] (task, response, error) in
             
             let connection = Connection(originalRequest: task.originalRequest, currentRequest: task.currentRequest, response: response, requestMIMEs: self.allowedMIMEs, cached: false)
             let data = task.data.copy() as! NSData
-            completion?(data: data, connection: connection, error: error)
-            
             self.handleResponses(data: data, connection: connection, error: error)
             
             //remove
             Acclaim.removeRunningCaller(self)
             
-            self.runningBlockInQueue = nil
-            self.running = false
-            
-        }
-        
-        self.sessionTask?.apiCaller = self
-        
-        defer{
-            self.running = true
         }
         
     }
 
-    public func resume(completion completion: ((data: NSData?, connection: Connection, error: NSError?) -> Void)?) {
+    public func resume() {
         
-        let block = dispatch_block_create_with_qos_class(DISPATCH_BLOCK_DETACHED, self.configuration.priority.qos_class, self.configuration.priority.relative_priority) {[unowned self] () -> Void in
-            self.run(connector: self.configuration.connector, completion: completion)
+        let block = dispatch_block_create_with_qos_class(DISPATCH_BLOCK_ENFORCE_QOS_CLASS, self.configuration.priority.qos_class, self.configuration.priority.relative_priority) {[unowned self] in
+            self.run(connector: self.configuration.connector)
         }
         
         self.runningBlockInQueue = block
-        dispatch_barrier_async(self.queue, block)
+        dispatch_sync(self.queue, block)
         
-        //add
-        Acclaim.addRunningCaller(self)
+        
+//        dispatch_block_perform(DISPATCH_BLOCK_INHERIT_QOS_CLASS, block)
+        
+        
+        
         
     }
     
     public func suspend() {
-        self.sessionTask?.suspend()
+        
+        dispatch_sync(self.queue) { [unowned self] in
+            self.sessionTask?.suspend()
+        }
+        
+        Acclaim.removeRunningCaller(self)
     }
     
     public func cancel(){
         
         //插入cancel指令到running之後
-        dispatch_sync(self.queue) {
+        dispatch_sync(self.queue) {[unowned self] in
             
             //Ignore if APICaller is not running.
             guard self.running else {
@@ -139,10 +154,9 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
                 ACDebugLog("Caller has been cannceled. Please perform `func resume()` to run your api.")
                 return
             }
-            
-            self.running = false
+
             self.sessionTask?.cancel()
-            
+            Acclaim.removeRunningCaller(self)
             dispatch_block_cancel(self.runningBlockInQueue)
             
         }
@@ -199,11 +213,19 @@ extension APICaller {
                 Acclaim.storeCachedResponse(cachedResponse, forRequest: connection.currentRequest)
             }
             
-            self.responseAssistants.forEach { reciver in
+            self.responseAssistants.forEach { receiver in
+                receiver.handle(data, connection: connection, error: error)
                 
-                if let error = reciver.handle(data, connection: connection, error: error) {
-                    self.handleFailedResponse(data: data, connection: connection, error: error)
-                }
+//                if let error = receiver.handle(data, connection: connection, error: error) {
+//                    
+//                    if let failedReceiver = receiver as? FailedHandleable where failedReceiver.failedHandler == nil {
+//                        self.handleFailedResponse(data: data, connection: connection, error: error)
+//                    }else{
+//                        self.handleFailedResponse(data: data, connection: connection, error: error)
+//                    }
+//                    
+//                    
+//                }
             }
         }
         

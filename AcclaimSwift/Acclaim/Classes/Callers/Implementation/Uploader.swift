@@ -44,11 +44,12 @@ extension Acclaim {
     
     public static func upload(API api:API, params:Parameters = [], priority: QueuePriority = .Default)->Uploader{
         
-        let method = api.requestTaskType.method.HTTPMethodByReplaceSerializer(SerializerType.MultipartForm)
-        api.requestTaskType.method = method
+        let method = api.method.HTTPMethodByReplaceSerializer(SerializerType.MultipartForm)
+        api.method = method
         
         let caller = Uploader(API: api, params: params)
         caller.configuration.priority = priority
+        caller.requestTaskType = RequestTaskType.UploadTask
         caller.resume()
         
         return caller

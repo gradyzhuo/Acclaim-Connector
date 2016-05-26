@@ -18,12 +18,10 @@ class ConnectionViewController: UIViewController {
 //        let param = FormParameter(key: "fling_hash", value: "dQAXWbcv")
 //        
         let api:API = "https://upload.wikimedia.org/wikipedia/commons/2/28/Frangipani_rust_(caused_by_Coleosporium_plumeriae)_on_Plumeria_rubra.jpg"
-        api.requestTaskType = .DownloadTask(method: .GET, resumeData: nil)
         
         let session = URLSession()
         
-        
-        session.request(API: api, configuration: Acclaim.Configuration.defaultConfiguration) { (data, connection, error) in
+        session.request(API: api) { (data, response, error) in
             print(UIImage(data: data!))
         }
 

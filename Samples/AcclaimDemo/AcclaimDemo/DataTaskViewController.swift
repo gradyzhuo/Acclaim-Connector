@@ -61,10 +61,11 @@ class DataTaskViewController: UIViewController {
         
         self.view.endEditing(true)
         
-        let api = API(URL: NSURL(string: self.urlTextField!.text!)!)
-//        let APICaller = RestfulAPI(API: api, params: [Parameter](dictionary: ["scope":"datasetMetadataSearch", "q":"id:8ef1626a-892a-4218-8344-f7ac46e1aa48"]))
+        let api = API(URL: NSURL(string: self.urlTextField!.text!)!, method: .GET)
         
-        let APICaller = RestfulAPI(API: "http://images.apple.com/tw/hotnews/promos/images/promo_event_2x.jpg")
+        let APICaller = RestfulAPI(API: api, params: [Parameter](dictionary: ["scope":"datasetMetadataSearch", "q":"id:8ef1626a-892a-4218-8344-f7ac46e1aa48"]))
+        
+//        let APICaller = RestfulAPI(API: "http://images.apple.com/tw/hotnews/promos/images/promo_event_2x.jpg")
         
         if let keyPath = self.keyPathTextField?.text {
             
@@ -80,13 +81,16 @@ class DataTaskViewController: UIViewController {
             
         }
         
+        
         APICaller.handle(responseType: .Success, assistant: ImageResponseAssistant(handler: { (image, connection) in
             print("image:\(image)")
-        }))
-        
-        APICaller.failed(deserializer: TextDeserializer()) { (outcome, connection, error) in
-            print("outcome: \(outcome), error:\(error)")
+        })).failed { (data, error) in
+            print("ImageResponseAssistant failed: \(error)")
         }
+        
+//        APICaller.failed(deserializer: TextDeserializer()) { (outcome, connection, error) in
+//            print("outcome: \(outcome), error:\(error)")
+//        }
         
         APICaller.cancelled { (resumeData, connection) in
             print("cancelled resumeData: \(resumeData)")
