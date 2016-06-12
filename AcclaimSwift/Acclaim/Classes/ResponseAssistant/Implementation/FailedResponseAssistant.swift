@@ -24,7 +24,7 @@ public struct FailedResponseAssistant<DeserializerType:Deserializer> : ResponseA
     
     public func handle(data: NSData?, connection: Connection, error: NSError?) {
         
-        let result = self.deserializer.deserialize(data)
+        let result = self.deserializer.deserialize(data: data)
         
         if let handler = self.handler {
             handler(outcome: result.outcome, connection: connection, error: error)

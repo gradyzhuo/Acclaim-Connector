@@ -78,7 +78,7 @@ public enum HTTPMethod {
             return self
             
         default:
-            ACDebugLog("[Failed]: The method of itself, \(self.rawValue) can't append a serializer to serialize.")
+            ACDebugLog(log: "[Failed]: The method of itself, \(self.rawValue) can't append a serializer to serialize.")
             return self
         }
         
@@ -89,7 +89,7 @@ public enum HTTPMethod {
 //MARK: - RawRepresentable Extension
 extension HTTPMethod : RawRepresentable {
     public init?(rawValue: HTTPMethod.RawValue) {
-        switch rawValue.uppercaseString {
+        switch rawValue.uppercased() {
         case "GET":
             self = .GET
         case "POST":
@@ -105,7 +105,7 @@ extension HTTPMethod : RawRepresentable {
         case "CONNECT":
             self = .CONNECT
         default:
-            ACDebugLog("The rawvalue your input : '\(rawValue)' can't be accepted. It will be GET instead.")
+            ACDebugLog(log: "The rawvalue your input : '\(rawValue)' can't be accepted. It will be GET instead.")
             self = .GET
         }
     }

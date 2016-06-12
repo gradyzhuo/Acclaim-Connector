@@ -27,19 +27,19 @@ public struct JSONMappingDeserializer<Outcome:Mappable> : Deserializer {
             for (key, value) in T.mappingTable{
                 let ivar = class_getInstanceVariable(T.self, value)
                 let newValue = dataObject[key]
-                object_setIvar(mappingObject, ivar, newValue)
+                object_setIvar(mappingObject, ivar, newValue!)
             }
             
             return mappingObject
         }
         
-        let result = JSONDeserializer(options: .AllowFragments).deserialize(data)
-        let outcome:Outcome = mappingObjectMake(result.outcome)
+        let result = JSONDeserializer(options: .allowFragments).deserialize(data: data)
+        let outcome:Outcome = mappingObjectMake(dataObject: result.outcome)
         return (outcome, nil)
     }
     
     public init(){
-        self.options = .AllowFragments
+        self.options = .allowFragments
     }
     
     public init(options: NSJSONReadingOptions){

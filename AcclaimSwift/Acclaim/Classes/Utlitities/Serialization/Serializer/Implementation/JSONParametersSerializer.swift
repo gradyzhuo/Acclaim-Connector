@@ -11,7 +11,7 @@ import Foundation
 public struct JSONParametersSerializer : ParametersSerializer {
     public var option: NSJSONWritingOptions
     
-    public init(option: NSJSONWritingOptions = .PrettyPrinted){
+    public init(option: NSJSONWritingOptions = .prettyPrinted){
         self.option = option
     }
     
@@ -41,7 +41,7 @@ public struct JSONParametersSerializer : ParametersSerializer {
         }
         
         
-        return try? NSJSONSerialization.dataWithJSONObject(JSONObject, options: self.option)
+        return try? NSJSONSerialization.data(withJSONObject: JSONObject, options: self.option)
     }
     
 }

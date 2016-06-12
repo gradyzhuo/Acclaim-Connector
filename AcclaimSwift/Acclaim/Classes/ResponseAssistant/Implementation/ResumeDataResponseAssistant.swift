@@ -25,7 +25,7 @@ public struct ResumeDataResponseAssistant:ResponseAssistant{
     
     public func handle(data: NSData?, connection: Connection, error: NSError?) {
         
-        let result = self.deserializer.deserialize(data)
+        let result = self.deserializer.deserialize(data: data)
         
         guard let data = result.outcome where result.error == nil else {
             return

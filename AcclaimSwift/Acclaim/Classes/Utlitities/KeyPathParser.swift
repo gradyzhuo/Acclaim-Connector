@@ -64,7 +64,7 @@ public protocol Command:class {
 
 public protocol KeyPathParser{
     static func parse<T>(value:AnyObject?, forKeyPath keyPath:KeyPath)->T?
-    static func handle(command command:String, value: AnyObject?)->AnyObject?
+    static func handle(command:String, value: AnyObject?)->AnyObject?
 }
 
 extension KeyPathParser{
@@ -82,10 +82,11 @@ extension KeyPathParser{
             return nil
         }
         
-        let command = matchResult.substring(matchIndex: 1)?.lowercaseString
+        let command = matchResult.substring(matchIndex: 1)?.lowercased()
         let path:String = matchResult.substring(matchIndex: 2) ?? ""
         
-        let keyPathes = path.componentsSeparatedByString(keyPath.separater)
+        
+        let keyPathes = path.components(separatedBy: keyPath.separater)
         
         let result = keyPathes.reduce(value) { (parsedObject, key) -> AnyObject? in
             

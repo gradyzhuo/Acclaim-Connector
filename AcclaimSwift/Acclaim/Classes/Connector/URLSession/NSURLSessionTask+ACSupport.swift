@@ -8,11 +8,11 @@
 
 import Foundation
 
-private let kRecevingProcessHandler = unsafeAddressOf("kProcessHandler")
-private let kSendingProcessHandler = unsafeAddressOf("kProcessHandler")
-private let kAPICaller = unsafeAddressOf("kAPICaller")
-private let kCompletionHandler = unsafeAddressOf("kCompletionHandler")
-private let kData = unsafeAddressOf("kData")
+private let kRecevingProcessHandler = unsafeAddress(of: "kProcessHandler")
+private let kSendingProcessHandler = unsafeAddress(of: "kProcessHandler")
+private let kAPICaller = unsafeAddress(of: "kAPICaller")
+private let kCompletionHandler = unsafeAddress(of: "kCompletionHandler")
+private let kData = unsafeAddress(of: "kData")
 
 extension NSURLSessionTask {
     typealias ResponseHandlerType = Handler<TaskResponseHandler>

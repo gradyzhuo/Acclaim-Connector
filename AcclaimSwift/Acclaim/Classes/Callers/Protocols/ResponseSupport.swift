@@ -20,34 +20,34 @@ extension ResponseSupport {
     public func failed(statusCode:Int? = nil, handler:FailedResponseAssistant<DataDeserializer>.Handler)->Self{
         var assistant = FailedResponseAssistant<DataDeserializer>()
         if let statusCode = statusCode {
-            assistant.addHandler(forStatusCode: statusCode, handler: handler)
+            _ = assistant.addHandler(forStatusCode: statusCode, handler: handler)
         }else{
             assistant.handler = handler
         }
-        self.handle(responseType: .Failed, assistant: assistant)
+        _ = self.handle(responseType: .Failed, assistant: assistant)
         
         return self
     }
     
-    public func failed<T:Deserializer>(deserializer deserializer: T, statusCode:Int? = nil, handler:FailedResponseAssistant<T>.Handler)->Self{
+    public func failed<T:Deserializer>(deserializer: T, statusCode:Int? = nil, handler:FailedResponseAssistant<T>.Handler)->Self{
         var assistant = FailedResponseAssistant<T>()
         if let statusCode = statusCode {
-            assistant.addHandler(forStatusCode: statusCode, handler: handler)
+            _ = assistant.addHandler(forStatusCode: statusCode, handler: handler)
         }else{
             assistant.handler = handler
         }
-        self.handle(responseType: .Failed, assistant: assistant)
+        _ = self.handle(responseType: .Failed, assistant: assistant)
         
         return self
     }
     
     public func handleOriginalData(handler:OriginalDataResponseAssistant.Handler)->Self{
-        self.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: handler))
+        _ = self.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: handler))
         return self
     }
     
     public func handleText(encoding: NSStringEncoding = NSUTF8StringEncoding, handler:TextResponseAssistant.Handler)->Self{
-        self.handle(responseType: .Success, assistant: TextResponseAssistant(encoding: encoding, handler: handler))
+        _ = self.handle(responseType: .Success, assistant: TextResponseAssistant(encoding: encoding, handler: handler))
         return self
     }
     

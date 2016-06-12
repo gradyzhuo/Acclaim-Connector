@@ -41,7 +41,7 @@ public class Acclaim {
          */
         public internal(set) var priority:QueuePriority = .Default
         
-        internal var cacheStoragePolicy:CacheStoragePolicy = .AllowedInMemoryOnly(renewRule: .NotRenewed)
+        internal var cacheStoragePolicy:CacheStoragePolicy = .allowedInMemoryOnly(renewRule: .NotRenewed)
         
         public init(connector: Connector, hostURLInfoKey key: String, bundleForHostURLInfo bundle: NSBundle, allowsCellularAccess cellularAccess: Bool = true){
             self.connector = connector
@@ -52,7 +52,7 @@ public class Acclaim {
         
         public static var defaultConfiguration: Acclaim.Configuration = {
             let defaultKey = Acclaim.Configuration.defaultHostURLInfoKey
-            return Acclaim.Configuration(connector: URLSession(), hostURLInfoKey: defaultKey, bundleForHostURLInfo: NSBundle.mainBundle())
+            return Acclaim.Configuration(connector: URLSession(), hostURLInfoKey: defaultKey, bundleForHostURLInfo: NSBundle.main())
         }()
         
     }
@@ -62,7 +62,7 @@ public class Acclaim {
     
     
     public static var sharedRequestParameters: Parameters?
-    public static var configuration: Acclaim.Configuration = Acclaim.Configuration.defaultConfiguration
+    public static var configuration: Configuration = Configuration.defaultConfiguration
     
     internal static var running:[String:Caller] = [:]
 //    internal static var sessionTask: [Caller:NSURLSessionTask] = [:]
@@ -74,33 +74,33 @@ public class Acclaim {
     internal static func removeRunningCaller(caller: Caller?){
 
         if let caller = caller  where self.running.keys.contains(caller.identifier){
-            self.running.removeValueForKey(caller.identifier)
+            self.running.removeValue(forKey: caller.identifier)
         }
         
-        ACDebugLog("removeRunningCallerByIdentifier:\(caller?.identifier)")
+        ACDebugLog(log: "removeRunningCallerByIdentifier:\(caller?.identifier)")
         
         defer{
-            ACDebugLog("caller:\(caller)")
-            ACDebugLog("count of running caller:\(Acclaim.running.count)")
+            ACDebugLog(log: "caller:\(caller)")
+            ACDebugLog(log: "count of running caller:\(Acclaim.running.count)")
         }
         
     }
 
     
     internal static var sharedURLCache: NSURLCache{
-        return NSURLCache.sharedURLCache()
+        return NSURLCache.shared()
     }
     
-    internal static func cachedResponse(request request: NSURLRequest) -> NSCachedURLResponse?{
-        return Acclaim.sharedURLCache.cachedResponseForRequest(request)
+    internal static func cachedResponse(request: NSURLRequest) -> NSCachedURLResponse?{
+        return Acclaim.sharedURLCache.cachedResponse(for: request)
     }
 
     internal static func storeCachedResponse(cachedResponse: NSCachedURLResponse, forRequest request: NSURLRequest){
-        Acclaim.sharedURLCache.storeCachedResponse(cachedResponse, forRequest: request)
+        Acclaim.sharedURLCache.storeCachedResponse(cachedResponse, for: request)
     }
     
     internal static func removeAllCachedResponsesSinceDate(date: NSDate){
-        Acclaim.sharedURLCache.removeCachedResponsesSinceDate(date)
+        Acclaim.sharedURLCache.removeCachedResponses(since: date)
     }
     
     internal static func removeAllCachedResponses(){
@@ -109,7 +109,7 @@ public class Acclaim {
     
     
     internal static func removeCachedResponse(request: NSURLRequest){
-        return Acclaim.sharedURLCache.removeCachedResponseForRequest(request)
+        return Acclaim.sharedURLCache.removeCachedResponse(for: request)
     }
     
 }

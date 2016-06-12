@@ -41,7 +41,7 @@ public struct QueuePriority : Equatable {
         self.qos_class = qos_class
         self.relative_priority = relative_priority
         
-        self.queue = queue
+        self.queue = queue!
     }
     
     

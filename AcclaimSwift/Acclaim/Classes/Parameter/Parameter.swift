@@ -21,37 +21,37 @@ extension Int: ParameterValue{ /* not implemented.*/ }
 
 public typealias Parameters = [Parameter]
 
-extension RangeReplaceableCollectionType where Generator.Element == Parameter {
+extension RangeReplaceableCollection where Iterator.Element == Parameter {
     public typealias Element = Generator.Element
     
     public init<T:ParameterValue>(dictionary elements: [String:T]){
         self.init()
         elements.forEach {
-            self.add(parameterValue: $1, forKey: $0)
+            _ = self.add(parameterValue: $1, forKey: $0)
         }
     }
     
     public init<T:ParameterValue>(dictionary elements: [String:[T]]){
         self.init()
         elements.forEach {
-            self.add(array: $1, forKey: $0)
+           _ = self.add(array: $1, forKey: $0)
         }
     }
     
     public init<T:ParameterValue>(dictionary elements: [String:[String:T]]){
         self.init()
         elements.forEach {
-            self.add(dictionary: $1, forKey: $0)
+           _ = self.add(dictionary: $1, forKey: $0)
         }
     }
     
     public func indexOf(paramKey key: String)->Self.Index?{
-        let index = self.indexOf { $0.key == key }
+        let index = self.index { $0.key == key }
         return index
     }
     
     public func indexOf(param: Element)->Self.Index?{
-        let index = self.indexOf { $0.key == param.key }
+        let index = self.index { $0.key == param.key }
         return index
     }
     
@@ -60,14 +60,14 @@ extension RangeReplaceableCollectionType where Generator.Element == Parameter {
     }
     
     public mutating func add(param:Element){
-        if !self.contains(param) {
+        if !self.contains(param: param) {
             self.append(param)
         }
     }
     
     public mutating func addParams(params:[Element]){
         params.forEach {
-            if !self.contains($0) {
+            if !self.contains(param: $0) {
                 self.append($0)
             }
         }
@@ -75,14 +75,14 @@ extension RangeReplaceableCollectionType where Generator.Element == Parameter {
     
     public mutating func remove(forKey key:String)->Element? {
         if let index = self.indexOf(paramKey: key){
-            return self.removeAtIndex(index)
+            self.remove(at: index)
         }
         return nil
     }
     
     internal func serialize(serializer: ParametersSerializer) -> NSData? {
         if let parameters = self as? [Element] {
-            return serializer.serialize(parameters)
+            return serializer.serialize(params: parameters)
         }
         return nil
     }
@@ -91,7 +91,7 @@ extension RangeReplaceableCollectionType where Generator.Element == Parameter {
 
 
 //MARK: - Convenience Methods
-extension RangeReplaceableCollectionType where Generator.Element == Parameter {
+extension RangeReplaceableCollection where Iterator.Element == Parameter {
     /**
      Generating and adding a new parameter by input key and value.
      - parameters:
@@ -101,7 +101,7 @@ extension RangeReplaceableCollectionType where Generator.Element == Parameter {
      */
     internal mutating func add<T:ParameterValue>(parameterValue value: T, forKey key:String)->Element{
         let param = FormParameter(key: key, value: value)
-        self.add(param)
+        self.add(param: param)
         return param
     }
     
@@ -136,7 +136,7 @@ extension RangeReplaceableCollectionType where Generator.Element == Parameter {
      */
     public mutating func add<T:ParameterValue>(array value: [T], forKey key:String)->Parameter{
         let param = FormParameter(key: key, value: value)
-        self.add(param)
+        self.add(param: param)
         return param
     }
     
@@ -149,13 +149,13 @@ extension RangeReplaceableCollectionType where Generator.Element == Parameter {
      */
     public mutating func add<T:ParameterValue>(dictionary value: [String:T], forKey key:String)->Parameter{
         let param = FormParameter(key: key, value: value)
-        self.add(param)
+        self.add(param: param)
         return param
     }
     
     public mutating func add(data value: NSData?, forKey key: String, fileName: String = "", MIME: MIMEType = .All)->Parameter{
         let param = FormDataParameter(key: key, data: value ?? NSData(), fileName: fileName, MIME: MIME)
-        self.add(param)
+        self.add(param: param)
         return param
     }
     
@@ -163,7 +163,7 @@ extension RangeReplaceableCollectionType where Generator.Element == Parameter {
         let data = decoder.decode(image: value) ?? NSData()
         let filename = String(format: "%.2f.%@", NSDate().timeIntervalSince1970, decoder.fileExtension)
         let param = FormDataParameter(key: key, data: data, fileName: filename, MIME: decoder.MIME)
-        self.add(param)
+        self.add(param: param)
         return param
     }
     
@@ -193,7 +193,7 @@ public enum ImageDecoder {
         }
     }
     
-    internal func decode(image image:UIImage?)->NSData?{
+    internal func decode(image: UIImage?)->NSData?{
         
         guard let image = image else{
             return nil

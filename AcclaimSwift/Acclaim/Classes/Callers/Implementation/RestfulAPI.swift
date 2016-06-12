@@ -26,7 +26,7 @@ public final class RestfulAPI : APICaller {
 //        
 //    }
     
-    public func handleObject(keyPath keyPath:KeyPath = "", handler: AssistantType.Handler)->AssistantType{
+    public func handleObject(keyPath:KeyPath = "", handler: AssistantType.Handler)->AssistantType{
         let assistant:AssistantType
         if keyPath == "" {
             assistant = AssistantType(handler: handler)
@@ -36,7 +36,7 @@ public final class RestfulAPI : APICaller {
         return self.handle(responseType: .Success, assistant: assistant)
     }
     
-    public func handleObject(keyPath keyPath:String = "", handler: AssistantType.Handler)->AssistantType{
+    public func handleObject(keyPath:String = "", handler: AssistantType.Handler)->AssistantType{
         let assistant:AssistantType
         if keyPath == "" {
             assistant = AssistantType(handler: handler)
@@ -46,7 +46,7 @@ public final class RestfulAPI : APICaller {
         return self.handle(responseType: .Success, assistant: assistant)
     }
     
-    public func handleMappingObject<T:Mappable>(mappingClass mappingClass: T.Type, option:NSJSONReadingOptions = .AllowFragments, handler:MappingResponseAssistant<T>.Handler)->MappingResponseAssistant<T>{
+    public func handleMappingObject<T:Mappable>(mappingClass: T.Type, option:NSJSONReadingOptions = .allowFragments, handler:MappingResponseAssistant<T>.Handler)->MappingResponseAssistant<T>{
         return self.handle(responseType: .Success, assistant: MappingResponseAssistant<T>(options: option, handler: handler))
     }
     
@@ -67,8 +67,8 @@ extension Acclaim {
         
         let caller = RestfulAPI(API: api, params: params)
         caller.configuration.priority = priority
-        caller.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: completionHandler))
-        caller.failed(deserializer: DataDeserializer(), handler: failedHandler)
+        _ = caller.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: completionHandler))
+        _ = caller.failed(deserializer: DataDeserializer(), handler: failedHandler)
         caller.resume()
         
         return caller
@@ -79,6 +79,7 @@ extension Acclaim {
 extension Acclaim {
     
     public static func call<T:ParameterValue>(API api:API, paramsDict:[String: T], priority: QueuePriority = .Default)->RestfulAPI{
+        
         let params = Parameters(dictionary: paramsDict)
         return Acclaim.call(API: api, params: params, priority: priority)
     }

@@ -12,8 +12,8 @@ public class URLSession : NSObject, _Connector {
     
     public internal(set) var session: NSURLSession!
     
-    public internal(set) var configuration:NSURLSessionConfiguration = .defaultSessionConfiguration()
-    public internal(set) var delegateQueue:NSOperationQueue = NSOperationQueue.mainQueue()
+    public internal(set) var configuration:NSURLSessionConfiguration = .default()
+    public internal(set) var delegateQueue:NSOperationQueue = NSOperationQueue.main()
     
     public required override init(){
         super.init()
@@ -37,14 +37,14 @@ public class URLSession : NSObject, _Connector {
             
             let request = api.generateRequest(parameters: params, configuration: configuration)
             if let resumeData = taskType.infoObject as? NSData {
-                task = self.session.downloadTaskWithResumeData(resumeData)
+                task = self.session.downloadTask(withResumeData: resumeData)
             }else{
-                task = self.session.downloadTaskWithRequest(request)
+                task = self.session.downloadTask(with: request)
             }
         }else if taskType == .UploadTask {
             
             let mutableRequest = api.generateRequest(parameters: params, configuration: configuration)
-            let uploadData = params.serialize(api.method.serializer) ?? NSData()
+            let uploadData = params.serialize(serializer: api.method.serializer) ?? NSData()
             
             if let multipartSerializer = api.method.serializer as? MultipartFormSerializer {
                 
@@ -56,13 +56,14 @@ public class URLSession : NSObject, _Connector {
                 
             }
             
-            task = self.session.uploadTaskWithRequest(mutableRequest, fromData: uploadData)
+            task = self.session.uploadTask(with: mutableRequest, from: uploadData)
         }
         else if taskType == .StreamTask {
-            let request = api.generateRequest(parameters: params, configuration: configuration)
+            // Unfinished
+            _ = api.generateRequest(parameters: params, configuration: configuration)
             
             let service = taskType.infoObject as! NSNetService
-            let streamTask:NSURLSessionStreamTask = self.session.streamTaskWithNetService(service)
+            let streamTask:NSURLSessionStreamTask = self.session.streamTask(with: service)
             task = streamTask
             
             streamTask.captureStreams()
@@ -71,7 +72,7 @@ public class URLSession : NSObject, _Connector {
             
             let request = api.generateRequest(parameters: params, configuration: configuration)
             //FIXME: 如果要使用Delegate，就一定要使用沒有CompletionHandler的版本
-            task = self.session.dataTaskWithRequest(request)
+            task = self.session.dataTask(with: request)
         }
         
         task.completionHandler = handler
@@ -91,6 +92,6 @@ public class URLSession : NSObject, _Connector {
     }
     
     deinit{
-        ACDebugLog("URLSession : [\(unsafeAddressOf(self))] deinit")
+        ACDebugLog(log: "URLSession : [\(unsafeAddress(of: self))] deinit")
     }
 }

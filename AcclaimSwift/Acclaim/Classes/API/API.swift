@@ -41,7 +41,7 @@ public struct RequestTaskType {
         - resumeData: It can be resume a downloadTask with previous result's data by pausing. (required)
      - returns: DownloadTask's RequestTaskType.
      */
-    public static func DownloadTask(resumeData resumeData: NSData?)->RequestTaskType{
+    public static func DownloadTask(resumeData: NSData?)->RequestTaskType{
         return RequestTaskType(identifier: "DownloadTask", infoObject: resumeData)
     }
     
@@ -65,7 +65,7 @@ public struct RequestTaskType {
         - netService: It can be resume a downloadTask with previous result's data by pausing. (required)
      - returns: DownloadTask's RequestTaskType.
      */
-    public static func StreamTask(service service: NSNetService)->RequestTaskType{
+    public static func StreamTask(service: NSNetService)->RequestTaskType{
         return RequestTaskType(identifier: "StreamTask", infoObject: service)
     }
     
@@ -89,7 +89,7 @@ public class  API : StringLiteralConvertible {
 //    public var requestTaskType: RequestTaskType = .DataTask(method: .GET)
     public var timeoutInterval:NSTimeInterval = 30
     
-    public var cachePolicy:NSURLRequestCachePolicy = .UseProtocolCachePolicy
+    public var cachePolicy:NSURLRequestCachePolicy = .useProtocolCachePolicy
     
     public var HTTPHeaderFields:[String: String] = [:]
     public internal(set) var cookies:[NSHTTPCookie] = []
@@ -109,7 +109,7 @@ public class  API : StringLiteralConvertible {
             throw NSError(domain: "API.Constructor", code: 999, userInfo: [NSLocalizedFailureReasonErrorKey:reason, NSLocalizedRecoverySuggestionErrorKey:recoverSuggestion])
         }
         
-        let apiURL = validHostURL.URLByAppendingPathComponent(api)
+        let apiURL = validHostURL.appendingPathComponent(api)
         
         self.init(URL: apiURL, method: method)
         
@@ -119,8 +119,8 @@ public class  API : StringLiteralConvertible {
         self.apiURL = URL
         self.method = method
         
-        for cookie in NSHTTPCookieStorage.sharedHTTPCookieStorage().cookies ?? [] where cookie.domain == URL.host!{
-            self.addHTTPCookie(cookie)
+        for cookie in NSHTTPCookieStorage.shared().cookies ?? [] where cookie.domain == URL.host!{
+            _ = self.addHTTPCookie(cookie: cookie)
         }
         
     }
@@ -135,7 +135,7 @@ public class  API : StringLiteralConvertible {
     
     public required convenience init(stringLiteral value: StringLiteralType) {
         
-        if let components = NSURLComponents(string: value) where components.scheme != nil, let url = components.URL  {
+        if let components = NSURLComponents(string: value) where components.scheme != nil, let url = components.url  {
             self.init(URL: url, method: .GET)
         }else{
             try! self.init(api: value)
@@ -176,13 +176,13 @@ extension API {
         - value: the value of cookie.
      - returns: object of NSHTTPCookie. (Optional)
      */
-    public func addSimpleHTTPCookie(name name:String, value: String)->NSHTTPCookie?{
+    public func addSimpleHTTPCookie(name:String, value: String)->NSHTTPCookie?{
         let properties = [NSHTTPCookieName:name, NSHTTPCookieValue:value, NSHTTPCookieDomain:self.apiURL.host ?? "", NSHTTPCookieOriginURL:self.apiURL.absoluteString, NSHTTPCookiePath:self.apiURL.path ?? "", NSHTTPCookieVersion:"0"]
         guard let cookie = NSHTTPCookie(properties: properties) else {
             return nil
         }
         
-        self.addHTTPCookie(cookie)
+        _ = self.addHTTPCookie(cookie: cookie)
         return cookie
     }
     
@@ -202,22 +202,23 @@ extension API {
     
     public func generateRequest(parameters params: Parameters, configuration: Acclaim.Configuration)->NSMutableURLRequest {
         
-        let request:NSMutableURLRequest = NSMutableURLRequest(URL: self.apiURL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
+        let request:NSMutableURLRequest = NSMutableURLRequest(url: self.apiURL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
         
-        let body = self.method.serializer.serialize(params)
+        let body = self.method.serializer.serialize(params: params)
         
         if let body = body where self.method == HTTPMethod.GET {
-            let components = NSURLComponents(URL: self.apiURL, resolvingAgainstBaseURL: false)
+            let components = NSURLComponents(url
+                : self.apiURL, resolvingAgainstBaseURL: false)
             components?.query = String(data: body, encoding: NSUTF8StringEncoding)
-            request.URL = (components?.URL)!
+            request.url = (components?.url)!
         }else{
-            request.HTTPBody = body
+            request.httpBody = body
         }
         
-        request.HTTPMethod = self.method.rawValue
+        request.httpMethod = self.method.rawValue
         request.allowsCellularAccess = configuration.allowsCellularAccess
         
-        for field in NSHTTPCookie.requestHeaderFieldsWithCookies(self.cookies){
+        for field in NSHTTPCookie.requestHeaderFields(with: self.cookies){
             request.addValue(field.1, forHTTPHeaderField: field.0)
         }
         
@@ -231,7 +232,7 @@ extension API {
         
         self.requestConfigurationHandler(request: request)
         
-        self.request = request.copy() as! NSURLRequest
+        self.request = request.copy() as? NSURLRequest
         return request
     }
 }

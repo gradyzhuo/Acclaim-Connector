@@ -16,7 +16,7 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
     public func deserialize(data: NSData?) -> (outcome: Outcome?, error: NSError?) {
         
         do {
-            let json = try NSJSONSerialization.JSONObjectWithData(data ?? NSData(), options: self.options)
+            let json = try NSJSONSerialization.jsonObject(with: data ?? NSData(), options: self.options)
             return (json, nil)
         } catch let error as NSError {
             return (nil, error)
@@ -28,8 +28,8 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
     public func deserialize(data: NSData?, keyPath:KeyPath) -> (outcome: Outcome?, error: NSError?) {
         
         do {
-            let json = try NSJSONSerialization.JSONObjectWithData(data ?? NSData(), options: self.options)
-            let keyPathJSON:AnyObject? = JSONDeserializer.parse(json, forKeyPath: keyPath)
+            let json = try NSJSONSerialization.jsonObject(with: data ?? NSData(), options: self.options)
+            let keyPathJSON:AnyObject? = JSONDeserializer.parse(value: json, forKeyPath: keyPath)
             return (keyPathJSON, nil)
             
         } catch let error as NSError {
@@ -40,14 +40,14 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
     
     
     public init(){
-        self.options = .AllowFragments
+        self.options = .allowFragments
     }
     
     public init(options: NSJSONReadingOptions){
         self.options = options
     }
     
-    public static func handle(command command: String, value: AnyObject?) -> AnyObject? {
+    public static func handle(command: String, value: AnyObject?) -> AnyObject? {
         
         guard let value = value else{
             return 0
@@ -59,7 +59,7 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
             }else if let dict = value as? [String:AnyObject] {
                 return dict.count
             }else if let strValue = value as? String{
-                return strValue.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)
+                return strValue.lengthOfBytes(using: NSUTF8StringEncoding)
             }
             return 1
         }

@@ -51,7 +51,7 @@ public enum FormParameter : Parameter, CustomStringConvertible{
         case .StringValue(let key, let value):
             return "StringValue(\(key):\(value))"
         case .ArrayValue(let key, let value):
-            return "ArrayValue(\(key):\(value.joinWithSeparator(",")))"
+            return "ArrayValue(\(key):\(value.joined(separator: ",")))"
         case .DictionaryValue(let key, let value):
             let valueString = value.map({ (element) -> String in
                 let key = "\(element.0)"

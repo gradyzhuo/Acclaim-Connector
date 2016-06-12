@@ -23,7 +23,7 @@ public struct QueryStringParametersSerializer : ParametersSerializer {
                     components.queryItems?.append(NSURLQueryItem(name: key, value: value))
                 case .ArrayValue(let key, let arrayValue):
                     let queryItems = arrayValue.map{ NSURLQueryItem(name: "\(key)[]", value: $0) }
-                    components.queryItems?.appendContentsOf(queryItems)
+                    components.queryItems?.append(contentsOf: queryItems)
                 case .DictionaryValue(let key, let dictionaryValue):
                     dictionaryValue.forEach { (element:(key:String, value:String)) in
                         components.queryItems?.append(NSURLQueryItem(name: "\(key)[\(element.key)]", value: element.value))
@@ -36,6 +36,6 @@ public struct QueryStringParametersSerializer : ParametersSerializer {
         
         let query:String? = components.query
         
-        return query?.dataUsingEncoding(NSUTF8StringEncoding)
+        return query?.data(using: NSUTF8StringEncoding)
     }
 }

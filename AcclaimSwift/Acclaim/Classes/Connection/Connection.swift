@@ -42,7 +42,7 @@ public struct Connection: _Connection {
         self.cached = cached
         
         self.requestMIMEs = requestMIMEs
-        if let MIMEString = self.response?.MIMEType, let MIME = try? MIMEType(MIME: MIMEString) {
+        if let MIMEString = self.response?.mimeType, let MIME = try? MIMEType(MIME: MIMEString) {
             self.responseMIME = MIME
         }
     }

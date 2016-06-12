@@ -19,10 +19,9 @@ public final class Downloader : APICaller, RecevingProcessHandlable {
         self.cancel(handler: nil)
     }
     
-    public func cancel(handler handler: ((resumeData: NSData?)->Void)?) {
+    public func cancel(handler: ((resumeData: NSData?)->Void)?) {
         if let sessionTask = self.sessionTask as? NSURLSessionDownloadTask, let handler = handler {
-            sessionTask.cancelByProducingResumeData {[weak self] resumeData in
-            
+            sessionTask.cancel { resumeData in
                 sessionTask.data = (resumeData?.mutableCopy() as? NSMutableData) ?? NSMutableData()
                 handler(resumeData: resumeData)
             }
@@ -36,7 +35,7 @@ public final class Downloader : APICaller, RecevingProcessHandlable {
         return self
     }
     
-    public func handleImage(scale scale: CGFloat = 1.0, handler:ImageResponseAssistant.Handler)->ImageResponseAssistant{
+    public func handleImage(scale: CGFloat = 1.0, handler:ImageResponseAssistant.Handler)->ImageResponseAssistant{
         return self.handle(responseType: .Success, assistant: ImageResponseAssistant(scale: scale, handler: handler))
     }
     

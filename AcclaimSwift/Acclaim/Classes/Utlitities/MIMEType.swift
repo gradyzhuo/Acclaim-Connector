@@ -13,14 +13,14 @@ public struct MIMEType : CustomStringConvertible  {
     public internal(set) var type: String
     public internal(set) var subtype: String
     
-    
     internal init(type: String, subtype: String){
-        self.type = type.lowercaseString
-        self.subtype = subtype.lowercaseString
+        self.type = type.lowercased()
+        self.subtype = subtype.lowercased()
     }
     
     internal init(MIME: String) throws {
-        let components = MIME.lowercaseString.componentsSeparatedByString("/")
+        
+        let components = MIME.lowercased().components(separatedBy: "/")
         guard components.count == 2 else {
             throw NSError(domain: "MIMEType", code: 0, userInfo: [NSLocalizedFailureReasonErrorKey:"MIME is not formated by [type/subtype]"])
         }
@@ -40,29 +40,29 @@ public struct MIMEType : CustomStringConvertible  {
 
 extension MIMEType {
     
-    public static func All(subtype subtype: String)->MIMEType{
+    public static func All(subtype: String)->MIMEType{
         return MIMEType(type: "*", subtype: subtype)
     }
     
-    public static func Text(subtype subtype: String)->MIMEType{
+    public static func Text(subtype: String)->MIMEType{
         return MIMEType(type: "text", subtype: subtype)
     }
-    public static func Multipart(subtype subtype: String)->MIMEType{
+    public static func Multipart(subtype: String)->MIMEType{
         return MIMEType(type: "multipart", subtype: subtype)
     }
-    public static func Application(subtype subtype: String)->MIMEType{
+    public static func Application(subtype: String)->MIMEType{
         return MIMEType(type: "application", subtype: subtype)
     }
-    public static func Message(subtype subtype: String)->MIMEType{
+    public static func Message(subtype: String)->MIMEType{
         return MIMEType(type: "message", subtype: subtype)
     }
-    public static func Image(subtype subtype: String)->MIMEType{
+    public static func Image(subtype: String)->MIMEType{
         return MIMEType(type: "image", subtype: subtype)
     }
-    public static func Audio(subtype subtype: String)->MIMEType{
+    public static func Audio(subtype: String)->MIMEType{
         return MIMEType(type: "audio", subtype: subtype)
     }
-    public static func Video(subtype subtype: String)->MIMEType{
+    public static func Video(subtype: String)->MIMEType{
         return MIMEType(type: "video", subtype: subtype)
     }
     
@@ -109,7 +109,7 @@ public func ==(lhs: MIMEType, rhs: MIMEType)->Bool{
 }
 
 //extension
-extension RangeReplaceableCollectionType where Generator.Element == MIMEType {
+extension RangeReplaceableCollection where Iterator.Element == MIMEType {
     public func contains(element: MIMEType) -> Bool {
         return self.contains({ (type) -> Bool in
             return type == element

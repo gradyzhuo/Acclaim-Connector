@@ -24,14 +24,14 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
     
     /** (readonly) */
     public var isCancelled : Bool {
-        return self.isBlockCanncelled && (self.sessionTask?.state == NSURLSessionTaskState.Canceling)
+        return self.isBlockCanncelled && (self.sessionTask?.state == .canceling)
     }
     
     /** (read only) */
     public internal(set) var api:API
     /** (read only) */
     public var running:Bool{
-        return self.sessionTask?.state == NSURLSessionTaskState.Running
+        return self.sessionTask?.state == NSURLSessionTaskState.running
     }
     
     /** (read only) */
@@ -70,7 +70,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
             }
             dispatch_block_notify(block, self.queue) { [unowned self] in
                 self.sessionTask?.apiCaller = self
-                Acclaim.addRunningCaller(self)
+                Acclaim.addRunningCaller(caller: self)
             }
         }
     }
@@ -86,7 +86,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
         self.taskType = taskType
         
         if let sharedRequestParameters = Acclaim.sharedRequestParameters {
-            self.params.addParams(sharedRequestParameters)
+            self.params.addParams(params: sharedRequestParameters)
         }
         
     }
@@ -109,7 +109,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
     }
     
     //MARK: -
-    internal func run(connector connector: Connector){
+    internal func run(connector: Connector){
         
         guard !self.running else {
             return
@@ -123,7 +123,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
             self.handleResponses(data: data, connection: connection, error: error)
             
             //remove
-            Acclaim.removeRunningCaller(self)
+            Acclaim.removeRunningCaller(caller: self)
             
         }
         
@@ -132,12 +132,12 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
 
     public func resume() {
         
-        let block = dispatch_block_create_with_qos_class(DISPATCH_BLOCK_ENFORCE_QOS_CLASS, self.configuration.priority.qos_class, self.configuration.priority.relative_priority) {[unowned self] in
+        let block:dispatch_block_t? = dispatch_block_create_with_qos_class(DISPATCH_BLOCK_ENFORCE_QOS_CLASS, self.configuration.priority.qos_class, self.configuration.priority.relative_priority) {[unowned self] in
             self.run(connector: self.configuration.connector)
         }
         
         self.runningBlockInQueue = block
-        dispatch_sync(self.queue, block)
+        dispatch_sync(self.queue, block!)
         
         
 //        dispatch_block_perform(DISPATCH_BLOCK_INHERIT_QOS_CLASS, block)
@@ -153,7 +153,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
             self.sessionTask?.suspend()
         }
         
-        Acclaim.removeRunningCaller(self)
+        Acclaim.removeRunningCaller(caller: self)
     }
     
     public func cancel(){
@@ -163,18 +163,18 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
             
             //Ignore if APICaller is not running.
             guard self.running else {
-                ACDebugLog("Caller is not running. Please perform `func resume()` to run your api.")
+                ACDebugLog(log: "Caller is not running. Please perform `func resume()` to run your api.")
                 return
             }
             
             //Ignore if APICaller has been cannceled.
             guard !self.isCancelled else {
-                ACDebugLog("Caller has been cannceled. Please perform `func resume()` to run your api.")
+                ACDebugLog(log: "Caller has been cannceled. Please perform `func resume()` to run your api.")
                 return
             }
 
             self.sessionTask?.cancel()
-            Acclaim.removeRunningCaller(self)
+            Acclaim.removeRunningCaller(caller: self)
             dispatch_block_cancel(self.runningBlockInQueue)
             
         }
@@ -183,7 +183,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
     
     //MARK: -
     deinit{
-        ACDebugLog("APICaller : [\(unsafeAddressOf(self))] deinit")
+        ACDebugLog(log: "APICaller : [\(unsafeAddress(of: self))] deinit")
     }
 }
 
@@ -197,7 +197,7 @@ extension APICaller {
         self.handleResponses(fromCached: true)(data: cachedResponse.data, connection: connection, error: nil)
     }
 
-    internal func handleResponses(data data:NSData?, connection: Connection, error:NSError?){
+    internal func handleResponses(data:NSData?, connection: Connection, error:NSError?){
         self.handleResponses()(data: data, connection: connection, error: error)
     }
     
@@ -207,7 +207,7 @@ extension APICaller {
             
             guard !self.isCancelled else {
                 //檢查cancel的訊息，並在這裡回傳resumedData
-                self.cancelledAssistant?.handle(data, connection: connection, error: nil)
+                self.cancelledAssistant?.handle(data: data, connection: connection, error: nil)
                 return
             }
             
@@ -216,12 +216,12 @@ extension APICaller {
                 
                 //before this request
                 if let cachedResponse = Acclaim.cachedResponse(request: connection.currentRequest) {
-                    self.handleCachedResponse(cachedResponse, byRequest: connection.currentRequest)
+                    self.handleCachedResponse(cachedResponse: cachedResponse, byRequest: connection.currentRequest)
                 }
                 
                 
                 if error?.code == -999 && error?.localizedDescription == "cancelled" {
-                    self.cancelledAssistant?.handle(data, connection: connection, error: error)
+                    self.cancelledAssistant?.handle(data: data, connection: connection, error: error)
                 }else{
                     self.handleFailedResponse(data: data, connection: connection, error: error)
                 }
@@ -232,19 +232,19 @@ extension APICaller {
             if let response = connection.response, let data = data where cached == false{
                 let cacheStoragePolicy = NSURLCacheStoragePolicy(self.configuration.cacheStoragePolicy)
                 let cachedResponse = NSCachedURLResponse(response: response, data: data, userInfo: nil, storagePolicy: cacheStoragePolicy)
-                Acclaim.storeCachedResponse(cachedResponse, forRequest: connection.currentRequest)
+                Acclaim.storeCachedResponse(cachedResponse: cachedResponse, forRequest: connection.currentRequest)
             }
             
             self.responseAssistants.forEach { receiver in
-                receiver.handle(data, connection: connection, error: error)
+                receiver.handle(data: data, connection: connection, error: error)
             }
         }
         
     }
     
-    internal func handleFailedResponse(data data:NSData?, connection: Connection, error:NSError?) {
+    internal func handleFailedResponse(data:NSData?, connection: Connection, error:NSError?) {
         
-        self.failedResponseAssistants.forEach { $0.handle(data, connection: connection, error: error) }
+        self.failedResponseAssistants.forEach { $0.handle(data: data, connection: connection, error: error) }
     }
     
     
@@ -288,19 +288,19 @@ public enum CacheStoragePolicy{
     }
     
     /// Response will be cached into a storage.
-    case Allowed(renewRule: RenewRule)
+    case allowed(renewRule: RenewRule)
     /// Response will be cached into a memory only.
-    case AllowedInMemoryOnly(renewRule: RenewRule)
+    case allowedInMemoryOnly(renewRule: RenewRule)
     /// Response should not be cached.
-    case NotAllowed
+    case notAllowed
     
     internal var renewRule: RenewRule {
         switch self {
-        case .Allowed(let renewRule):
+        case .allowed(let renewRule):
             return renewRule
-        case .AllowedInMemoryOnly(let renewRule):
+        case .allowedInMemoryOnly(let renewRule):
             return renewRule
-        case .NotAllowed:
+        case .notAllowed:
             return .NotRenewed
         }
     }
@@ -326,12 +326,12 @@ extension CacheStoragePolicy.RenewRule {
 extension NSURLCacheStoragePolicy {
     public init(_ rawValue: CacheStoragePolicy) {
         switch rawValue{
-        case .Allowed:
-            self = .Allowed
-        case .AllowedInMemoryOnly:
-            self = .AllowedInMemoryOnly
-        case .NotAllowed:
-            self = .NotAllowed
+        case .allowed:
+            self = .allowed
+        case .allowedInMemoryOnly:
+            self = .allowedInMemoryOnly
+        case .notAllowed:
+            self = .notAllowed
         }
     }
 }
@@ -340,12 +340,12 @@ extension CacheStoragePolicy {
     
     public init(_ rawValue: NSURLCacheStoragePolicy){
         switch rawValue {
-        case .Allowed:
-            self = .Allowed(renewRule: .NotRenewed)
-        case .AllowedInMemoryOnly:
-            self = .AllowedInMemoryOnly(renewRule: .NotRenewed)
-        case .NotAllowed:
-            self = .NotAllowed
+        case .allowed:
+            self = .allowed(renewRule: .NotRenewed)
+        case .allowedInMemoryOnly:
+            self = .allowedInMemoryOnly(renewRule: .NotRenewed)
+        case .notAllowed:
+            self = .notAllowed
         }
     }
 }

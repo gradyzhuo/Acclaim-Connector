@@ -26,15 +26,15 @@ public final class Uploader : APICaller, SendingProcessHandlable {
 //MARK: - ResponseSupport
 extension Uploader {
 
-    public func handleMappingObject<T:Mappable>(mappingClass: T.Type, option:NSJSONReadingOptions = .AllowFragments, handler:MappingResponseAssistant<T>.Handler)->MappingResponseAssistant<T>{
+    public func handleMappingObject<T:Mappable>(mappingClass: T.Type, option:NSJSONReadingOptions = .allowFragments, handler:MappingResponseAssistant<T>.Handler)->MappingResponseAssistant<T>{
         return self.handle(responseType: .Success, assistant: MappingResponseAssistant<T>(options: option, handler: handler))
     }
     
-    public func handleObject(keyPath keyPath:KeyPath, option:NSJSONReadingOptions = .AllowFragments, handler:JSONResponseAssistant.Handler)->JSONResponseAssistant{
+    public func handleObject(keyPath:KeyPath, option:NSJSONReadingOptions = .allowFragments, handler:JSONResponseAssistant.Handler)->JSONResponseAssistant{
         return self.handle(responseType: .Success, assistant: JSONResponseAssistant(forKeyPath: keyPath, options: option, handler: handler))
     }
 
-    public func handleObject(option:NSJSONReadingOptions = .AllowFragments, handler:JSONResponseAssistant.Handler)->JSONResponseAssistant{
+    public func handleObject(option:NSJSONReadingOptions = .allowFragments, handler:JSONResponseAssistant.Handler)->JSONResponseAssistant{
         return self.handle(responseType: .Success, assistant: JSONResponseAssistant(options: option, handler: handler))
     }
     
@@ -48,7 +48,7 @@ extension Acclaim {
     
     public static func upload(API api:API, params:Parameters = [], priority: QueuePriority = .Default)->Uploader{
         
-        let method = api.method.HTTPMethodByReplaceSerializer(SerializerType.MultipartForm)
+        let method = api.method.HTTPMethodByReplaceSerializer(serializer: SerializerType.MultipartForm)
         api.method = method
         
         let caller = Uploader(API: api, params: params)
@@ -62,8 +62,8 @@ extension Acclaim {
         
         let caller = Uploader(API: api, params: params)
         caller.configuration.priority = priority
-        caller.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: completionHandler))
-        caller.failed(deserializer: DataDeserializer(), handler: failedHandler)
+        _ = caller.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: completionHandler))
+        _ = caller.failed(deserializer: DataDeserializer(), handler: failedHandler)
         caller.resume()
         
         

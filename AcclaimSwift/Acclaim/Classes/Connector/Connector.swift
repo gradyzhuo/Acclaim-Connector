@@ -36,7 +36,7 @@ extension Connector {
     
     internal func _request(API api: API, params: Parameters = [], requestTaskType: RequestTaskType, configuration: Acclaim.Configuration,completionHandler handler: TaskResponseHandler) -> NSURLSessionTask? {
         
-        let task:NSURLSessionTask = self.generateTask(api, params: params, requestTaskType: requestTaskType, configuration: configuration,completionHandler: handler)
+        let task:NSURLSessionTask = self.generateTask(api: api, params: params, requestTaskType: requestTaskType, configuration: configuration,completionHandler: handler)
         
         return task
     }
