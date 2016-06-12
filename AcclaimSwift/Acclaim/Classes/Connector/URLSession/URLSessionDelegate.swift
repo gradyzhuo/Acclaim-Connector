@@ -149,12 +149,47 @@ extension URLSessionDelegate : NSURLSessionDownloadDelegate {
             let handler = processableCaller.recevingProcessHandler
             handler?(bytes: bytesWritten, totalBytes: totalBytesWritten, totalBytesExpected: totalBytesExpectedToWrite)
         }
-        
-        
     }
     
     internal func URLSession(session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didResumeAtOffset fileOffset: Int64, expectedTotalBytes: Int64) {
-        print("didResumeAtOffset:\(fileOffset) here")
+        print("didResumeAtOffset:\(fileOffset)")
     }
     
 }
+
+/*
+extension URLSessionDelegate : NSURLSessionStreamDelegate, NSStreamDelegate{
+    internal func URLSession(session: NSURLSession, readClosedForStreamTask streamTask: NSURLSessionStreamTask){
+        print("readClosedForStreamTask")
+        
+    }
+
+    internal func URLSession(session: NSURLSession, writeClosedForStreamTask streamTask: NSURLSessionStreamTask){
+        print("writeClosedForStreamTask")
+    }
+    
+    internal func URLSession(session: NSURLSession, betterRouteDiscoveredForStreamTask streamTask: NSURLSessionStreamTask){
+        print("betterRouteDiscoveredForStreamTask")
+    }
+    
+    internal func URLSession(session: NSURLSession, streamTask: NSURLSessionStreamTask, didBecomeInputStream inputStream: NSInputStream, outputStream: NSOutputStream){
+        print("didBecomeInputStream")
+        
+        
+        
+        inputStream.delegate = self
+        inputStream.scheduleInRunLoop(NSRunLoop.currentRunLoop(), forMode: NSDefaultRunLoopMode)
+        inputStream.open()
+        
+        print("inputStream.has:\(inputStream.hasBytesAvailable)")
+        print("outputStream.hasSpaceAvailable:\(outputStream.hasSpaceAvailable)")
+        
+        
+    }
+    
+    
+    func stream(aStream: NSStream, handleEvent eventCode: NSStreamEvent) {
+        print("InputStreamHandler here")
+    }
+}
+*/

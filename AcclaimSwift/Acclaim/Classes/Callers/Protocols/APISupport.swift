@@ -7,11 +7,8 @@
 //
 
 public protocol APISupport : Configurable {
-    var api:API               { get }
-    var params:Parameters { get }
-    
-    
-    init(API api: API, params: Parameters, connector: Connector)
+    var api:API                   { get }
+    var params:Parameters         { get }
 }
 
 internal protocol _APISupport : APISupport {

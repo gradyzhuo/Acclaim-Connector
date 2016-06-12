@@ -8,10 +8,10 @@
 
 import Foundation
 
-public protocol FailedHandleable {
-    associatedtype FailedHandler = (data: NSData?, error: ErrorType?)->Void
-    
+public protocol AssistantFailedHandleable {
+    associatedtype AssistantType:ResponseAssistant
+    associatedtype FailedHandler = (assistant: AssistantType, data: NSData?, error: ErrorType?)->Void
     var failedHandler: FailedHandler? { get }
     
-    mutating func failed(handle handler: FailedHandler)
+    mutating func failed(assistantHandler handler: FailedHandler)
 }

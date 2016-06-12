@@ -81,12 +81,12 @@ class DownloadTaskViewController: UIViewController {
             self.apiCaller?.resume()
         }
         
-        if DownloadTaskViewController.previousCancelledResumeData != nil {
+        if let previousCancelledResumeData = DownloadTaskViewController.previousCancelledResumeData {
             
             let alert = UIAlertController(title: "Continue Donwolding?", message: "It's found a privous cancelled resume data, should continue?", preferredStyle: .Alert)
             alert.addAction(UIAlertAction(title: "Should", style: .Default, handler: {[unowned self]  (_) in
                 
-                self.apiCaller?.requestTaskType = .DownloadTask(resumeData: DownloadTaskViewController.previousCancelledResumeData)
+                self.apiCaller?.taskType = .DownloadTask(resumeData: previousCancelledResumeData)
                 self.apiCaller?.resume()
             }))
             

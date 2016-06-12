@@ -8,15 +8,16 @@
 
 import Foundation
 
-/// Default key setting for API Host URL in the Info.plist.
-public let ACAPIHostURLInfoKey:String = "ACAPIHostURLInfoKey"
-
 public class Acclaim {
     
     /**
      The Configuration for setting prefered connector, hostURLInfoKey, bundleForHostURLInfo, and allowsCellularAccess.
      */
     public struct Configuration{
+        
+        /// Default key setting for API Host URL in the Info.plist.
+        public static let defaultHostURLInfoKey:String = "ACAPIHostURLInfoKey"
+        
         /**
          The connector what performs network connection. (readonly) <br />
          - seealso:
@@ -50,7 +51,8 @@ public class Acclaim {
         }
         
         public static var defaultConfiguration: Acclaim.Configuration = {
-            return Acclaim.Configuration(connector: URLSession(), hostURLInfoKey: ACAPIHostURLInfoKey, bundleForHostURLInfo: NSBundle.mainBundle())
+            let defaultKey = Acclaim.Configuration.defaultHostURLInfoKey
+            return Acclaim.Configuration(connector: URLSession(), hostURLInfoKey: defaultKey, bundleForHostURLInfo: NSBundle.mainBundle())
         }()
         
     }
@@ -116,7 +118,7 @@ extension Acclaim {
     
     public static func hostURLFromInfoDictionary()->NSURL? {
         
-        guard let urlStr = self.configuration.bundleForHostURLInfo.infoDictionary?[ACAPIHostURLInfoKey] as? String else{
+        guard let urlStr = self.configuration.bundleForHostURLInfo.infoDictionary?[Acclaim.Configuration.defaultHostURLInfoKey] as? String else{
             return nil
         }
         

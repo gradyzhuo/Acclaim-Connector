@@ -35,16 +35,15 @@ public class URLSession : NSObject, _Connector {
         
         if taskType == .DownloadTask {
             
-            let request = taskType.generateRequest(api, configuration: configuration, params: params)
-            
-            if let resumeData = taskType.resumeData {
+            let request = api.generateRequest(parameters: params, configuration: configuration)
+            if let resumeData = taskType.infoObject as? NSData {
                 task = self.session.downloadTaskWithResumeData(resumeData)
             }else{
                 task = self.session.downloadTaskWithRequest(request)
             }
         }else if taskType == .UploadTask {
             
-            let mutableRequest:NSMutableURLRequest! = taskType.generateRequest(api, configuration: configuration, params: params).mutableCopy() as! NSMutableURLRequest
+            let mutableRequest = api.generateRequest(parameters: params, configuration: configuration)
             let uploadData = params.serialize(api.method.serializer) ?? NSData()
             
             if let multipartSerializer = api.method.serializer as? MultipartFormSerializer {
@@ -59,12 +58,34 @@ public class URLSession : NSObject, _Connector {
             
             task = self.session.uploadTaskWithRequest(mutableRequest, fromData: uploadData)
         }
+        else if taskType == .StreamTask {
+            let request = api.generateRequest(parameters: params, configuration: configuration)
+            
+            let service = taskType.infoObject as! NSNetService
+            let streamTask:NSURLSessionStreamTask = self.session.streamTaskWithNetService(service)
+            task = streamTask
+            
+            streamTask.captureStreams()
+        }
         else{
             
-            let request = taskType.generateRequest(api, configuration: configuration, params: params)
+            let request = api.generateRequest(parameters: params, configuration: configuration)
             //FIXME: 如果要使用Delegate，就一定要使用沒有CompletionHandler的版本
             task = self.session.dataTaskWithRequest(request)
         }
+        
+        task.completionHandler = handler
+        
+        return task
+    }
+    
+    
+    public func request(API api: API, params: Parameters = [], requestTaskType: RequestTaskType = .DataTask, configuration: Acclaim.Configuration = Acclaim.Configuration.defaultConfiguration,completionHandler handler: DataResponseHandler) -> NSURLSessionTask? {
+        let task = self._request(API: api, params: params, requestTaskType: requestTaskType, configuration: configuration){
+            handler(data: $0.task.data, response: $0.response, error: $0.error)
+        }
+        
+        task?.resume()
         
         return task
     }

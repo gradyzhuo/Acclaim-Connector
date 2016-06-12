@@ -33,7 +33,7 @@ public class TextResponseAssistant : ResponseAssistant{
         let result = self.deserializer.deserialize(data)
         
         guard let text = result.outcome where result.error == nil else {
-            self.failedHandler?(data: data, error: result.error)
+            self.failedHandler?(assistant: self, data: data, error: result.error)
             return
         }
         
@@ -43,10 +43,11 @@ public class TextResponseAssistant : ResponseAssistant{
 }
 
 
-extension TextResponseAssistant : FailedHandleable {
-    public typealias FailedHandler = (data: NSData?, error: ErrorType?)->Void
+extension TextResponseAssistant : AssistantFailedHandleable {
+    public typealias AssistantType = TextResponseAssistant
+    public typealias FailedHandler = (assistant: AssistantType, data: NSData?, error: ErrorType?)->Void
     
-    public func failed(handle handler: FailedHandler) {
+    public func failed(assistantHandler handler: FailedHandler) {
         self.failedHandler = handler
     }
     

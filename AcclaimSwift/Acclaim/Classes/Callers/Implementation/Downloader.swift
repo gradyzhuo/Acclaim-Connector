@@ -9,8 +9,11 @@
 import Foundation
 
 public final class Downloader : APICaller, RecevingProcessHandlable {
-    public internal(set) var cancelledResumeData: NSData?
     public internal(set) var recevingProcessHandler: ProcessHandler?
+    
+    public init(API api: API, params: Parameters = [], resumeData: NSData? = nil, configuration: Acclaim.Configuration = Acclaim.configuration) {
+        super.init(API: api, params: params, taskType: .DownloadTask(resumeData: resumeData),configuration:configuration)
+    }
     
     public override func cancel() {
         self.cancel(handler: nil)
@@ -20,7 +23,6 @@ public final class Downloader : APICaller, RecevingProcessHandlable {
         if let sessionTask = self.sessionTask as? NSURLSessionDownloadTask, let handler = handler {
             sessionTask.cancelByProducingResumeData {[weak self] resumeData in
             
-                self?.cancelledResumeData = resumeData
                 sessionTask.data = (resumeData?.mutableCopy() as? NSMutableData) ?? NSMutableData()
                 handler(resumeData: resumeData)
             }
@@ -44,9 +46,8 @@ extension Acclaim {
     
     public static func download(API api:API, params:Parameters = [], method: HTTPMethod = .GET, resumeData: NSData? = nil, priority: QueuePriority = .Default)->Downloader{
         
-        let caller = Downloader(API: api, params: params)
+        let caller = Downloader(API: api, params: params, resumeData: resumeData)
         caller.configuration.priority = priority
-        caller.requestTaskType = RequestTaskType.DownloadTask(resumeData: resumeData)
         caller.resume()
 
         

@@ -18,17 +18,13 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
     public var identifier: String = String(NSDate().timeIntervalSince1970)
     public var configuration: Acclaim.Configuration = Acclaim.configuration
     
-    //看起來還是不能挷定method，要拆掉
-    public var requestTaskType: RequestTaskType
+    public var taskType: RequestTaskType
+    
+    //MARK: readonly variables
     
     /** (readonly) */
     public var isCancelled : Bool {
         return self.isBlockCanncelled && (self.sessionTask?.state == NSURLSessionTaskState.Canceling)
-    }
-    
-    internal var isBlockCanncelled : Bool {
-        let testResult = dispatch_block_testcancel(self.runningBlockInQueue)
-        return Bool(testResult)
     }
     
     /** (read only) */
@@ -37,9 +33,36 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
     public var running:Bool{
         return self.sessionTask?.state == NSURLSessionTaskState.Running
     }
+    
     /** (read only) */
+    public internal(set) var params:Parameters = []
+    /** (read only) */
+    public internal(set) var responseAssistants:[Assistant] = []
+    /** (read only) */
+    public internal(set) var failedResponseAssistants:[Assistant] = []
+    /** (read only) */
+    public internal(set) var cancelledAssistant: Assistant?
+    
+    /** (read only) */
+    public var allowedMIMEs: [MIMEType]{
+        
+        return self.responseAssistants.reduce([MIMEType]()) { (MIMEs, responseAssistant) -> [MIMEType] in
+            
+            if let MIMEAssistant = responseAssistant as? MIMESupport {
+                return MIMEs + MIMEAssistant.allowedMIMEs
+            }
+            
+            return MIMEs
+        }
+    }
     
     //MARK: internal variables
+    
+    internal var isBlockCanncelled : Bool {
+        let testResult = dispatch_block_testcancel(self.runningBlockInQueue)
+        return Bool(testResult)
+    }
+    
     internal var runningBlockInQueue:dispatch_block_t!{
         didSet{
             guard let block = self.runningBlockInQueue else{
@@ -52,39 +75,15 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
         }
     }
     
-    
-    public internal(set) var params:Parameters = []
-    
     internal var sessionTask:NSURLSessionTask?
+    internal lazy var queue: dispatch_queue_t = dispatch_queue_create(self.identifier, DISPATCH_QUEUE_SERIAL)
     
-    public internal(set) var responseAssistants:[Assistant] = []
-    public internal(set) var failedResponseAssistants:[Assistant] = []
-    public internal(set) var cancelledAssistant: Assistant?
-    
-    public var allowedMIMEs: [MIMEType]{
-        
-        return self.responseAssistants.reduce([MIMEType]()) { (MIMEs, responseAssistant) -> [MIMEType] in
-            
-            if let MIMEAssistant = responseAssistant as? MIMESupport {
-                return MIMEs + MIMEAssistant.allowedMIMEs
-            }
-
-            return MIMEs
-        }
-    }
-    
-    lazy var queue: dispatch_queue_t = dispatch_queue_create(self.identifier, DISPATCH_QUEUE_SERIAL)
-    
-    convenience init<T:ParameterValue>(API api:API, params:[String: T], connector: Connector = Acclaim.configuration.connector) {
-        let params = Parameters(dictionary: params)
-        self.init(API: api, params: params, connector: connector)
-    }
-    
-    required public init(API api:API, params:Parameters = [], connector: Connector = Acclaim.configuration.connector) {
+    //MARK: -
+    public init(API api:API, params:Parameters = [], taskType: RequestTaskType = .DataTask, configuration: Acclaim.Configuration = Acclaim.configuration) {
         self.api = api
         self.params = params
-        self.configuration.connector = connector
-        self.requestTaskType = .DataTask
+        self.configuration = configuration
+        self.taskType = taskType
         
         if let sharedRequestParameters = Acclaim.sharedRequestParameters {
             self.params.addParams(sharedRequestParameters)
@@ -92,6 +91,24 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
         
     }
     
+    
+    public convenience init<T:ParameterValue>(API api:API, paramsDict:[String:T] = [:], taskType: RequestTaskType = .DataTask, configuration: Acclaim.Configuration = Acclaim.configuration) {
+        
+        let params = Parameters(dictionary: paramsDict)
+        self.init(API: api, params:params, taskType:taskType, configuration: configuration)
+    }
+    
+    public convenience init<T:ParameterValue>(API api:API, paramsDict:[String:[T]] = [:], taskType: RequestTaskType = .DataTask, configuration: Acclaim.Configuration = Acclaim.configuration) {
+        let params = Parameters(dictionary: paramsDict)
+        self.init(API: api, params:params, taskType:taskType, configuration: configuration)
+    }
+    
+    public convenience init<T:ParameterValue>(API api:API, paramsDict:[String:[String:T]] = [:], taskType: RequestTaskType = .DataTask, configuration: Acclaim.Configuration = Acclaim.configuration) {
+        let params = Parameters(dictionary: paramsDict)
+        self.init(API: api, params:params, taskType:taskType, configuration: configuration)
+    }
+    
+    //MARK: -
     internal func run(connector connector: Connector){
         
         guard !self.running else {
@@ -99,7 +116,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
         }
         
         // set
-        self.sessionTask = connector._request(API: self.api, params: self.params, requestTaskType: self.requestTaskType, configuration: self.configuration) {[unowned self] (task, response, error) in
+        self.sessionTask = connector._request(API: self.api, params: self.params, requestTaskType: self.taskType, configuration: self.configuration) {[unowned self] (task, response, error) in
             
             let connection = Connection(originalRequest: task.originalRequest, currentRequest: task.currentRequest, response: response, requestMIMEs: self.allowedMIMEs, cached: false)
             let data = task.data.copy() as! NSData
@@ -110,6 +127,7 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
             
         }
         
+        self.sessionTask?.resume()
     }
 
     public func resume() {
@@ -163,10 +181,14 @@ public class APICaller : Caller, APISupport, ResponseSupport, Configurable, MIME
         
     }
     
+    //MARK: -
     deinit{
         ACDebugLog("APICaller : [\(unsafeAddressOf(self))] deinit")
     }
 }
+
+
+//MARK: - Response Handler
 
 extension APICaller {
     
@@ -215,17 +237,6 @@ extension APICaller {
             
             self.responseAssistants.forEach { receiver in
                 receiver.handle(data, connection: connection, error: error)
-                
-//                if let error = receiver.handle(data, connection: connection, error: error) {
-//                    
-//                    if let failedReceiver = receiver as? FailedHandleable where failedReceiver.failedHandler == nil {
-//                        self.handleFailedResponse(data: data, connection: connection, error: error)
-//                    }else{
-//                        self.handleFailedResponse(data: data, connection: connection, error: error)
-//                    }
-//                    
-//                    
-//                }
             }
         }
         

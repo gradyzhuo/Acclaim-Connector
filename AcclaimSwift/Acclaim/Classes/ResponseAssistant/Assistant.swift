@@ -24,7 +24,6 @@ public protocol ResponseAssistant : Assistant, MIMESupport {
     var deserializer: DeserializerType { set get }
     
     init(handler: Handler?)
-    
 }
 
 public enum ResponseAssistantType:Int {

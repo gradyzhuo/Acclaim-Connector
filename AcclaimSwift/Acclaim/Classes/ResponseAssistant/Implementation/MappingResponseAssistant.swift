@@ -34,7 +34,7 @@ MappingResponseAssistant<MappingObject:Mappable> : ResponseAssistant{
         let result = self.deserializer.deserialize(data)
         
         guard let mappingObject = result.outcome where result.error == nil else {
-            self.failedHandler?(data: data, error: result.error)
+            self.failedHandler?(assistant: self, data: data, error: result.error)
             return
         }
         
@@ -43,10 +43,11 @@ MappingResponseAssistant<MappingObject:Mappable> : ResponseAssistant{
     
 }
 
-extension MappingResponseAssistant : FailedHandleable {
-    public typealias FailedHandler = (data: NSData?, error: ErrorType?)->Void
+extension MappingResponseAssistant : AssistantFailedHandleable {
+    public typealias AssistantType = MappingResponseAssistant
+    public typealias FailedHandler = (assistant: AssistantType, data: NSData?, error: ErrorType?)->Void
     
-    public func failed(handle handler: FailedHandler) {
+    public func failed(assistantHandler handler: FailedHandler) {
         self.failedHandler = handler
     }
 }

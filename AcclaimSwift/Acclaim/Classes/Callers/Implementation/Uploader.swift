@@ -12,6 +12,10 @@ public final class Uploader : APICaller, SendingProcessHandlable {
     
     public internal(set) var sendingProcessHandler: ProcessHandler?
     
+    public init(API api: API, params: Parameters = [], resumeData: NSData? = nil, configuration: Acclaim.Configuration = Acclaim.configuration) {
+        super.init(API: api, params: params, taskType: .UploadTask, configuration:configuration)
+    }
+    
     public func observer(sendingProcess handler: ProcessHandler) -> Self {
         self.sendingProcessHandler = handler
         return self
@@ -49,7 +53,6 @@ extension Acclaim {
         
         let caller = Uploader(API: api, params: params)
         caller.configuration.priority = priority
-        caller.requestTaskType = RequestTaskType.UploadTask
         caller.resume()
         
         return caller

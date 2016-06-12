@@ -35,7 +35,7 @@ public class ImageResponseAssistant : ResponseAssistant{
         let result = self.deserializer.deserialize(data)
         
         guard let image = result.outcome where result.error == nil else {
-            self.failedHandler?(data: data, error: result.error)
+            self.failedHandler?(assistant: self, data: data, error: error)
             return
         }
         
@@ -44,10 +44,11 @@ public class ImageResponseAssistant : ResponseAssistant{
     
 }
 
-extension ImageResponseAssistant : FailedHandleable{
-    public typealias FailedHandler = (data: NSData?, error: ErrorType?)->Void
+extension ImageResponseAssistant : AssistantFailedHandleable{
+    public typealias AssistantType = ImageResponseAssistant
+    public typealias FailedHandler = (assistant: AssistantType, data: NSData?, error: ErrorType?)->Void
     
-    public func failed(handle failedHandler: FailedHandler) {
+    public func failed(assistantHandler failedHandler: FailedHandler) {
         self.failedHandler = failedHandler
     }
 }

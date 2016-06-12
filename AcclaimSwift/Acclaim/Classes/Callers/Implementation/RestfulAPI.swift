@@ -36,6 +36,16 @@ public final class RestfulAPI : APICaller {
         return self.handle(responseType: .Success, assistant: assistant)
     }
     
+    public func handleObject(keyPath keyPath:String = "", handler: AssistantType.Handler)->AssistantType{
+        let assistant:AssistantType
+        if keyPath == "" {
+            assistant = AssistantType(handler: handler)
+        }else{
+            assistant = AssistantType(forKeyPath: KeyPath(path: keyPath), handler: handler)
+        }
+        return self.handle(responseType: .Success, assistant: assistant)
+    }
+    
     public func handleMappingObject<T:Mappable>(mappingClass mappingClass: T.Type, option:NSJSONReadingOptions = .AllowFragments, handler:MappingResponseAssistant<T>.Handler)->MappingResponseAssistant<T>{
         return self.handle(responseType: .Success, assistant: MappingResponseAssistant<T>(options: option, handler: handler))
     }

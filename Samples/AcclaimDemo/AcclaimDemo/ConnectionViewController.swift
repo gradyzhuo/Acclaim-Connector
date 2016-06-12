@@ -19,11 +19,21 @@ class ConnectionViewController: UIViewController {
 //        
         let api:API = "https://upload.wikimedia.org/wikipedia/commons/2/28/Frangipani_rust_(caused_by_Coleosporium_plumeriae)_on_Plumeria_rubra.jpg"
         
+//        let streamAPI: API = "http://live.leanstream.co/ICRTFM?args=tunein_aac"
         let session = URLSession()
+//
+//        
+//        let service = NSNetService(domain: "live.leanstream.co", type: "_ipp._tcp", name: "")
+//        
+//        session.request(API: streamAPI, requestTaskType: .StreamTask(service: service)) { (data, response, error) in
+//            print("here")
+//        }
+        
         
         session.request(API: api) { (data, response, error) in
             print(UIImage(data: data!))
         }
+        
 
     }
 

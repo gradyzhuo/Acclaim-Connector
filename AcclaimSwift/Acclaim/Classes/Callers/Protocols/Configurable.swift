@@ -8,4 +8,5 @@
 
 public protocol Configurable {
     var configuration: Acclaim.Configuration { set get }
+    var taskType: RequestTaskType { set get }
 }
