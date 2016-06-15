@@ -8,10 +8,10 @@
 
 import Foundation
 
-typealias CarryingHandler = (data: NSData?, connection: Connection, error: NSError?) -> Void
+typealias CarryingHandler = (data: Data?, connection: Connection, error: NSError?) -> Void
 
 public class QueueCaller : Caller {
-    public var identifier: String = String(NSDate().timeIntervalSince1970)
+    public var identifier: String = String(Date().timeIntervalSince1970)
     public internal(set) var priority:QueuePriority = QueuePriority.Default
     public internal(set) var running:Bool  = false
     public internal(set) var isCancelled:Bool = false
@@ -27,15 +27,15 @@ public class QueueCaller : Caller {
     public internal(set) var waittingCallers: [Caller]
     public internal(set) var targetCaller: Caller
     
-    internal let group : dispatch_group_t = dispatch_group_create()
-    internal let queue : dispatch_queue_t
+    internal let group : DispatchGroup = DispatchGroup()
+    internal let queue : DispatchQueue
     
     public convenience init(targetCaller caller:Caller, waitting callers: Caller...){
         self.init(targetCaller: caller, waitting: callers)
     }
     
     public init(targetCaller caller:Caller, waitting callers: [Caller]){
-        self.queue = dispatch_queue_create(identifier, DISPATCH_QUEUE_SERIAL)
+        self.queue = DispatchQueue(label: identifier, attributes: DispatchQueueAttributes.serial)
         self.targetCaller = caller
         self.waittingCallers = callers
     }
@@ -71,7 +71,7 @@ public class QueueCaller : Caller {
         
     }
     
-    public func setCarryingHandler(forWattingIdentifier identifier: String, handler: (data: NSData?, connection: Connection, error: NSError?) -> Void){
+    public func setCarryingHandler(forWattingIdentifier identifier: String, handler: (data: Data?, connection: Connection, error: NSError?) -> Void){
         self.carryingHandlers[identifier] = handler
     }
     

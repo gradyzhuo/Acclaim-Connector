@@ -25,7 +25,7 @@ public class Acclaim {
          */
         public internal(set) var connector: Connector
         public internal(set) var hostURLInfoKey: String
-        public internal(set) var bundleForHostURLInfo: NSBundle
+        public internal(set) var bundleForHostURLInfo: Bundle
         public internal(set) var allowsCellularAccess: Bool
         
         /**
@@ -41,9 +41,9 @@ public class Acclaim {
          */
         public internal(set) var priority:QueuePriority = .Default
         
-        internal var cacheStoragePolicy:CacheStoragePolicy = .allowedInMemoryOnly(renewRule: .NotRenewed)
+        internal var cacheStoragePolicy:CacheStoragePolicy = .allowedInMemoryOnly(renewRule: .notRenewed)
         
-        public init(connector: Connector, hostURLInfoKey key: String, bundleForHostURLInfo bundle: NSBundle, allowsCellularAccess cellularAccess: Bool = true){
+        public init(connector: Connector, hostURLInfoKey key: String, bundleForHostURLInfo bundle: Bundle, allowsCellularAccess cellularAccess: Bool = true){
             self.connector = connector
             self.hostURLInfoKey = key
             self.bundleForHostURLInfo = bundle
@@ -52,7 +52,7 @@ public class Acclaim {
         
         public static var defaultConfiguration: Acclaim.Configuration = {
             let defaultKey = Acclaim.Configuration.defaultHostURLInfoKey
-            return Acclaim.Configuration(connector: URLSession(), hostURLInfoKey: defaultKey, bundleForHostURLInfo: NSBundle.main())
+            return Acclaim.Configuration(connector: URLSession(), hostURLInfoKey: defaultKey, bundleForHostURLInfo: Bundle.main())
         }()
         
     }
@@ -67,39 +67,39 @@ public class Acclaim {
     internal static var running:[String:Caller] = [:]
 //    internal static var sessionTask: [Caller:NSURLSessionTask] = [:]
     
-    internal static func addRunningCaller(caller: Caller){
+    internal static func add(runningCaller caller: Caller){
         self.running[caller.identifier] = caller
     }
     
-    internal static func removeRunningCaller(caller: Caller?){
+    internal static func remove(runningCaller caller: Caller?){
 
         if let caller = caller  where self.running.keys.contains(caller.identifier){
             self.running.removeValue(forKey: caller.identifier)
         }
         
-        ACDebugLog(log: "removeRunningCallerByIdentifier:\(caller?.identifier)")
+        Debug(log: "removeRunningCallerByIdentifier:\(caller?.identifier)")
         
         defer{
-            ACDebugLog(log: "caller:\(caller)")
-            ACDebugLog(log: "count of running caller:\(Acclaim.running.count)")
+            Debug(log: "caller:\(caller)")
+            Debug(log: "count of running caller:\(Acclaim.running.count)")
         }
         
     }
 
     
-    internal static var sharedURLCache: NSURLCache{
-        return NSURLCache.shared()
+    internal static var sharedURLCache: URLCache{
+        return URLCache.shared()
     }
     
-    internal static func cachedResponse(request: NSURLRequest) -> NSCachedURLResponse?{
+    internal static func cachedResponse(for request: URLRequest) -> CachedURLResponse?{
         return Acclaim.sharedURLCache.cachedResponse(for: request)
     }
 
-    internal static func storeCachedResponse(cachedResponse: NSCachedURLResponse, forRequest request: NSURLRequest){
+    internal static func store(cachedResponse: CachedURLResponse, forRequest request: URLRequest){
         Acclaim.sharedURLCache.storeCachedResponse(cachedResponse, for: request)
     }
     
-    internal static func removeAllCachedResponsesSinceDate(date: NSDate){
+    internal static func removeAllCachedResponsesSinceDate(_ date: Date){
         Acclaim.sharedURLCache.removeCachedResponses(since: date)
     }
     
@@ -108,7 +108,7 @@ public class Acclaim {
     }
     
     
-    internal static func removeCachedResponse(request: NSURLRequest){
+    internal static func removeCachedResponse(_ request: URLRequest){
         return Acclaim.sharedURLCache.removeCachedResponse(for: request)
     }
     
@@ -116,13 +116,13 @@ public class Acclaim {
 
 extension Acclaim {
     
-    public static func hostURLFromInfoDictionary()->NSURL? {
+    public static func hostURLFromInfoDictionary()->URL? {
         
         guard let urlStr = self.configuration.bundleForHostURLInfo.infoDictionary?[Acclaim.Configuration.defaultHostURLInfoKey] as? String else{
             return nil
         }
         
-        guard let url = NSURL(string: urlStr) else {
+        guard let url = URL(string: urlStr) else {
             return nil
         }
         
@@ -131,8 +131,14 @@ extension Acclaim {
     
 }
 
-internal func ACDebugLog(log:AnyObject){
+internal func Debug(log:AnyObject){
     #if DEBUG
-    print("[DEBUG]: \(log)")
+    print("[Log]: \(log)")
+    #endif
+}
+
+internal func Debug(crash:AnyObject){
+    #if DEBUG
+        print("[Crash]: \(crash)")
     #endif
 }

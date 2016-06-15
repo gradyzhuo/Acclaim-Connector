@@ -10,13 +10,13 @@ import Foundation
 
 
 public struct JSONDeserializer : Deserializer, KeyPathParser{
-    internal var options: NSJSONReadingOptions
+    internal var options: JSONSerialization.ReadingOptions
     public typealias Outcome = AnyObject
 
-    public func deserialize(data: NSData?) -> (outcome: Outcome?, error: NSError?) {
+    public func deserialize(data: Data?) -> (outcome: Outcome?, error: NSError?) {
         
         do {
-            let json = try NSJSONSerialization.jsonObject(with: data ?? NSData(), options: self.options)
+            let json = try JSONSerialization.jsonObject(with: data ?? Data(), options: self.options)
             return (json, nil)
         } catch let error as NSError {
             return (nil, error)
@@ -25,10 +25,10 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
     }
     
     //TIP: Only that simply deserializing with keypath. This function will not be used by 'ResponseAssistant'.
-    public func deserialize(data: NSData?, keyPath:KeyPath) -> (outcome: Outcome?, error: NSError?) {
+    public func deserialize(data: Data?, keyPath:KeyPath) -> (outcome: Outcome?, error: NSError?) {
         
         do {
-            let json = try NSJSONSerialization.jsonObject(with: data ?? NSData(), options: self.options)
+            let json = try JSONSerialization.jsonObject(with: data ?? Data(), options: self.options)
             let keyPathJSON:AnyObject? = JSONDeserializer.parse(value: json, forKeyPath: keyPath)
             return (keyPathJSON, nil)
             
@@ -43,7 +43,7 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
         self.options = .allowFragments
     }
     
-    public init(options: NSJSONReadingOptions){
+    public init(options: JSONSerialization.ReadingOptions){
         self.options = options
     }
     
@@ -59,7 +59,7 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
             }else if let dict = value as? [String:AnyObject] {
                 return dict.count
             }else if let strValue = value as? String{
-                return strValue.lengthOfBytes(using: NSUTF8StringEncoding)
+                return strValue.lengthOfBytes(using: String.Encoding.utf8)
             }
             return 1
         }
@@ -76,7 +76,7 @@ public struct JSONDeserializer : Deserializer, KeyPathParser{
             }else if let dict = value as? [String:AnyObject] {
                 return dict.keys.map{ $0 }.indices.description
             }else if let strValue = value as? String{
-                return (strValue.startIndex..<strValue.endIndex).description
+                return "\(strValue.characters.indices)"
             }else if let intValue = value as? Int {
                 return (0..<intValue).description
             }

@@ -22,7 +22,7 @@ public struct FailedResponseAssistant<DeserializerType:Deserializer> : ResponseA
         self.handler = handler
     }
     
-    public func handle(data: NSData?, connection: Connection, error: NSError?) {
+    public func handle(data: Data?, connection: Connection, error: NSError?) {
         
         let result = self.deserializer.deserialize(data: data)
         
@@ -30,7 +30,7 @@ public struct FailedResponseAssistant<DeserializerType:Deserializer> : ResponseA
             handler(outcome: result.outcome, connection: connection, error: error)
         }
         
-        if let httpResponse = connection.response as? NSHTTPURLResponse,
+        if let httpResponse = connection.response as? HTTPURLResponse,
             let handler = self.handlers[httpResponse.statusCode]{
             handler(outcome: result.outcome, connection: connection, error: error)
         }

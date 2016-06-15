@@ -9,25 +9,25 @@
 import Foundation
 
 public struct JSONParametersSerializer : ParametersSerializer {
-    public var option: NSJSONWritingOptions
+    public var option: JSONSerialization.WritingOptions
     
-    public init(option: NSJSONWritingOptions = .prettyPrinted){
+    public init(option: JSONSerialization.WritingOptions = .prettyPrinted){
         self.option = option
     }
     
-    public func serialize(params: Parameters) -> NSData? {
+    public func serialize(params: Parameters) -> Data? {
         
         var JSONObject = [String:AnyObject]()
         params.forEach {(parameter) -> Void in
             
             if let parameter = parameter as? FormParameter {
                 switch parameter {
-                case .StringValue(let key, let value):
+                case .stringValue(let key, let value):
                     JSONObject[key] = value
-                case .ArrayValue(let key, let arrayValue):
+                case .arrayValue(let key, let arrayValue):
                     let value = arrayValue.map{ $0 }
                     JSONObject[key] = value
-                case .DictionaryValue(let key, let dictionaryValue):
+                case .dictionaryValue(let key, let dictionaryValue):
                     let value = dictionaryValue.reduce([String:AnyObject](), combine: { (dict, element:(key: String, value: String)) -> [String:AnyObject] in
                         var dictValue = dict
                         dictValue[element.key] = element.value
@@ -41,7 +41,7 @@ public struct JSONParametersSerializer : ParametersSerializer {
         }
         
         
-        return try? NSJSONSerialization.data(withJSONObject: JSONObject, options: self.option)
+        return try? JSONSerialization.data(withJSONObject: JSONObject, options: self.option)
     }
     
 }

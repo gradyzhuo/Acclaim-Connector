@@ -30,7 +30,7 @@ public class ImageResponseAssistant : ResponseAssistant{
         self.deserializer = DeserializerType(scale: scale)
     }
     
-    public func handle(data: NSData?, connection: Connection, error: NSError?) {
+    public func handle(data: Data?, connection: Connection, error: NSError?) {
         
         let result = self.deserializer.deserialize(data: data)
         
@@ -46,7 +46,7 @@ public class ImageResponseAssistant : ResponseAssistant{
 
 extension ImageResponseAssistant : AssistantFailedHandleable{
     public typealias AssistantType = ImageResponseAssistant
-    public typealias FailedHandler = (assistant: AssistantType, data: NSData?, error: ErrorProtocol?)->Void
+    public typealias FailedHandler = (assistant: AssistantType, data: Data?, error: ErrorProtocol?)->Void
     
     public func failed(assistantHandler failedHandler: FailedHandler) {
         self.failedHandler = failedHandler

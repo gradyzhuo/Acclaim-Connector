@@ -11,7 +11,6 @@ public protocol Caller : class {
     var running:Bool           { get }
     var isCancelled: Bool      { get }
     
-    func suspend()
     func resume()
     func cancel()
 }

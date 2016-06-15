@@ -19,22 +19,22 @@ internal class URLSessionDelegate : NSObject {
     }
     
     deinit{
-        ACDebugLog(log: "URLSessionDelegate : [\(unsafeAddress(of: self))] deinit")
+        Debug(log: "URLSessionDelegate : [\(unsafeAddress(of: self))] deinit")
     }
     
 }
 
-extension URLSessionDelegate : NSURLSessionDelegate {
-    internal func URLSession(session: NSURLSession, task: NSURLSessionTask, didCompleteWithError error: NSError?) {
+extension URLSessionDelegate : Foundation.URLSessionDelegate {
+    internal func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: NSError?) {
         
         task.completionHandler?(task: task, response: task.response, error: error)
         task.removeAllAssociatedObjects()
     }
 }
 
-extension URLSessionDelegate : NSURLSessionTaskDelegate {
+extension URLSessionDelegate : URLSessionTaskDelegate {
     
-    internal func urlSession(_ session: NSURLSession, task: NSURLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+    internal func urlSession(_ session: Foundation.URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         
         if let processableCaller = task.apiCaller as? SendingProcessHandlable {
             let handler = processableCaller.sendingProcessHandler
@@ -44,28 +44,28 @@ extension URLSessionDelegate : NSURLSessionTaskDelegate {
         
     }
     
-    internal func urlSession(_ session: NSURLSession, task: NSURLSessionTask, willPerformHTTPRedirection response: NSHTTPURLResponse, newRequest request: NSURLRequest, completionHandler: (NSURLRequest?) -> Void) {
+    internal func urlSession(_ session: Foundation.URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest, completionHandler: (URLRequest?) -> Void) {
         completionHandler(request)
     }
     
-    internal func urlSession(_ session: NSURLSession, task: NSURLSessionTask, needNewBodyStream completionHandler: (NSInputStream?) -> Void) {
+    internal func urlSession(_ session: Foundation.URLSession, task: URLSessionTask, needNewBodyStream completionHandler: (InputStream?) -> Void) {
         //FIXME: 還沒有BodyStream
         completionHandler(nil)
     }
     
-    internal func urlSession(_ session: NSURLSession, task: NSURLSessionTask, didReceive challenge: NSURLAuthenticationChallenge, completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
+    internal func urlSession(_ session: Foundation.URLSession, task: URLSessionTask, didReceive challenge: URLAuthenticationChallenge, completionHandler: (Foundation.URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         completionHandler(.useCredential, nil)
     }
     
 }
 
-extension URLSessionDelegate : NSURLSessionDataDelegate {
+extension URLSessionDelegate : URLSessionDataDelegate {
     
-    internal func URLSession(session: NSURLSession, didReceiveChallenge challenge: NSURLAuthenticationChallenge, completionHandler: (NSURLSessionAuthChallengeDisposition, NSURLCredential?) -> Void) {
+    internal func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: (Foundation.URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
         completionHandler(.useCredential, challenge.proposedCredential)
     }
     
-    internal func urlSession(_ session: NSURLSession, dataTask: NSURLSessionDataTask, didReceive data: NSData) {
+    internal func urlSession(_ session: Foundation.URLSession, dataTask: URLSessionDataTask, didReceive data: Data) {
         
         dataTask.data.append(data)
         
@@ -74,13 +74,13 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
         
         if let processableCaller = dataTask.apiCaller as? RecevingProcessHandlable {
             let handler = processableCaller.recevingProcessHandler
-            handler?(bytes: Int64(data.length), totalBytes: countOfBytesReceived, totalBytesExpected: countOfBytesExpectedToReceive)
+            handler?(bytes: Int64(data.count), totalBytes: countOfBytesReceived, totalBytesExpected: countOfBytesExpectedToReceive)
         }
         
         
     }
     
-    internal func urlSession(_ session: NSURLSession, dataTask: NSURLSessionDataTask, didReceive response: NSURLResponse, completionHandler: (NSURLSessionResponseDisposition) -> Void) {
+    internal func urlSession(_ session: Foundation.URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: (Foundation.URLSession.ResponseDisposition) -> Void) {
         
         guard let MIME = response.mimeType else{
             completionHandler(.cancel)
@@ -113,7 +113,7 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
         
     }
     
-    internal func urlSession(_ session: NSURLSession, dataTask: NSURLSessionDataTask, didBecome downloadTask: NSURLSessionDownloadTask) {
+    internal func urlSession(_ session: Foundation.URLSession, dataTask: URLSessionDataTask, didBecome downloadTask: URLSessionDownloadTask) {
         
         downloadTask.apiCaller = dataTask.apiCaller
         downloadTask.completionHandler = dataTask.completionHandler
@@ -124,26 +124,28 @@ extension URLSessionDelegate : NSURLSessionDataDelegate {
         print("here didBecomeDownloadTask", self.session)
     }
     
-    internal func urlSession(_ session: NSURLSession, dataTask: NSURLSessionDataTask, didBecome streamTask: NSURLSessionStreamTask) {
+    internal func urlSession(_ session: Foundation.URLSession, dataTask: URLSessionDataTask, didBecome streamTask: URLSessionStreamTask) {
         
     }
     
-    internal func urlSession(_ session: NSURLSession, dataTask: NSURLSessionDataTask, willCacheResponse proposedResponse: NSCachedURLResponse, completionHandler: (NSCachedURLResponse?) -> Void) {
+    internal func urlSession(_ session: Foundation.URLSession, dataTask: URLSessionDataTask, willCacheResponse proposedResponse: CachedURLResponse, completionHandler: (CachedURLResponse?) -> Void) {
         completionHandler(proposedResponse)
     }
     
 }
 
-extension URLSessionDelegate : NSURLSessionDownloadDelegate {
+extension URLSessionDelegate : URLSessionDownloadDelegate {
     
-    internal func urlSession(_ session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didFinishDownloadingTo location: NSURL) {
-        
-        let data = NSMutableData(contentsOf: location)
-        downloadTask.data = data ?? NSMutableData()
-        
+    internal func urlSession(_ session: Foundation.URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        do{
+            let data = try Data(contentsOf: location)
+            downloadTask.data = data ?? Data()
+        }catch{
+            Debug(crash: "[Crashed]: Data from \(location)")
+        }
     }
     
-    internal func urlSession(_ session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
+    internal func urlSession(_ session: Foundation.URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
         
         if let processableCaller = downloadTask.apiCaller as? RecevingProcessHandlable {
             let handler = processableCaller.recevingProcessHandler
@@ -151,7 +153,7 @@ extension URLSessionDelegate : NSURLSessionDownloadDelegate {
         }
     }
     
-    internal func urlSession(_ session: NSURLSession, downloadTask: NSURLSessionDownloadTask, didResumeAtOffset fileOffset: Int64, expectedTotalBytes: Int64) {
+    internal func urlSession(_ session: Foundation.URLSession, downloadTask: URLSessionDownloadTask, didResumeAtOffset fileOffset: Int64, expectedTotalBytes: Int64) {
         print("didResumeAtOffset:\(fileOffset)")
     }
     

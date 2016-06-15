@@ -10,23 +10,23 @@ import Foundation
 
 public struct QueryStringParametersSerializer : ParametersSerializer {
     
-    public func serialize(params: Parameters) -> NSData? {
+    public func serialize(params: Parameters) -> Data? {
         
-        let components = NSURLComponents()
-        components.queryItems = [NSURLQueryItem]()
+        var components = URLComponents()
+        components.queryItems = [URLQueryItem]()
         
         params.forEach {(parameter) -> Void in
             
             if let parameter = parameter as? FormParameter {
                 switch parameter {
-                case .StringValue(let key, let value):
-                    components.queryItems?.append(NSURLQueryItem(name: key, value: value))
-                case .ArrayValue(let key, let arrayValue):
-                    let queryItems = arrayValue.map{ NSURLQueryItem(name: "\(key)[]", value: $0) }
+                case .stringValue(let key, let value):
+                    components.queryItems?.append(URLQueryItem(name: key, value: value))
+                case .arrayValue(let key, let arrayValue):
+                    let queryItems = arrayValue.map{ URLQueryItem(name: "\(key)[]", value: $0) }
                     components.queryItems?.append(contentsOf: queryItems)
-                case .DictionaryValue(let key, let dictionaryValue):
+                case .dictionaryValue(let key, let dictionaryValue):
                     dictionaryValue.forEach { (element:(key:String, value:String)) in
-                        components.queryItems?.append(NSURLQueryItem(name: "\(key)[\(element.key)]", value: element.value))
+                        components.queryItems?.append(URLQueryItem(name: "\(key)[\(element.key)]", value: element.value))
                     }
                 }
             }
@@ -36,6 +36,6 @@ public struct QueryStringParametersSerializer : ParametersSerializer {
         
         let query:String? = components.query
         
-        return query?.data(using: NSUTF8StringEncoding)
+        return query?.data(using: String.Encoding.utf8)
     }
 }

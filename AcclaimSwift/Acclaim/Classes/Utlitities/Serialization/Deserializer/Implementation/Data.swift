@@ -9,9 +9,9 @@
 import Foundation
 
 public struct DataDeserializer : Deserializer {
-    public typealias Outcome = NSData
+    public typealias Outcome = Data
     
-    public func deserialize(data: NSData?) -> (outcome: Outcome?, error: NSError?) {
+    public func deserialize(data: Data?) -> (outcome: Outcome?, error: NSError?) {
         return (data, nil)
     }
     

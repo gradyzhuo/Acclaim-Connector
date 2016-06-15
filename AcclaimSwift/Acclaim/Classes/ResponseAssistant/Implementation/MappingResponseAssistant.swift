@@ -24,12 +24,12 @@ MappingResponseAssistant<MappingObject:Mappable> : ResponseAssistant{
         self.handler = handler
     }
     
-    public init(options: NSJSONReadingOptions, handler: Handler){
+    public init(options: JSONSerialization.ReadingOptions, handler: Handler){
         self.deserializer = JSONMappingDeserializer<MappingObject>(options: options)
         self.handler = handler
     }
     
-    public func handle(data: NSData?, connection: Connection, error: NSError?) {
+    public func handle(data: Data?, connection: Connection, error: NSError?) {
         
         let result = self.deserializer.deserialize(data: data)
         
@@ -45,7 +45,7 @@ MappingResponseAssistant<MappingObject:Mappable> : ResponseAssistant{
 
 extension MappingResponseAssistant : AssistantFailedHandleable {
     public typealias AssistantType = MappingResponseAssistant
-    public typealias FailedHandler = (assistant: AssistantType, data: NSData?, error: ErrorProtocol?)->Void
+    public typealias FailedHandler = (assistant: AssistantType, data: Data?, error: ErrorProtocol?)->Void
     
     public func failed(assistantHandler handler: FailedHandler) {
         self.failedHandler = handler

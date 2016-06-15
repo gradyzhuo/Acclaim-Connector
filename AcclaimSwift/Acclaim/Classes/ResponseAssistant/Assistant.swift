@@ -13,7 +13,7 @@ public protocol MIMESupport {
 }
 
 public protocol Assistant{
-    func handle(data:NSData?, connection: Connection, error:NSError?)
+    func handle(data:Data?, connection: Connection, error:NSError?)
 }
 
 public protocol ResponseAssistant : Assistant, MIMESupport {
@@ -27,6 +27,6 @@ public protocol ResponseAssistant : Assistant, MIMESupport {
 }
 
 public enum ResponseAssistantType:Int {
-    case Success
-    case Failed
+    case success
+    case failed
 }

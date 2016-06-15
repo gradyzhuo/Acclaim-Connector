@@ -23,12 +23,12 @@ public class TextResponseAssistant : ResponseAssistant{
         self.handler = handler
     }
     
-    public init(encoding: NSStringEncoding, handler: Handler) {
+    public init(encoding: String.Encoding, handler: Handler) {
         self.deserializer = TextDeserializer(encoding: encoding)
         self.handler = handler
     }
     
-    public func handle(data: NSData?, connection: Connection, error: NSError?) {
+    public func handle(data: Data?, connection: Connection, error: NSError?) {
         
         let result = self.deserializer.deserialize(data: data)
         
@@ -45,7 +45,7 @@ public class TextResponseAssistant : ResponseAssistant{
 
 extension TextResponseAssistant : AssistantFailedHandleable {
     public typealias AssistantType = TextResponseAssistant
-    public typealias FailedHandler = (assistant: AssistantType, data: NSData?, error: ErrorProtocol?)->Void
+    public typealias FailedHandler = (assistant: AssistantType, data: Data?, error: ErrorProtocol?)->Void
     
     public func failed(assistantHandler handler: FailedHandler) {
         self.failedHandler = handler

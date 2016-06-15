@@ -9,24 +9,24 @@
 import Foundation
 
 internal protocol _Connection {
-    associatedtype ResponseType:NSURLResponse
+    associatedtype ResponseType:URLResponse
     
-    var currentRequest: NSURLRequest! { get }
-    var originalRequest: NSURLRequest! { get }
+    var currentRequest: URLRequest! { get }
+    var originalRequest: URLRequest! { get }
     var requestMIMEs: [MIMEType] { get }
     var responseMIME: MIMEType? { get }
     
     var response: Self.ResponseType? { get }
     var cached: Bool { get }
     
-    init(originalRequest request: NSURLRequest?, currentRequest:NSURLRequest?, response: ResponseType?, requestMIMEs:[MIMEType], cached: Bool)
+    init(originalRequest request: URLRequest?, currentRequest:URLRequest?, response: ResponseType?, requestMIMEs:[MIMEType], cached: Bool)
 }
 
 public struct Connection: _Connection {
-    public typealias ResponseType = NSURLResponse
+    public typealias ResponseType = URLResponse
     
-    public internal(set) var currentRequest: NSURLRequest!
-    public internal(set) var originalRequest: NSURLRequest!
+    public internal(set) var currentRequest: URLRequest!
+    public internal(set) var originalRequest: URLRequest!
     
     public internal(set) var response: ResponseType?
     public internal(set) var cached: Bool
@@ -34,7 +34,7 @@ public struct Connection: _Connection {
     public internal(set) var requestMIMEs: [MIMEType]
     public internal(set) var responseMIME: MIMEType?
     
-    internal init(originalRequest request: NSURLRequest?, currentRequest:NSURLRequest?, response: ResponseType?, requestMIMEs:[MIMEType], cached: Bool) {
+    internal init(originalRequest request: URLRequest?, currentRequest:URLRequest?, response: ResponseType?, requestMIMEs:[MIMEType], cached: Bool) {
         self.originalRequest = request
         self.currentRequest = request
         

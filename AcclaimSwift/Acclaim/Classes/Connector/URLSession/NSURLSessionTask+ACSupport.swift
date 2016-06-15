@@ -14,7 +14,7 @@ private let kAPICaller = unsafeAddress(of: "kAPICaller")
 private let kCompletionHandler = unsafeAddress(of: "kCompletionHandler")
 private let kData = unsafeAddress(of: "kData")
 
-extension NSURLSessionTask {
+extension URLSessionTask {
     typealias ResponseHandlerType = Handler<TaskResponseHandler>
     
     internal var apiCaller: Caller? {
@@ -42,15 +42,15 @@ extension NSURLSessionTask {
     }
     
     
-    internal var data:NSMutableData {
+    internal var data:Data {
         
         set{
             objc_setAssociatedObject(self, kData, newValue, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
         }
         
         get{
-            guard let data = objc_getAssociatedObject(self, kData) as? NSMutableData else {
-                self.data = NSMutableData()
+            guard let data = objc_getAssociatedObject(self, kData) as? Data else {
+                self.data = Data()
                 return self.data
             }
             return data

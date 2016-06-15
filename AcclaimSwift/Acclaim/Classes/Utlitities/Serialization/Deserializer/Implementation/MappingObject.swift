@@ -16,9 +16,9 @@ public protocol Mappable:class {
 }
 
 public struct JSONMappingDeserializer<Outcome:Mappable> : Deserializer {
-    internal var options: NSJSONReadingOptions
+    internal var options: JSONSerialization.ReadingOptions
     
-    public func deserialize(data: NSData?) -> (outcome: Outcome?, error: NSError?) {
+    public func deserialize(data: Data?) -> (outcome: Outcome?, error: NSError?) {
         
         func mappingObjectMake<T: Mappable>(dataObject: AnyObject!)->T {
             
@@ -42,7 +42,7 @@ public struct JSONMappingDeserializer<Outcome:Mappable> : Deserializer {
         self.options = .allowFragments
     }
     
-    public init(options: NSJSONReadingOptions){
+    public init(options: JSONSerialization.ReadingOptions){
         self.options = options
     }
 }

@@ -9,5 +9,5 @@
 public protocol CancelSupport:class {
     var cancelledAssistant: Assistant? { get }
     
-    func cancelled(handler:ResumeDataResponseAssistant.Handler)->Self
+    func cancelled(_ handler:ResumeDataResponseAssistant.Handler)->Self
 }

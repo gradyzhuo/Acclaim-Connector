@@ -9,16 +9,16 @@
 import Foundation
 
 public enum FormParameter : Parameter, CustomStringConvertible{
-    case StringValue(key: String, value: String)
-    case ArrayValue(key: String, value: [String])
-    case DictionaryValue(key: String, value: [String:String])
+    case stringValue(key: String, value: String)
+    case arrayValue(key: String, value: [String])
+    case dictionaryValue(key: String, value: [String:String])
     
     public init<T:ParameterValue>(key: String, value: T){
-        self = FormParameter.StringValue(key: key, value: String(value))
+        self = FormParameter.stringValue(key: key, value: String(value))
     }
     
     public init<T:ParameterValue>(key: String, value: [T]){
-        self = FormParameter.ArrayValue(key: key, value: value.map { String($0) })
+        self = FormParameter.arrayValue(key: key, value: value.map { String($0) })
     }
     
     public init<T:ParameterValue>(key: String, value: [String:T]){
@@ -29,17 +29,17 @@ public enum FormParameter : Parameter, CustomStringConvertible{
             return value
         }
         
-        self = FormParameter.DictionaryValue(key: key, value: dictionValue )
+        self = FormParameter.dictionaryValue(key: key, value: dictionValue )
         
     }
     
     public var key:String{
         switch self {
-        case .StringValue(let key, _):
+        case .stringValue(let key, _):
             return key
-        case .ArrayValue(let key, _):
+        case .arrayValue(let key, _):
             return key
-        case .DictionaryValue(let key, _):
+        case .dictionaryValue(let key, _):
             return key
         }
     }
@@ -48,11 +48,11 @@ public enum FormParameter : Parameter, CustomStringConvertible{
     public var description: String{
         
         switch self {
-        case .StringValue(let key, let value):
+        case .stringValue(let key, let value):
             return "StringValue(\(key):\(value))"
-        case .ArrayValue(let key, let value):
+        case .arrayValue(let key, let value):
             return "ArrayValue(\(key):\(value.joined(separator: ",")))"
-        case .DictionaryValue(let key, let value):
+        case .dictionaryValue(let key, let value):
             let valueString = value.map({ (element) -> String in
                 let key = "\(element.0)"
                 let value = "\(element.1)"

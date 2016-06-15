@@ -66,7 +66,7 @@ extension MIMEType {
         return MIMEType(type: "video", subtype: subtype)
     }
     
-    public static let All: MIMEType = MIMEType.All(subtype: "*")
+    public static let All: MIMEType = .All(subtype: "*")
     
     public static let Text: MIMEType = .Text(subtype: "*")
     public static let Multipart: MIMEType = .Multipart(subtype: "*")

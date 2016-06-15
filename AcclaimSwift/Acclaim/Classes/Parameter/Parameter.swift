@@ -50,24 +50,24 @@ extension RangeReplaceableCollection where Iterator.Element == Parameter {
         return index
     }
     
-    public func indexOf(param: Element)->Self.Index?{
+    public func indexOf(_ param: Element)->Self.Index?{
         let index = self.index { $0.key == param.key }
         return index
     }
     
-    public func contains(param: Element) -> Bool {
+    public func contains(_ param: Element) -> Bool {
         return self.contains{ $0.key == param.key }
     }
     
-    public mutating func add(param:Element){
-        if !self.contains(param: param) {
+    public mutating func add(_ param:Element){
+        if !self.contains(param) {
             self.append(param)
         }
     }
     
-    public mutating func addParams(params:[Element]){
+    public mutating func add(params: [Element]){
         params.forEach {
-            if !self.contains(param: $0) {
+            if !self.contains($0) {
                 self.append($0)
             }
         }
@@ -80,7 +80,7 @@ extension RangeReplaceableCollection where Iterator.Element == Parameter {
         return nil
     }
     
-    internal func serialize(serializer: ParametersSerializer) -> NSData? {
+    internal func serialize(by serializer: ParametersSerializer) -> NSData? {
         if let parameters = self as? [Element] {
             return serializer.serialize(params: parameters)
         }
@@ -101,7 +101,7 @@ extension RangeReplaceableCollection where Iterator.Element == Parameter {
      */
     internal mutating func add<T:ParameterValue>(parameterValue value: T, forKey key:String)->Element{
         let param = FormParameter(key: key, value: value)
-        self.add(param: param)
+        self.add(param)
         return param
     }
     
@@ -136,7 +136,7 @@ extension RangeReplaceableCollection where Iterator.Element == Parameter {
      */
     public mutating func add<T:ParameterValue>(array value: [T], forKey key:String)->Parameter{
         let param = FormParameter(key: key, value: value)
-        self.add(param: param)
+        self.add(param)
         return param
     }
     
@@ -149,21 +149,21 @@ extension RangeReplaceableCollection where Iterator.Element == Parameter {
      */
     public mutating func add<T:ParameterValue>(dictionary value: [String:T], forKey key:String)->Parameter{
         let param = FormParameter(key: key, value: value)
-        self.add(param: param)
+        self.add(param)
         return param
     }
     
-    public mutating func add(data value: NSData?, forKey key: String, fileName: String = "", MIME: MIMEType = .All)->Parameter{
-        let param = FormDataParameter(key: key, data: value ?? NSData(), fileName: fileName, MIME: MIME)
-        self.add(param: param)
+    public mutating func add(data value: Data?, forKey key: String, fileName: String = "", MIME: MIMEType = .All)->Parameter{
+        let param = FormDataParameter(key: key, data: value ?? Data(), fileName: fileName, MIME: MIME)
+        self.add(param)
         return param
     }
     
     public mutating func add(image value: UIImage?, decoder: ImageDecoder, forKey key: String)->Parameter{
-        let data = decoder.decode(image: value) ?? NSData()
-        let filename = String(format: "%.2f.%@", NSDate().timeIntervalSince1970, decoder.fileExtension)
+        let data = decoder.decode(image: value) ?? Data()
+        let filename = String(format: "%.2f.%@", Date().timeIntervalSince1970, decoder.fileExtension)
         let param = FormDataParameter(key: key, data: data, fileName: filename, MIME: decoder.MIME)
-        self.add(param: param)
+        self.add(param)
         return param
     }
     
@@ -172,35 +172,35 @@ extension RangeReplaceableCollection where Iterator.Element == Parameter {
 
 /// ImageDecoder
 public enum ImageDecoder {
-    case JPEG(quality: CGFloat)
-    case PNG
+    case jpeg(quality: CGFloat)
+    case png
     
     internal var MIME: MIMEType {
         switch self {
-        case .JPEG:
+        case .jpeg:
             return .Image(subtype: "jpeg")
-        case .PNG:
+        case .png:
             return .Image(subtype: "png")
         }
     }
     
     internal var fileExtension: String {
         switch self {
-        case .JPEG:
+        case .jpeg:
             return "jpg"
-        case .PNG:
+        case .png:
             return "png"
         }
     }
     
-    internal func decode(image: UIImage?)->NSData?{
+    internal func decode(image: UIImage?)->Data?{
         
         guard let image = image else{
             return nil
         }
         
         switch self {
-        case .JPEG(let quality):
+        case .jpeg(let quality):
             return UIImageJPEGRepresentation(image, quality)
         default:
             return UIImagePNGRepresentation(image)

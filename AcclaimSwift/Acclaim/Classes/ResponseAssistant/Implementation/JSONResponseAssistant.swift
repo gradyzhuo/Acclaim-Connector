@@ -20,7 +20,7 @@ public class JSONResponseAssistant : ResponseAssistant{
     public var handler : Handler?
     public var failedHandler : FailedHandler?
     
-    public init(forKeyPath keyPath:KeyPath, options: NSJSONReadingOptions = NSJSONReadingOptions.allowFragments, handler: Handler) {
+    public init(forKeyPath keyPath:KeyPath, options: JSONSerialization.ReadingOptions = JSONSerialization.ReadingOptions.allowFragments, handler: Handler) {
         
         self.deserializer = JSONDeserializer(options: options)
         _ = self.addHandler(forKeyPath: keyPath, handler: handler)
@@ -30,12 +30,12 @@ public class JSONResponseAssistant : ResponseAssistant{
         self.handler = handler
     }
     
-    public init(options: NSJSONReadingOptions, handler: Handler? = nil){
+    public init(options: JSONSerialization.ReadingOptions, handler: Handler? = nil){
         self.deserializer = JSONDeserializer(options: options)
         self.handler = handler
     }
     
-    public func handle(data: NSData?, connection: Connection, error: NSError?) {
+    public func handle(data: Data?, connection: Connection, error: NSError?) {
         
         let result = self.deserializer.deserialize(data: data)
         
@@ -61,7 +61,7 @@ public class JSONResponseAssistant : ResponseAssistant{
 
 extension JSONResponseAssistant : AssistantFailedHandleable {
     public typealias AssistantType = JSONResponseAssistant
-    public typealias FailedHandler = (assistant: AssistantType, data: NSData?, error: ErrorProtocol?)->Void
+    public typealias FailedHandler = (assistant: AssistantType, data: Data?, error: ErrorProtocol?)->Void
     
     public func failed(assistantHandler handler: FailedHandler) {
         self.failedHandler = handler

@@ -9,76 +9,76 @@
 import Foundation
 
 /// The method of HTTP request.
-public enum HTTPMethod {
+public enum Method {
     
     public typealias RawValue = String
 
-    case GET
+    case get
     
-    case POST
-    case PUT
-    case DELETE
-    case HEAD
-    case OPTIONS
-    case CONNECT
+    case post
+    case put
+    case delete
+    case head
+    case options
+    case connect
     
-    case POSTWith(serializer: SerializerType)
-    case PUTWith(serializer: SerializerType)
-    case DELETEWith(serializer: SerializerType)
-    case HEADWith(serializer: SerializerType)
-    case OPTIONSWith(serializer: SerializerType)
-    case CONNECTWith(serializer: SerializerType)
+    case postWith(serializer: SerializerType)
+    case putWith(serializer: SerializerType)
+    case deleteWith(serializer: SerializerType)
+    case headWith(serializer: SerializerType)
+    case optionsWith(serializer: SerializerType)
+    case connectWith(serializer: SerializerType)
     
     internal var serializer: ParametersSerializer {
         switch self {
-        case let .POSTWith(serialize):
+        case let .postWith(serialize):
             return serialize.serializer
         
-        case let .PUTWith(serialize):
+        case let .putWith(serialize):
             return serialize.serializer
-        case let .DELETEWith(serialize):
+        case let .deleteWith(serialize):
             return serialize.serializer
-        case let .HEADWith(serialize):
+        case let .headWith(serialize):
             return serialize.serializer
-        case let .OPTIONSWith(serialize):
+        case let .optionsWith(serialize):
             return serialize.serializer
-        case let .CONNECTWith(serialize):
+        case let .connectWith(serialize):
             return serialize.serializer
         default:
-            return SerializerType.QueryString.serializer
+            return SerializerType.queryString.serializer
         }
     }
     
-    public func HTTPMethodByReplaceSerializer(serializer: SerializerType)->HTTPMethod {
+    public func replaced(bySerializerType serializer: SerializerType)->Method {
         
         switch self {
         
-        case .POST:
-            return .POSTWith(serializer: serializer)
-        case .PUT:
-            return .PUTWith(serializer: serializer)
-        case .DELETE:
-            return .DELETEWith(serializer: serializer)
-        case .HEAD:
-            return .HEADWith(serializer: serializer)
-        case .OPTIONS:
-            return .OPTIONSWith(serializer: serializer)
-        case .CONNECT:
-            return .CONNECTWith(serializer: serializer)
+        case .post:
+            return .postWith(serializer: serializer)
+        case .put:
+            return .putWith(serializer: serializer)
+        case .delete:
+            return .deleteWith(serializer: serializer)
+        case .head:
+            return .headWith(serializer: serializer)
+        case .options:
+            return .optionsWith(serializer: serializer)
+        case .connect:
+            return .connectWith(serializer: serializer)
         
-        case .POSTWith:
+        case .postWith:
             fallthrough
-        case .PUTWith:
+        case .putWith:
             fallthrough
-        case .DELETEWith:
+        case .deleteWith:
             fallthrough
-        case .OPTIONSWith:
+        case .optionsWith:
             fallthrough
-        case .CONNECTWith:
+        case .connectWith:
             return self
             
         default:
-            ACDebugLog(log: "[Failed]: The method of itself, \(self.rawValue) can't append a serializer to serialize.")
+            Debug(log: "[Failed]: The method of itself, \(self.rawValue) can't append a serializer to serialize.")
             return self
         }
         
@@ -87,88 +87,88 @@ public enum HTTPMethod {
 }
 
 //MARK: - RawRepresentable Extension
-extension HTTPMethod : RawRepresentable {
-    public init?(rawValue: HTTPMethod.RawValue) {
+extension Method : RawRepresentable {
+    public init?(rawValue: Method.RawValue) {
         switch rawValue.uppercased() {
         case "GET":
-            self = .GET
+            self = .get
         case "POST":
-            self = .POST
+            self = .post
         case "PUT":
-            self = .PUT
+            self = .put
         case "DELETE":
-            self = .DELETE
+            self = .delete
         case "HEAD":
-            self = .HEAD
+            self = .head
         case "OPTIONS":
-            self = .OPTIONS
+            self = .options
         case "CONNECT":
-            self = .CONNECT
+            self = .connect
         default:
-            ACDebugLog(log: "The rawvalue your input : '\(rawValue)' can't be accepted. It will be GET instead.")
-            self = .GET
+            Debug(log: "The rawvalue your input : '\(rawValue)' can't be accepted. It will be GET instead.")
+            self = .get
         }
     }
     
     public var rawValue: String {
         
         switch self {
-        case .GET:
+        case .get:
             return "GET"
             
-        case .POSTWith:
+        case .postWith:
             fallthrough
-        case .POST:
+        case .post:
             return "POST"
             
-        case .PUTWith:
+        case .putWith:
             fallthrough
-        case .PUT:
+        case .put:
             return "PUT"
             
-        case .DELETEWith:
+        case .deleteWith:
             fallthrough
-        case .DELETE:
+        case .delete:
             return "DELETE"
             
-        case .HEADWith:
+        case .headWith:
             fallthrough
-        case .HEAD:
+        case .head:
             return "HEAD"
             
-        case .OPTIONSWith:
+        case .optionsWith:
             fallthrough
-        case .OPTIONS:
+        case .options:
             return "OPTIONS"
             
-        case .CONNECTWith:
+        case .connectWith:
             fallthrough
-        case .CONNECT:
+        case .connect:
             return "CONNECT"
         }
     }
 }
 
-public func ==(lhs: HTTPMethod, rhs: HTTPMethod)->Bool{
+public func ==(lhs: Method, rhs: Method)->Bool{
     return lhs.rawValue == rhs.rawValue
 }
 
 //typealias
-extension HTTPMethod : StringLiteralConvertible {
+extension Method : StringLiteralConvertible {
     public typealias StringLiteralType = String
     public typealias ExtendedGraphemeClusterLiteralType = String
     public typealias UnicodeScalarLiteralType = String
     
     /// Create an instance initialized to `value`.
-    public init(stringLiteral value: HTTPMethod.StringLiteralType){
-        self = HTTPMethod(rawValue: value)!
+    public init(stringLiteral value: Method.StringLiteralType){
+        self = Method(rawValue: value)!
     }
     
-    public init(unicodeScalarLiteral value: HTTPMethod.UnicodeScalarLiteralType) {
-        self = HTTPMethod(stringLiteral: value)
+    public init(unicodeScalarLiteral value: Method.UnicodeScalarLiteralType) {
+        self = Method(stringLiteral: value)
     }
     
-    public init(extendedGraphemeClusterLiteral value: HTTPMethod.ExtendedGraphemeClusterLiteralType) {
-        self = HTTPMethod(stringLiteral: value)
+    public init(extendedGraphemeClusterLiteral value: Method.ExtendedGraphemeClusterLiteralType) {
+        self = Method(stringLiteral: value)
     }
 }

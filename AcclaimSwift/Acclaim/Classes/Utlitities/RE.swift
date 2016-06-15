@@ -2,7 +2,7 @@ import Foundation
 
 public struct RE {
     
-    public internal(set) var regularExpression: NSRegularExpression
+    public internal(set) var regularExpression: RegularExpression
     
     public struct Pattern {
         public internal(set) var patternString:String
@@ -10,10 +10,10 @@ public struct RE {
     
     public struct Sult {
         public internal(set) var content: String
-        public internal(set) var result:NSTextCheckingResult
+        public internal(set) var result:TextCheckingResult
         public internal(set) var matches:[Int:String] = [:]
         
-        public init(content: String, result:NSTextCheckingResult){
+        public init(content: String, result:TextCheckingResult){
             self.content = content
             self.result = result
             
@@ -32,18 +32,18 @@ public struct RE {
     
     public init(pattern: Pattern){
         self.pattern = pattern
-        self.regularExpression = try! NSRegularExpression(pattern: pattern.patternString, options: .useUnicodeWordBoundaries)
+        self.regularExpression = try! RegularExpression(pattern: pattern.patternString, options: .useUnicodeWordBoundaries)
     }
     
-    public func match(inString string: String,  options: NSMatchingOptions = .withTransparentBounds)->[RE.Sult]{
-        let range = NSRange(location: 0, length: string.lengthOfBytes(using: NSUTF8StringEncoding))
+    public func match(inString string: String,  options: RegularExpression.MatchingOptions = .withTransparentBounds)->[RE.Sult]{
+        let range = NSRange(location: 0, length: string.lengthOfBytes(using: String.Encoding.utf8))
         let matches = self.regularExpression.matches(in: string, options: options, range: range)
         return matches.map{ Sult(content: string, result: $0) }
     }
     
-    public func isMatch(inString string: String,  options: NSMatchingOptions = .withTransparentBounds)->Bool{
+    public func isMatch(inString string: String,  options: RegularExpression.MatchingOptions = .withTransparentBounds)->Bool{
         
-        let range = NSRange(location: 0, length: string.lengthOfBytes(using: NSUTF8StringEncoding))
+        let range = NSRange(location: 0, length: string.lengthOfBytes(using: String.Encoding.utf8))
         let matchedRange = self.regularExpression.rangeOfFirstMatch(in: string, options: options, range: range)
         return (range.location == matchedRange.location) && (range.length == matchedRange.length)
     }
@@ -52,15 +52,15 @@ public struct RE {
 
 extension RE.Pattern {
     
-    public func isMatch(inString string: String, options: NSMatchingOptions = .withTransparentBounds)->Bool{
+    public func isMatch(inString string: String, options: RegularExpression.MatchingOptions = .withTransparentBounds)->Bool{
         return RE(pattern: self).isMatch(inString: string, options: options)
     }
     
-    public func match(inString string: String, options: NSMatchingOptions = .withTransparentBounds)->[RE.Sult]{
+    public func match(inString string: String, options: RegularExpression.MatchingOptions = .withTransparentBounds)->[RE.Sult]{
         return RE(pattern: self).match(inString: string, options: options)
     }
     
-    public func firstMatch(inString string: String, options: NSMatchingOptions = .withTransparentBounds)->RE.Sult?{
+    public func firstMatch(inString string: String, options: RegularExpression.MatchingOptions = .withTransparentBounds)->RE.Sult?{
         return RE(pattern: self).match(inString: string, options: options).first
     }
     

@@ -10,63 +10,64 @@ import Foundation
 
 public struct MultipartFormSerializer: ParametersSerializer {
     
-    let boundary = "-----\(NSDate().timeIntervalSince1970)"
+    let boundary = "-----\(Date().timeIntervalSince1970)"
     
-    public func serialize(params: Parameters) -> NSData? {
+    public func serialize(params: Parameters) -> Data? {
         
         let data = NSMutableData()
         
         //URLEncoding add case '+' to encode.
-        let chars = NSCharacterSet.urlPathAllowed().mutableCopy().inverted as! NSMutableCharacterSet
-        chars.addCharacters(in: "+")
+        
+        var chars = CharacterSet.urlHostAllowed.inverted
+        chars.insert(charactersIn: "+")
         chars.invert()
         
         params.forEach { (parameter) in
             
-            data.append("--\(self.boundary)\r\n".data(using: NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
+            data.append("--\(self.boundary)\r\n".data(using: String.Encoding.utf8, allowLossyConversion: true) ?? Data())
             
             if let parameter = parameter as? FormParameter {
                 
                 switch parameter {
-                case .StringValue(let key, let value):
+                case .stringValue(let key, let value):
                     
                     let encodedStringValue = value.addingPercentEncoding(withAllowedCharacters: chars) ?? ""
-                    data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: NSUTF8StringEncoding, allowLossyConversion: false) ?? NSData())
-                    data.append("\(encodedStringValue)\r\n".data(using: NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
+                    data.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: String.Encoding.utf8, allowLossyConversion: false) ?? Data())
+                    data.append("\(encodedStringValue)\r\n".data(using: String.Encoding.utf8, allowLossyConversion: true) ?? Data())
                     
-                case .ArrayValue(let key, let arrayValue):
+                case .arrayValue(let key, let arrayValue):
                     //Expend all array value
                     arrayValue.forEach({ (value) in
                         
                         let encodedStringValue = value.addingPercentEncoding(withAllowedCharacters: chars) ?? ""
-                        data.append("Content-Disposition: form-data; name=\"\(key)[]\"\r\n\r\n".data(using: NSUTF8StringEncoding, allowLossyConversion: false) ?? NSData())
-                        data.append("\(encodedStringValue)\r\n".data(using: NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
+                        data.append("Content-Disposition: form-data; name=\"\(key)[]\"\r\n\r\n".data(using: String.Encoding.utf8, allowLossyConversion: false) ?? Data())
+                        data.append("\(encodedStringValue)\r\n".data(using: String.Encoding.utf8, allowLossyConversion: true) ?? Data())
                         
                     })
                     
-                case .DictionaryValue(let key, let dictionaryValue):
+                case .dictionaryValue(let key, let dictionaryValue):
                     
                     dictionaryValue.forEach({ (elementKey, value) in
                         let encodedStringValue = value.addingPercentEncoding(withAllowedCharacters: chars) ?? ""
-                        data.append("Content-Disposition: form-data; name=\"\(key)[\(elementKey)]\"\r\n\r\n".data(using: NSUTF8StringEncoding, allowLossyConversion: false) ?? NSData())
-                        data.append("\(encodedStringValue)\r\n".data(using: NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
+                        data.append("Content-Disposition: form-data; name=\"\(key)[\(elementKey)]\"\r\n\r\n".data(using: String.Encoding.utf8, allowLossyConversion: false) ?? Data())
+                        data.append("\(encodedStringValue)\r\n".data(using: String.Encoding.utf8, allowLossyConversion: true) ?? Data())
                     })
                     
                 }
                 
             }else if let parameter = parameter as? FormDataParameter{
                 
-                data.append("Content-Disposition: form-data; name=\"\(parameter.key)\"; filename=\"\(parameter.fileName)\"\r\n".data(using: NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
-                data.append("Content-Type: \(parameter.MIME)\r\n\r\n".data(using: NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
-                data.append(parameter.data)
-                data.append("\r\n".data(using: NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
+                data.append("Content-Disposition: form-data; name=\"\(parameter.key)\"; filename=\"\(parameter.fileName)\"\r\n".data(using: String.Encoding.utf8, allowLossyConversion: true) ?? Data())
+                data.append("Content-Type: \(parameter.MIME)\r\n\r\n".data(using: String.Encoding.utf8, allowLossyConversion: true) ?? Data())
+                data.append(parameter.data as Data)
+                data.append("\r\n".data(using: String.Encoding.utf8, allowLossyConversion: true) ?? Data())
                 
             }
             
-            data.append("--\(self.boundary)--\r\n".data(using: NSUTF8StringEncoding, allowLossyConversion: true) ?? NSData())
+            data.append("--\(self.boundary)--\r\n".data(using: String.Encoding.utf8, allowLossyConversion: true) ?? Data())
         }
         
-        return data.copy() as? NSData
+        return data.copy() as? Data
     }
     
 }

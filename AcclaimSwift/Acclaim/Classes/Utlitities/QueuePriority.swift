@@ -22,44 +22,46 @@ import Foundation
  */
 public struct QueuePriority : Equatable {
     
-    internal let queue:dispatch_queue_t
+    internal let queue:DispatchQueue
     
-    internal var queue_attr:dispatch_queue_attr_t!
-    internal var qos_class:qos_class_t
-    internal var relative_priority:Int32
+    internal let attribute: DispatchQueueAttributes
+    internal let relativePriority: Int
     
     internal var identifier:String? {
-        let utf8 = dispatch_queue_get_label(QueuePriority.Default.queue)
-        return String(CString: utf8, encoding: NSUTF8StringEncoding)
+        let utf8 = QueuePriority.Default.queue.label
+        return String(CString: utf8, encoding: String.Encoding.utf8)
     }
     
-    internal init(identifier:String, queue_attr: dispatch_queue_attr_t! = DISPATCH_QUEUE_SERIAL, qos_class:qos_class_t = QOS_CLASS_DEFAULT, relative_priority:Int32 = -1){
-        let priorityAttr = dispatch_queue_attr_make_with_qos_class(queue_attr, qos_class, relative_priority)
-        let queue = dispatch_queue_create(identifier, priorityAttr)
+    internal init(identifier:String, attributes: DispatchQueueAttributes = [.serial, .qosDefault], relativePriority:Int = -1){
         
-        self.queue_attr = queue_attr
-        self.qos_class = qos_class
-        self.relative_priority = relative_priority
+        self.relativePriority = relativePriority
+        self.attribute = attributes
         
-        self.queue = queue!
+        self.queue = DispatchQueue(label: identifier, attributes: attributes)
     }
     
+    
+    internal var qos: DispatchQoS {
+        return self.queue.qos
+    }
+    
+    //MARK: -
     
     public static let Default:QueuePriority = {
-        return QueuePriority(identifier:"ACAPIQueue.Default", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_DEFAULT, relative_priority: 0)
-        }()
+        return QueuePriority(identifier:"ACAPIQueue.Default", attributes: [.serial, .qosDefault], relativePriority: 0)
+    }()
     
     public static let High:QueuePriority = {
-        return QueuePriority(identifier:"ACAPIQueue.HIGH", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_USER_INITIATED, relative_priority: 0)
-        }()
+        return QueuePriority(identifier:"ACAPIQueue.HIGH", attributes: [.serial, .qosUserInitiated], relativePriority: 0)
+    }()
     
     public static let Medium:QueuePriority = {
-        return QueuePriority(identifier:"ACAPIQueue.MEDIUM", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_UTILITY, relative_priority: 0)
-        }()
+        return QueuePriority(identifier:"ACAPIQueue.MEDIUM", attributes: [.serial, .qosUtility], relativePriority: 0)
+    }()
     
     public static let Low:QueuePriority = {
-        return QueuePriority(identifier:"ACAPIQueue.LOW", queue_attr: DISPATCH_QUEUE_SERIAL, qos_class: QOS_CLASS_BACKGROUND, relative_priority: 0)
-        }()
+        return QueuePriority(identifier:"ACAPIQueue.LOW", attributes: [.serial, .qosBackground], relativePriority: 0)
+    }()
 }
 
 public func ==(lhs: QueuePriority, rhs: QueuePriority)->Bool{

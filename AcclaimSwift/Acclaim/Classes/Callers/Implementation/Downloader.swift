@@ -11,18 +11,18 @@ import Foundation
 public final class Downloader : APICaller, RecevingProcessHandlable {
     public internal(set) var recevingProcessHandler: ProcessHandler?
     
-    public init(API api: API, params: Parameters = [], resumeData: NSData? = nil, configuration: Acclaim.Configuration = Acclaim.configuration) {
+    public init(API api: API, params: Parameters = [], resumeData: Data? = nil, configuration: Acclaim.Configuration = Acclaim.configuration) {
         super.init(API: api, params: params, taskType: .DownloadTask(resumeData: resumeData),configuration:configuration)
     }
     
     public override func cancel() {
-        self.cancel(handler: nil)
+        self.cancel(nil)
     }
     
-    public func cancel(handler: ((resumeData: NSData?)->Void)?) {
-        if let sessionTask = self.sessionTask as? NSURLSessionDownloadTask, let handler = handler {
+    public func cancel(_ handler: ((resumeData: Data?)->Void)?) {
+        if let sessionTask = self.sessionTask as? URLSessionDownloadTask, let handler = handler {
             sessionTask.cancel { resumeData in
-                sessionTask.data = (resumeData?.mutableCopy() as? NSMutableData) ?? NSMutableData()
+                sessionTask.data = resumeData ?? Data()
                 handler(resumeData: resumeData)
             }
         }else{
@@ -35,15 +35,15 @@ public final class Downloader : APICaller, RecevingProcessHandlable {
         return self
     }
     
-    public func handleImage(scale: CGFloat = 1.0, handler:ImageResponseAssistant.Handler)->ImageResponseAssistant{
-        return self.handle(responseType: .Success, assistant: ImageResponseAssistant(scale: scale, handler: handler))
+    public func handleImage(_ scale: CGFloat = 1.0, handler:ImageResponseAssistant.Handler)->ImageResponseAssistant{
+        return self.handle(responseType: .success, assistant: ImageResponseAssistant(scale: scale, handler: handler))
     }
     
 }
 
 extension Acclaim {
     
-    public static func download(API api:API, params:Parameters = [], method: HTTPMethod = .GET, resumeData: NSData? = nil, priority: QueuePriority = .Default)->Downloader{
+    public static func download(API api:API, params:Parameters = [], method: Method = .get, resumeData: Data? = nil, priority: QueuePriority = .Default)->Downloader{
         
         let caller = Downloader(API: api, params: params, resumeData: resumeData)
         caller.configuration.priority = priority

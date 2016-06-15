@@ -11,25 +11,25 @@ import Foundation
 public protocol Serializer {}
 
 public protocol ParametersSerializer:Serializer {
-    func serialize(params:Parameters) -> NSData?
+    func serialize(params: Parameters) -> Data?
 }
 
 public enum SerializerType {
-    case QueryString
-    case JSON(option: NSJSONWritingOptions)
-    case MultipartForm
-    case Custom(serializer: ParametersSerializer)
+    case queryString
+    case json(option: JSONSerialization.WritingOptions)
+    case multipartForm
+    case custom(serializer: ParametersSerializer)
     
     internal var serializer: ParametersSerializer {
         
         switch self {
-        case let .JSON(option):
+        case let .json(option):
             return JSONParametersSerializer(option: option)
-        case .QueryString:
+        case .queryString:
             return QueryStringParametersSerializer()
-        case .MultipartForm:
+        case .multipartForm:
             return MultipartFormSerializer()
-        case let .Custom(serializer):
+        case let .custom(serializer):
             return serializer
         }
         

@@ -11,7 +11,7 @@ public protocol ResponseSupport {
     var responseAssistants:[Assistant] { get }
     var failedResponseAssistants:[Assistant] { get }
     
-    func handle<T:ResponseAssistant>(responseType type:ResponseAssistantType, assistant: T)->T
+    func handle<T:ResponseAssistant>(responseType: ResponseAssistantType, assistant: T)->T
 }
 
 extension ResponseSupport {
@@ -24,7 +24,7 @@ extension ResponseSupport {
         }else{
             assistant.handler = handler
         }
-        _ = self.handle(responseType: .Failed, assistant: assistant)
+        _ = self.handle(responseType: .failed, assistant: assistant)
         
         return self
     }
@@ -36,18 +36,18 @@ extension ResponseSupport {
         }else{
             assistant.handler = handler
         }
-        _ = self.handle(responseType: .Failed, assistant: assistant)
+        _ = self.handle(responseType: .failed, assistant: assistant)
         
         return self
     }
     
     public func handleOriginalData(handler:OriginalDataResponseAssistant.Handler)->Self{
-        _ = self.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: handler))
+        _ = self.handle(responseType: .success, assistant: OriginalDataResponseAssistant(handler: handler))
         return self
     }
     
-    public func handleText(encoding: NSStringEncoding = NSUTF8StringEncoding, handler:TextResponseAssistant.Handler)->Self{
-        _ = self.handle(responseType: .Success, assistant: TextResponseAssistant(encoding: encoding, handler: handler))
+    public func handleText(encoding: String.Encoding = String.Encoding.utf8, handler:TextResponseAssistant.Handler)->Self{
+        _ = self.handle(responseType: .success, assistant: TextResponseAssistant(encoding: encoding, handler: handler))
         return self
     }
     

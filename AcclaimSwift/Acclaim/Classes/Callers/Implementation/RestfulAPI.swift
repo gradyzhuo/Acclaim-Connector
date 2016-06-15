@@ -26,28 +26,28 @@ public final class RestfulAPI : APICaller {
 //        
 //    }
     
-    public func handleObject(keyPath:KeyPath = "", handler: AssistantType.Handler)->AssistantType{
+    public func handleObject(_ keyPath:KeyPath = "", handler: AssistantType.Handler)->AssistantType{
         let assistant:AssistantType
         if keyPath == "" {
             assistant = AssistantType(handler: handler)
         }else{
             assistant = AssistantType(forKeyPath: keyPath, handler: handler)
         }
-        return self.handle(responseType: .Success, assistant: assistant)
+        return self.handle(responseType: .success, assistant: assistant)
     }
     
-    public func handleObject(keyPath:String = "", handler: AssistantType.Handler)->AssistantType{
+    public func handleObject(_ keyPath:String = "", handler: AssistantType.Handler)->AssistantType{
         let assistant:AssistantType
         if keyPath == "" {
             assistant = AssistantType(handler: handler)
         }else{
             assistant = AssistantType(forKeyPath: KeyPath(path: keyPath), handler: handler)
         }
-        return self.handle(responseType: .Success, assistant: assistant)
+        return self.handle(responseType: .success, assistant: assistant)
     }
     
-    public func handleMappingObject<T:Mappable>(mappingClass: T.Type, option:NSJSONReadingOptions = .allowFragments, handler:MappingResponseAssistant<T>.Handler)->MappingResponseAssistant<T>{
-        return self.handle(responseType: .Success, assistant: MappingResponseAssistant<T>(options: option, handler: handler))
+    public func handleMappingObject<T:Mappable>(_ mappingClass: T.Type, option:JSONSerialization.ReadingOptions = .allowFragments, handler:MappingResponseAssistant<T>.Handler)->MappingResponseAssistant<T>{
+        return self.handle(responseType: .success, assistant: MappingResponseAssistant<T>(options: option, handler: handler))
     }
     
 }
@@ -67,7 +67,7 @@ extension Acclaim {
         
         let caller = RestfulAPI(API: api, params: params)
         caller.configuration.priority = priority
-        _ = caller.handle(responseType: .Success, assistant: OriginalDataResponseAssistant(handler: completionHandler))
+        _ = caller.handle(responseType: .success, assistant: OriginalDataResponseAssistant(handler: completionHandler))
         _ = caller.failed(deserializer: DataDeserializer(), handler: failedHandler)
         caller.resume()
         

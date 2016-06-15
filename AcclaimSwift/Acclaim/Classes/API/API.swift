@@ -41,7 +41,7 @@ public struct RequestTaskType {
         - resumeData: It can be resume a downloadTask with previous result's data by pausing. (required)
      - returns: DownloadTask's RequestTaskType.
      */
-    public static func DownloadTask(resumeData: NSData?)->RequestTaskType{
+    public static func DownloadTask(resumeData: Data?)->RequestTaskType{
         return RequestTaskType(identifier: "DownloadTask", infoObject: resumeData)
     }
     
@@ -65,7 +65,7 @@ public struct RequestTaskType {
         - netService: It can be resume a downloadTask with previous result's data by pausing. (required)
      - returns: DownloadTask's RequestTaskType.
      */
-    public static func StreamTask(service: NSNetService)->RequestTaskType{
+    public static func StreamTask(_ service: NetService)->RequestTaskType{
         return RequestTaskType(identifier: "StreamTask", infoObject: service)
     }
     
@@ -81,24 +81,24 @@ public class  API : StringLiteralConvertible {
     public typealias ExtendedGraphemeClusterLiteralType = String
     public typealias UnicodeScalarLiteralType = String
     
-    public internal(set) var apiURL:NSURL
+    public internal(set) var apiURL:URL
     
     /**  Convenience property from RequestTaskType. (readonly) */
-    public var method: HTTPMethod = .GET
+    public var method: Method = .get
     
 //    public var requestTaskType: RequestTaskType = .DataTask(method: .GET)
-    public var timeoutInterval:NSTimeInterval = 30
+    public var timeoutInterval:TimeInterval = 30
     
-    public var cachePolicy:NSURLRequestCachePolicy = .useProtocolCachePolicy
+    public var cachePolicy:NSURLRequest.CachePolicy = .useProtocolCachePolicy
     
     public var HTTPHeaderFields:[String: String] = [:]
-    public internal(set) var cookies:[NSHTTPCookie] = []
+    public internal(set) var cookies:[HTTPCookie] = []
     
     /** The property `request` will be generated after getRequest() is called. default value is nil. (readonly) */
-    public internal(set) var request: NSURLRequest?
-    internal var requestConfigurationHandler: (request: NSMutableURLRequest)->Void = { _ in }
+    public internal(set) var request: URLRequest?
+    internal var requestConfigurationHandler: (request: URLRequest)->Void = { _ in }
     
-    public convenience init(api:String, host:NSURL! = Acclaim.hostURLFromInfoDictionary(), method: HTTPMethod = .GET) throws {
+    public convenience init(api:String, host:URL! = Acclaim.hostURLFromInfoDictionary(), method: Method = .get) throws {
         
         
         guard let validHostURL = host else {
@@ -109,24 +109,24 @@ public class  API : StringLiteralConvertible {
             throw NSError(domain: "API.Constructor", code: 999, userInfo: [NSLocalizedFailureReasonErrorKey:reason, NSLocalizedRecoverySuggestionErrorKey:recoverSuggestion])
         }
         
-        let apiURL = validHostURL.appendingPathComponent(api)
+        let apiURL = try! validHostURL.appendingPathComponent(api)
         
         self.init(URL: apiURL, method: method)
         
     }
     
-    public init(URL:NSURL, method: HTTPMethod){
+    public init(URL:Foundation.URL, method: Method){
         self.apiURL = URL
         self.method = method
         
-        for cookie in NSHTTPCookieStorage.shared().cookies ?? [] where cookie.domain == URL.host!{
-            _ = self.addHTTPCookie(cookie: cookie)
+        for cookie in HTTPCookieStorage.shared().cookies ?? [] where cookie.domain == URL.host!{
+            _ = self.add(cookie: cookie)
         }
         
     }
     
-    public convenience init(URLString string: String, method:HTTPMethod = .GET) throws {
-        guard let URL = NSURL(string: string) else {
+    public convenience init(URLString string: String, method:Method = .get) throws {
+        guard let URL = URL(string: string) else {
             throw NSError(domain: "API.From.URLString", code: 0, userInfo: [NSLocalizedFailureReasonErrorKey:"The API can't be construct by URLString(\(string))"])
         }
         
@@ -135,8 +135,8 @@ public class  API : StringLiteralConvertible {
     
     public required convenience init(stringLiteral value: StringLiteralType) {
         
-        if let components = NSURLComponents(string: value) where components.scheme != nil, let url = components.url  {
-            self.init(URL: url, method: .GET)
+        if let components = URLComponents(string: value) where components.scheme != nil, let url = components.url  {
+            self.init(URL: url, method: .get)
         }else{
             try! self.init(api: value)
         }
@@ -160,7 +160,7 @@ extension API {
     
     public static var HTTPHeaderFieldsForAllRequest:[String: String] = [:]
     
-    public func configRequest(handler: (request: NSMutableURLRequest)->Void) {
+    public func configRequest(_ handler: (request: URLRequest)->Void) {
         self.requestConfigurationHandler = handler
     }
     
@@ -176,13 +176,21 @@ extension API {
         - value: the value of cookie.
      - returns: object of NSHTTPCookie. (Optional)
      */
-    public func addSimpleHTTPCookie(name:String, value: String)->NSHTTPCookie?{
-        let properties = [NSHTTPCookieName:name, NSHTTPCookieValue:value, NSHTTPCookieDomain:self.apiURL.host ?? "", NSHTTPCookieOriginURL:self.apiURL.absoluteString, NSHTTPCookiePath:self.apiURL.path ?? "", NSHTTPCookieVersion:"0"]
-        guard let cookie = NSHTTPCookie(properties: properties) else {
+    public func addSimpleHTTPCookie(name:String, value: String)->HTTPCookie?{
+        let properties:[HTTPCookiePropertyKey:AnyObject] = [
+            .name:name,
+            .value:value,
+            .domain:self.apiURL.host ?? "",
+            .originURL:self.apiURL,
+            .path:self.apiURL.path ?? "",
+            .version:"0"
+        ]
+        
+        guard let cookie = HTTPCookie(properties: properties) else {
             return nil
         }
         
-        _ = self.addHTTPCookie(cookie: cookie)
+        _ = self.add(cookie: cookie)
         return cookie
     }
     
@@ -192,7 +200,7 @@ extension API {
      - cookie: the instance of NSHTTPCookie.
      - returns: API.
      */
-    public func addHTTPCookie(cookie: NSHTTPCookie)->Self{
+    public func add(cookie: HTTPCookie)->Self{
         self.cookies.append(cookie)
         return self
     }
@@ -200,16 +208,16 @@ extension API {
 
 extension API {
     
-    public func generateRequest(parameters params: Parameters, configuration: Acclaim.Configuration)->NSMutableURLRequest {
+    public func generateRequest(parameters params: Parameters, configuration: Acclaim.Configuration)->URLRequest {
         
-        let request:NSMutableURLRequest = NSMutableURLRequest(url: self.apiURL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
+        var request:URLRequest = URLRequest(url: self.apiURL, cachePolicy: self.cachePolicy, timeoutInterval: self.timeoutInterval)
         
         let body = self.method.serializer.serialize(params: params)
         
-        if let body = body where self.method == HTTPMethod.GET {
-            let components = NSURLComponents(url
+        if let body = body where self.method == .get {
+            var components = URLComponents(url
                 : self.apiURL, resolvingAgainstBaseURL: false)
-            components?.query = String(data: body, encoding: NSUTF8StringEncoding)
+            components?.query = String(data: body as Data, encoding: String.Encoding.utf8)
             request.url = (components?.url)!
         }else{
             request.httpBody = body
@@ -218,7 +226,7 @@ extension API {
         request.httpMethod = self.method.rawValue
         request.allowsCellularAccess = configuration.allowsCellularAccess
         
-        for field in NSHTTPCookie.requestHeaderFields(with: self.cookies){
+        for field in HTTPCookie.requestHeaderFields(with: self.cookies){
             request.addValue(field.1, forHTTPHeaderField: field.0)
         }
         
@@ -232,7 +240,7 @@ extension API {
         
         self.requestConfigurationHandler(request: request)
         
-        self.request = request.copy() as? NSURLRequest
+        self.request = request
         return request
     }
 }
